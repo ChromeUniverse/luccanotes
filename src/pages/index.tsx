@@ -10,11 +10,7 @@ import NoteCard from "../components/NoteCard";
 import { TagColors } from "../components/TagPill";
 import Button from "../components/Button";
 import { NotePencil } from "phosphor-react";
-
-export type Tag = {
-  label: string;
-  color: TagColors;
-};
+import { Note, Tag } from "..";
 
 type TagsKeys = "coding" | "music" | "school" | "general" | "tasks" | "work";
 
@@ -44,12 +40,6 @@ const tags: { [key in TagsKeys]: Tag } = {
     color: "green",
   },
 } as const;
-
-type Note = {
-  noteTitle: string;
-  lastUpdated: string;
-  tags: Tag[];
-};
 
 const notes: Note[] = [
   {
@@ -99,21 +89,21 @@ const Home: NextPage = () => {
         <div className="mx-auto px-4 md:w-[90%] md:max-w-[1200px]">
           {/* Top row */}
           <div className="flex gap-3">
-            <SearchBar />
+            <SearchBar tags={Object.values(tags)} />
             <div className="hidden gap-3 md:flex">
               <Button
                 intent="secondary"
                 icon="tag"
                 label="Manage tags"
                 tooltipPosition="bottom"
-                lg
+                size="lg"
               />
               <Button
                 intent="primary"
                 icon="note-pencil"
                 label="New note"
                 tooltipPosition="bottom"
-                lg
+                size="lg"
               />
             </div>
           </div>
@@ -138,6 +128,7 @@ const Home: NextPage = () => {
           label="Manage tags"
           roundedFull
           tooltipPosition="left"
+          size="lg"
           shadow
         />
         <Button
@@ -146,6 +137,7 @@ const Home: NextPage = () => {
           label="New note"
           roundedFull
           tooltipPosition="left"
+          size="lg"
           shadow
         />
       </div>

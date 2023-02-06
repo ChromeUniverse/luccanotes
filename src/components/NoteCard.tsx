@@ -1,5 +1,5 @@
 import { ArrowSquareOut, DotsThreeOutlineVertical } from "phosphor-react";
-import { Tag } from "../pages";
+import { Tag } from "..";
 import Button from "./Button";
 import TagPill from "./TagPill";
 import Tooltip from "./Tooltip";
