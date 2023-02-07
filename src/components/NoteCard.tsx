@@ -8,7 +8,7 @@ function HiddenTagPillContainer({ hiddenTags }: { hiddenTags: Tag[] }) {
       <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900">
         {hiddenTags.length} more {hiddenTags.length === 1 ? "tag" : "tags"}
       </p>
-      <Tooltip tooltipPosition="bottom">
+      <Tooltip tooltipPosition="bottom" alignment="xCenter">
         <div className="flex flex-col gap-2 md:flex-row">
           {hiddenTags.map((tag, index) => (
             <TagPill key={index} label={tag.label} color={tag.color} />

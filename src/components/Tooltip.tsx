@@ -33,7 +33,9 @@ export type TooltipPosition = VariantProps<
 
 export type TooltipAlignment = VariantProps<typeof tooltipStyles>["alignment"];
 
-interface Props extends ToolTipProps, VariantProps<typeof tooltipStyles> {}
+interface Props
+  extends ToolTipProps,
+    Required<VariantProps<typeof tooltipStyles>> {}
 
 const Tooltip = ({ tooltipPosition, children, alignment }: Props) => {
   return (

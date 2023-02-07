@@ -160,7 +160,7 @@ function SearchBar({
   setSortOrder: (newSortOrder: "asc" | "desc") => void;
 }) {
   return (
-    <div className="relative flex w-full items-center rounded-lg border-2 bg-white pl-5 pr-3 transition-colors focus-within:border-blue-600">
+    <div className="relative flex w-full items-center rounded-lg border-2 bg-white py-1.5 pl-5 pr-3 transition-colors focus-within:border-blue-600">
       <MagnifyingGlass className="text-gray-400" size={20} weight="bold" />
       <input
         value={searchInput}
@@ -171,16 +171,18 @@ function SearchBar({
       />
 
       <Popover as="div" className="flex items-center justify-center">
-        <Popover.Button className="group outline-none">
+        <Popover.Button className="group relative outline-none">
           {({ open }) => (
             <>
               {/* Desktop */}
-              <div className="relative hidden h-10 w-10 items-center justify-center rounded-lg outline outline-2 outline-transparent transition-all hover:bg-gray-100 group-focus:bg-gray-100 group-focus:outline-gray-900 md:flex">
-                <CaretDown
-                  className="peer text-gray-400 transition ui-open:rotate-180"
-                  size={20}
-                  weight="bold"
-                />
+              <div className="hidden md:block">
+                <div className="peer h-10 w-10 items-center justify-center rounded-lg outline outline-2 outline-transparent transition-all hover:bg-gray-100 group-focus:bg-gray-100 group-focus:outline-gray-900 md:flex">
+                  <CaretDown
+                    className="text-gray-400 transition ui-open:rotate-180"
+                    size={20}
+                    weight="bold"
+                  />
+                </div>
                 {!open && (
                   <Tooltip tooltipPosition="bottom" alignment="xCenter">
                     Sorting & Filtering
@@ -188,12 +190,14 @@ function SearchBar({
                 )}
               </div>
               {/* Mobile */}
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-lg outline outline-2 outline-transparent transition-all hover:bg-gray-100 group-focus:bg-gray-100 group-focus:outline-gray-900 md:hidden">
-                <CaretDown
-                  className="peer text-gray-400 transition ui-open:rotate-180"
-                  size={20}
-                  weight="bold"
-                />
+              <div className="block md:hidden">
+                <div className="peer flex h-10 w-10 items-center justify-center rounded-lg outline outline-2 outline-transparent transition-all hover:bg-gray-100 group-focus:bg-gray-100 group-focus:outline-gray-900 md:hidden">
+                  <CaretDown
+                    className="text-gray-400 transition ui-open:rotate-180"
+                    size={20}
+                    weight="bold"
+                  />
+                </div>
                 {!open && (
                   <Tooltip tooltipPosition="bottom" alignment="left">
                     Sorting & Filtering
