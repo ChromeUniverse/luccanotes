@@ -1,7 +1,8 @@
 type Note = {
-  noteTitle: string;
-  lastUpdated: string;
+  title: string;
   tags: Tag[];
+  createdAt: Date;
+  lastUpdated: Date;
 };
 export type Tag = {
   label: string;
