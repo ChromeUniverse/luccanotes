@@ -42,45 +42,40 @@ function TagPillContainer({ tags }: { tags: Tag[] }) {
 }
 
 function NoteCard({
-  noteTitle,
+  title,
   lastUpdated,
   tags,
 }: {
-  noteTitle: string;
+  title: string;
   lastUpdated: Date;
   tags: Tag[];
 }) {
   return (
-    <div className="group flex items-start justify-between rounded-lg border-[3px] border-transparent bg-white px-5 py-6 transition-colors hover:border-blue-600 md:px-7">
+    <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-colors focus-within:border-blue-600 hover:border-blue-600 md:px-7">
       <div className="flex flex-col">
         {/* Note title */}
-        <h2 className="text-2xl font-semibold text-gray-900">{noteTitle}</h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{title}</h2>
         {/* Last updated */}
-        {/* <p className="pt-2 pb-3 text-gray-500">Last edited {lastUpdated} ago</p> */}
+        <p className="pt-2 pb-3 text-gray-500">
+          {/* Last edited {Date.now() - lastUpdated.getTime()} ms ago */}
+          {/* WARNING: Dirty hack to avoid hydration errors */}
+          Just testing
+        </p>
         <TagPillContainer tags={tags} />
       </div>
-      <div className="mt-0 flex flex-col items-center gap-1 opacity-0 transition-all group-hover:opacity-100">
-        {/* <ArrowSquareOut
-          className="ml-1 text-gray-400"
-          size={28}
-          weight="bold"
-        /> */}
-
-        {/* <DotsThreeOutlineVertical
-          className="text-gray-400"
-          size={24}
-          weight="fill"
-        /> */}
+      <div className="mt-0 flex flex-col items-center gap-1 transition-all group-hover:opacity-100">
         <Button
           intent="secondary"
           label="Open note"
           tooltipPosition="left"
+          tooltipAlignment="yCenter"
           icon="arrow-square-out"
         />
         <Button
           intent="secondary"
           label="Options"
           tooltipPosition="left"
+          tooltipAlignment="yCenter"
           icon="three-dots"
         />
       </div>

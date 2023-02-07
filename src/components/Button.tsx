@@ -8,15 +8,16 @@ import {
   Tag,
 } from "phosphor-react";
 import React from "react";
-import Tooltip, { TooltipPosition } from "./Tooltip";
+import Tooltip, { TooltipAlignment, TooltipPosition } from "./Tooltip";
 
 // CVA Variants
 const buttonStyles = cva("peer flex items-center justify-center", {
   variants: {
     intent: {
-      primary: "bg-blue-600 text-white hover:brightness-[85%]",
+      primary:
+        "bg-blue-600 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
       secondary:
-        "bg-white text-gray-400 hover:brightness-95 hover:text-blue-600",
+        "bg-white text-gray-400 hover:brightness-95 hover:text-blue-600 focus-visible:brightness-95 focus-visible:text-blue-600",
     },
     roundedFull: {
       true: "rounded-[28px] hover:rounded-xl transition-all",
@@ -47,6 +48,7 @@ type ButtonProps = {
     | "caret-down";
   label: string;
   tooltipPosition: TooltipPosition;
+  tooltipAlignment: TooltipAlignment;
 };
 
 // Merged props
@@ -72,6 +74,7 @@ function Button({
   roundedFull,
   intent,
   tooltipPosition,
+  tooltipAlignment,
   shadow,
   size,
 }: Props) {
@@ -80,7 +83,9 @@ function Button({
       <button className={buttonStyles({ intent, roundedFull, shadow, size })}>
         {icon && icons[icon]}
       </button>
-      <Tooltip tooltipPosition={tooltipPosition}>{label}</Tooltip>
+      <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
+        {label}
+      </Tooltip>
     </div>
   );
 }
