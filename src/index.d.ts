@@ -1,9 +1,6 @@
-type Note = {
-  noteTitle: string;
-  lastUpdated: string;
+export type Note = {
+  title: string;
   tags: Tag[];
-};
-export type Tag = {
-  label: string;
-  color: TagColors;
+  createdAt: Date;
+  lastUpdated: Date;
 };

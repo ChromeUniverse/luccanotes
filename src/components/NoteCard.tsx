@@ -1,7 +1,5 @@
-import { ArrowSquareOut, DotsThreeOutlineVertical } from "phosphor-react";
-import { Tag } from "..";
 import Button from "./Button";
-import TagPill from "./TagPill";
+import TagPill, { type Tag } from "./TagPill";
 import Tooltip from "./Tooltip";
 
 function HiddenTagPillContainer({ hiddenTags }: { hiddenTags: Tag[] }) {
@@ -26,19 +24,15 @@ function TagPillContainer({ tags }: { tags: Tag[] }) {
     <>
       {/* Mobile Tag container */}
       <div className="flex w-auto items-center gap-3 md:hidden">
-        <TagPill label={tags[0]?.label as string} color={tags[0]?.color} />
+        {tags[0] && <TagPill label={tags[0].label} color={tags[0].color} />}
         {tags.length - 1 > 0 && (
           <HiddenTagPillContainer hiddenTags={tags.slice(1, tags.length)} />
         )}
       </div>
       {/* Desktop Tag container */}
       <div className="hidden w-auto items-center gap-3 md:flex">
-        {tags.length >= 1 && (
-          <TagPill label={tags[0]?.label as string} color={tags[0]?.color} />
-        )}
-        {tags.length >= 2 && (
-          <TagPill label={tags[1]?.label as string} color={tags[1]?.color} />
-        )}
+        {tags[0] && <TagPill label={tags[0].label} color={tags[0].color} />}
+        {tags[1] && <TagPill label={tags[1].label} color={tags[1].color} />}
         {tags.length - 2 > 0 && (
           <HiddenTagPillContainer hiddenTags={tags.slice(2, tags.length)} />
         )}
@@ -53,7 +47,7 @@ function NoteCard({
   tags,
 }: {
   noteTitle: string;
-  lastUpdated: string;
+  lastUpdated: Date;
   tags: Tag[];
 }) {
   return (
@@ -62,7 +56,7 @@ function NoteCard({
         {/* Note title */}
         <h2 className="text-2xl font-semibold text-gray-900">{noteTitle}</h2>
         {/* Last updated */}
-        <p className="pt-2 pb-3 text-gray-500">Last edited {lastUpdated} ago</p>
+        {/* <p className="pt-2 pb-3 text-gray-500">Last edited {lastUpdated} ago</p> */}
         <TagPillContainer tags={tags} />
       </div>
       <div className="mt-0 flex flex-col items-center gap-1 opacity-0 transition-all group-hover:opacity-100">

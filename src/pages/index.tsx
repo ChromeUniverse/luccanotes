@@ -5,12 +5,16 @@ import { api } from "../utils/api";
 import { type NextPage } from "next";
 
 import Navbar from "../components/Navbar";
-import SearchBar from "../components/SearchBar";
+// import SearchBar, { type SortField } from "../components/SearchBar";
 import NoteCard from "../components/NoteCard";
-import { TagColors } from "../components/TagPill";
+// import { type TagColors } from "../components/TagPill";
 import Button from "../components/Button";
-import { NotePencil } from "phosphor-react";
-import { Note, Tag } from "..";
+// import { type Note } from "../index.d.ts";
+
+import { useMemo, useState } from "react";
+import { type Tag } from "../components/TagPill";
+import { type Note } from "..";
+import SearchBar from "../components/SearchBar";
 
 type TagsKeys = "coding" | "music" | "school" | "general" | "tasks" | "work";
 
@@ -43,8 +47,9 @@ const tags: { [key in TagsKeys]: Tag } = {
 
 const notes: Note[] = [
   {
-    noteTitle: "My First Note",
-    lastUpdated: "5 min",
+    title: "My First Note",
+    createdAt: new Date(),
+    lastUpdated: new Date(),
     tags: [
       tags.coding,
       tags.music,
@@ -55,18 +60,21 @@ const notes: Note[] = [
     ],
   },
   {
-    noteTitle: "Second Note",
-    lastUpdated: "5 min",
+    title: "Second Note",
+    createdAt: new Date(),
+    lastUpdated: new Date(),
     tags: [tags.work, tags.general, tags.work, tags.general],
   },
   {
-    noteTitle: "Note Number 3",
-    lastUpdated: "5 min",
+    title: "Note Number 3",
+    createdAt: new Date(),
+    lastUpdated: new Date(),
     tags: [tags.school, tags.tasks, tags.work, tags.general, tags.coding],
   },
   {
-    noteTitle: "The 4th Note",
-    lastUpdated: "5 min",
+    title: "The 4th Note",
+    createdAt: new Date(),
+    lastUpdated: new Date(),
     tags: [
       tags.coding,
       tags.tasks,
@@ -109,10 +117,10 @@ const Home: NextPage = () => {
           </div>
           {/* Note card container */}
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {notes.map(({ lastUpdated, noteTitle, tags }, index) => (
+            {notes.map(({ lastUpdated, title, tags }, index) => (
               <NoteCard
                 key={index}
-                noteTitle={noteTitle}
+                noteTitle={title}
                 lastUpdated={lastUpdated}
                 tags={tags}
               />

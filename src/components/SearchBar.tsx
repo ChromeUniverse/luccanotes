@@ -8,9 +8,8 @@ import {
   MagnifyingGlass,
 } from "phosphor-react";
 import { useState } from "react";
-import { Tag } from "..";
 import Button from "./Button";
-import TagPill from "./TagPill";
+import TagPill, { Tag } from "./TagPill";
 import Tooltip from "./Tooltip";
 
 // Sort fields
