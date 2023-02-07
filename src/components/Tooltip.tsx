@@ -27,11 +27,9 @@ type ToolTipProps = {
   children: React.ReactNode;
 };
 
-export type TooltipPosition = VariantProps<
-  typeof tooltipStyles
->["tooltipPosition"];
-
-export type TooltipAlignment = VariantProps<typeof tooltipStyles>["alignment"];
+type TooltipVariantProps = Required<VariantProps<typeof tooltipStyles>>;
+export type TooltipPosition = TooltipVariantProps["tooltipPosition"];
+export type TooltipAlignment = TooltipVariantProps["alignment"];
 
 interface Props
   extends ToolTipProps,

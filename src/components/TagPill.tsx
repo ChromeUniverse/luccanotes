@@ -1,5 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
 
+export type Tag = {
+  label: string;
+  color: TagColors;
+};
+
 const tagPillStyles = cva("rounded-full py-1 px-4", {
   variants: {
     color: {
@@ -18,16 +23,9 @@ interface TagPillProps {
   label: string;
 }
 
-type TagColors = Required<VariantProps<typeof tagPillStyles>>["color"];
-
-export type Tag = {
-  label: string;
-  color: TagColors;
-};
-
-interface Props
-  extends TagPillProps,
-    Required<VariantProps<typeof tagPillStyles>> {}
+type TagPillVariantProps = Required<VariantProps<typeof tagPillStyles>>;
+type TagColors = TagPillVariantProps["color"];
+interface Props extends TagPillProps, TagPillVariantProps {}
 
 function TagPill({ label, color }: Props) {
   return <div className={tagPillStyles({ color })}>{label}</div>;
