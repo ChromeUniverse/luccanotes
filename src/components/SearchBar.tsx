@@ -33,9 +33,9 @@ function SortingSection({
   setSortOrder: (newSortOrder: "asc" | "desc") => void;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <h3 className="mb-0 text-lg font-semibold text-gray-900">Sorting</h3>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 md:flex-row">
         {/* Sort Field Selector */}
         <div className="flex items-center gap-3">
           {/* Label */}
@@ -123,7 +123,7 @@ function SortingSection({
 
 function TagsSection({ tags }: { tags: Tag[] }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <p className="text-lg font-semibold text-gray-900">Tags</p>
       <div className="flex flex-wrap gap-1">
         {tags.map((tag, index) => (
@@ -212,7 +212,7 @@ function SearchBar({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Popover.Panel className="absolute right-0 left-0 top-full z-10 mt-3 flex flex-col gap-2 rounded-lg bg-gray-100 px-6 py-4 drop-shadow-lg ui-open:scale-100">
+          <Popover.Panel className="absolute right-0 left-0 top-full z-10 mt-3 flex flex-col gap-5 rounded-lg bg-gray-100 px-6 py-4 drop-shadow-lg ui-open:scale-100">
             <SortingSection
               sortField={sortField}
               setSortField={setSortField}
@@ -220,7 +220,6 @@ function SearchBar({
               setSortOrder={setSortOrder}
             />
 
-            {/* Tags */}
             <TagsSection tags={tags} />
           </Popover.Panel>
         </Transition>
