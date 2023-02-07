@@ -19,7 +19,7 @@ const sortFieldLabels = {
   createdAt: "Creation Date",
   lastUpdated: "Last Updated",
 } as const;
-type SortField = keyof typeof sortFieldLabels;
+export type SortField = keyof typeof sortFieldLabels;
 
 function SortingSection({
   sortField,
@@ -35,7 +35,7 @@ function SortingSection({
   return (
     <div className="space-y-2">
       <h3 className="mb-0 text-lg font-semibold text-gray-900">Sorting</h3>
-      <div className="flex flex-row gap-10">
+      <div className="flex flex-col gap-6">
         {/* Sort Field Selector */}
         <div className="flex items-center gap-3">
           {/* Label */}
@@ -75,29 +75,46 @@ function SortingSection({
         {/* Sort Order Selector */}
         <RadioGroup
           as="div"
-          className="mr-6 flex items-center gap-3"
+          className="mr-6 flex items-center gap-2"
           value={sortOrder}
           onChange={setSortOrder}
         >
           {/* Label */}
           <RadioGroup.Label className="text-gray-600">Order</RadioGroup.Label>
           {/* Options */}
-          <div className="flex">
-            <RadioGroup.Option value="asc">
-              <ArrowCircleUp
-                weight="duotone"
-                size={40}
-                className="cursor-pointer fill-transparent text-gray-400 transition-all ui-checked:fill-blue-500 ui-checked:text-blue-600"
-              />
-            </RadioGroup.Option>
-            <RadioGroup.Option value="desc">
-              <ArrowCircleDown
-                weight="duotone"
-                size={40}
-                className="cursor-pointer fill-transparent text-gray-400 transition-all ui-checked:fill-blue-500 ui-checked:text-blue-600"
-              />
-            </RadioGroup.Option>
-          </div>
+          {sortField === "title" ? (
+            // sorting by title
+            <div className="flex gap-3">
+              <RadioGroup.Option value="asc">
+                <span className="rounded-lg border-2 bg-gray-200 p-2.5 font-semibold text-gray-500 transition-colors ui-checked:border-blue-600 ui-checked:bg-blue-200 ui-checked:text-blue-600">
+                  A-z
+                </span>
+              </RadioGroup.Option>
+              <RadioGroup.Option value="desc">
+                <span className="rounded-lg border-2 bg-gray-200 p-2.5 font-semibold text-gray-500 transition-colors ui-checked:border-blue-600 ui-checked:bg-blue-200 ui-checked:text-blue-600">
+                  Z-a
+                </span>
+              </RadioGroup.Option>
+            </div>
+          ) : (
+            // sorting by 'createdAt' or 'lastUpdate'
+            <div className="flex">
+              <RadioGroup.Option value="asc">
+                <ArrowCircleUp
+                  weight="duotone"
+                  size={40}
+                  className="cursor-pointer fill-transparent text-gray-400 transition-all ui-checked:fill-blue-500 ui-checked:text-blue-600"
+                />
+              </RadioGroup.Option>
+              <RadioGroup.Option value="desc">
+                <ArrowCircleDown
+                  weight="duotone"
+                  size={40}
+                  className="cursor-pointer fill-transparent text-gray-400 transition-all ui-checked:fill-blue-500 ui-checked:text-blue-600"
+                />
+              </RadioGroup.Option>
+            </div>
+          )}
         </RadioGroup>
       </div>
     </div>
@@ -126,14 +143,25 @@ function CaretUpDownIcon() {
   );
 }
 
-function SearchBar({ tags }: { tags: Tag[] }) {
-  // Search parameters state
-  const [searchInput, setSearchInput] = useState("");
-  const [sortField, setSortField] = useState<SortField>("title");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-
+function SearchBar({
+  tags,
+  searchInput,
+  setSearchInput,
+  sortField,
+  setSortField,
+  sortOrder,
+  setSortOrder,
+}: {
+  tags: Tag[];
+  searchInput: string;
+  setSearchInput: (newSearchInput: string) => void;
+  sortField: SortField;
+  setSortField: (newSortField: SortField) => void;
+  sortOrder: "asc" | "desc";
+  setSortOrder: (newSortOrder: "asc" | "desc") => void;
+}) {
   return (
-    <div className="relative flex w-full items-center rounded-lg bg-white pl-5 pr-3">
+    <div className="relative flex w-full items-center rounded-lg border-2 bg-white pl-5 pr-3 transition-colors focus-within:border-blue-600">
       <MagnifyingGlass className="text-gray-400" size={20} weight="bold" />
       <input
         value={searchInput}
@@ -144,39 +172,47 @@ function SearchBar({ tags }: { tags: Tag[] }) {
       />
 
       <Popover as="div" className="flex items-center justify-center">
-        <Popover.Button as="div">
-          {/* <Button
-            intent="secondary"
-            icon="caret-down"
-            label="Sort & Filter"
-            tooltipPosition="bottom"
-          /> */}
-
+        <Popover.Button className="group outline-none">
           {({ open }) => (
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-lg transition-all hover:bg-gray-100">
-              <CaretDown
-                className="peer text-gray-400 transition ui-open:rotate-180"
-                size={20}
-                weight="bold"
-              />
-              {!open && (
-                <Tooltip tooltipPosition="bottom">Sorting & Filtering</Tooltip>
-              )}
-            </div>
+            <>
+              {/* Desktop */}
+              <div className="relative hidden h-10 w-10 items-center justify-center rounded-lg outline outline-2 outline-transparent transition-all hover:bg-gray-100 group-focus:bg-gray-100 group-focus:outline-gray-900 md:flex">
+                <CaretDown
+                  className="peer text-gray-400 transition ui-open:rotate-180"
+                  size={20}
+                  weight="bold"
+                />
+                {!open && (
+                  <Tooltip tooltipPosition="bottom" alignment="xCenter">
+                    Sorting & Filtering
+                  </Tooltip>
+                )}
+              </div>
+              {/* Mobile */}
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-lg outline outline-2 outline-transparent transition-all hover:bg-gray-100 group-focus:bg-gray-100 group-focus:outline-gray-900 md:hidden">
+                <CaretDown
+                  className="peer text-gray-400 transition ui-open:rotate-180"
+                  size={20}
+                  weight="bold"
+                />
+                {!open && (
+                  <Tooltip tooltipPosition="bottom" alignment="left">
+                    Sorting & Filtering
+                  </Tooltip>
+                )}
+              </div>
+            </>
           )}
         </Popover.Button>
         <Transition
-        // enter="transition duration-100 ease-out "
-        // enterFrom="opacity-0 scale-0"
-        // enterTo="opacity-100 scale-100"
-        // leave="transition duration-75 ease-out"
-        // leaveFrom="transform scale-100 opacity-100"
-        // leaveTo="transform scale-95 opacity-0"
+          enter="transition ease-out z-10"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition ease-out z-10"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
         >
-          <Popover.Panel
-            as="div"
-            className="absolute right-0 left-0 top-full z-10 mt-3 flex origin-top-right flex-col gap-2 rounded-lg bg-gray-100 px-6 py-4 drop-shadow-lg"
-          >
+          <Popover.Panel className="absolute right-0 left-0 top-full z-10 mt-3 flex flex-col gap-2 rounded-lg bg-gray-100 px-6 py-4 drop-shadow-lg ui-open:scale-100">
             <SortingSection
               sortField={sortField}
               setSortField={setSortField}
