@@ -9,6 +9,7 @@ import {
 } from "phosphor-react";
 import { useState } from "react";
 import Button from "./Button";
+import CaretUpDownIcon from "./CaretUpDownIcon";
 import TagPill, { Tag } from "./TagPill";
 import Tooltip from "./Tooltip";
 
@@ -129,15 +130,6 @@ function TagsSection({ tags }: { tags: Tag[] }) {
           <TagPill key={index} label={tag.label} color={tag.color} />
         ))}
       </div>
-    </div>
-  );
-}
-
-function CaretUpDownIcon() {
-  return (
-    <div className="flex flex-col">
-      <CaretUp weight="bold" size={12} />
-      <CaretDown weight="bold" size={12} />
     </div>
   );
 }
