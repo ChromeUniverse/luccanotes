@@ -15,6 +15,7 @@ import { useMemo, useState } from "react";
 import { type Tag } from "../components/TagPill";
 import { type Note } from "..";
 import SearchBar, { type SortField } from "../components/SearchBar";
+import Layout from "../components/Layout";
 
 type TagsKeys = "coding" | "music" | "school" | "general" | "tasks" | "work";
 
@@ -154,46 +155,64 @@ const Home: NextPage = () => {
     setSortOrder,
   };
 
+  <div className="fixed right-0 bottom-0 flex flex-col gap-2 px-5 py-5 md:hidden">
+    <Button //
+      intent="secondary"
+      icon="tag"
+      label="Manage tags"
+      roundedFull
+      tooltipPosition="left"
+      tooltipAlignment="yCenter"
+      size="lg"
+      shadow
+    />
+    <Button
+      intent="primary"
+      icon="note-pencil"
+      label="New note"
+      roundedFull
+      tooltipPosition="left"
+      tooltipAlignment="yCenter"
+      size="lg"
+      shadow
+    />
+  </div>;
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar username="lucca.dr" noteTitle="My First Note" />
-      <main className=" flex-grow bg-gray-200 pt-4 pb-20">
-        <div className="mx-auto px-4 md:w-[90%] md:max-w-[1200px]">
-          {/* Top row */}
-          <div className="flex gap-3">
-            <SearchBar {...searchBarProps} />
-            <div className="hidden gap-3 md:flex">
-              <Button
-                intent="secondary"
-                icon="tag"
-                label="Manage tags"
-                tooltipPosition="bottom"
-                tooltipAlignment="xCenter"
-                size="lg"
-              />
-              <Button
-                intent="primary"
-                icon="note-pencil"
-                label="New note"
-                tooltipPosition="bottom"
-                tooltipAlignment="xCenter"
-                size="lg"
-              />
-            </div>
-          </div>
-          {/* Note card container */}
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {visibleNotes.map(({ lastUpdated, title, tags }, index) => (
-              <NoteCard
-                key={index}
-                title={title}
-                lastUpdated={lastUpdated}
-                tags={tags}
-              />
-            ))}
-          </div>
+    <Layout>
+      {/* Top row */}
+      <div className="flex gap-3">
+        <SearchBar {...searchBarProps} />
+        <div className="hidden gap-3 md:flex">
+          <Button
+            intent="secondary"
+            icon="tag"
+            label="Manage tags"
+            tooltipPosition="bottom"
+            tooltipAlignment="xCenter"
+            size="lg"
+          />
+          <Button
+            intent="primary"
+            icon="note-pencil"
+            label="New note"
+            tooltipPosition="bottom"
+            tooltipAlignment="xCenter"
+            size="lg"
+          />
         </div>
-      </main>
+      </div>
+      {/* Note card container */}
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        {visibleNotes.map(({ lastUpdated, title, tags }, index) => (
+          <NoteCard
+            key={index}
+            title={title}
+            lastUpdated={lastUpdated}
+            tags={tags}
+          />
+        ))}
+      </div>
       {/* Mobile button container */}
       <div className="fixed right-0 bottom-0 flex flex-col gap-2 px-5 py-5 md:hidden">
         <Button //
@@ -217,7 +236,7 @@ const Home: NextPage = () => {
           shadow
         />
       </div>
-    </div>
+    </Layout>
   );
 };
 
