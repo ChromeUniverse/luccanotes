@@ -85,12 +85,12 @@ function SortingSection({
             // sorting by title
             <div className="flex gap-3">
               <RadioGroup.Option value="asc">
-                <span className="rounded-lg border-2 bg-gray-200 p-2.5 font-semibold text-gray-500 transition-colors ui-checked:border-blue-600 ui-checked:bg-blue-200 ui-checked:text-blue-600">
+                <span className="cursor-pointer rounded-lg border-2 bg-gray-200 p-2.5 font-semibold text-gray-500 transition-colors ui-checked:border-blue-600 ui-checked:bg-blue-200 ui-checked:text-blue-600">
                   A-z
                 </span>
               </RadioGroup.Option>
               <RadioGroup.Option value="desc">
-                <span className="rounded-lg border-2 bg-gray-200 p-2.5 font-semibold text-gray-500 transition-colors ui-checked:border-blue-600 ui-checked:bg-blue-200 ui-checked:text-blue-600">
+                <span className="cursor-pointer rounded-lg border-2 bg-gray-200 p-2.5 font-semibold text-gray-500 transition-colors ui-checked:border-blue-600 ui-checked:bg-blue-200 ui-checked:text-blue-600">
                   Z-a
                 </span>
               </RadioGroup.Option>
