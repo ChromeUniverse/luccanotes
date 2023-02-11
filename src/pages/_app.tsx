@@ -26,13 +26,20 @@ const MyApp: AppType<{ session: Session | null }> = ({
   }
 
   return (
-    <div className={inter.className}>
+    // <div className={inter.className}>
+    <>
+      <style jsx global>{`
+        html {
+          font-family: ${inter.style.fontFamily};
+        }
+      `}</style>
       <div className={theme === "dark" ? "dark" : ""}>
         <SessionProvider session={session}>
           <Component {...pageProps} />
         </SessionProvider>
       </div>
-    </div>
+    </>
+    // </div>
   );
 };
 

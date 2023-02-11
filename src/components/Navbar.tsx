@@ -116,7 +116,7 @@ function Navbar({
       {/* Profile picture dropdown */}
       <Popover className="relative ml-auto flex items-center">
         {/* PFP button */}
-        <Popover.Button className="rounded-full outline-2 outline-blue-600 focus:outline-blue-600 ui-open:outline-blue-600">
+        <Popover.Button className="rounded-full outline-2 hover:outline-blue-600 focus:border-transparent focus:outline-blue-600 focus:ring-0 ui-open:outline-blue-600">
           <div className="ml-auto h-12 w-12 rounded-full bg-slate-300"></div>
         </Popover.Button>
 
@@ -129,7 +129,7 @@ function Navbar({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Popover.Panel className="absolute top-full right-0 z-10 mt-3 flex w-72 flex-col rounded-lg bg-gray-100 py-4 text-gray-600 drop-shadow-lg">
+          <Popover.Panel className="absolute top-full right-0 z-10 mt-3 flex w-72 flex-col rounded-lg bg-gray-100 py-2 text-gray-600 drop-shadow-lg">
             {/* Account settings */}
             <DropdownLine>
               <Gear //

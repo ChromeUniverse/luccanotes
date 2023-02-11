@@ -5,6 +5,7 @@ import {
   DotsThreeOutlineVertical,
   IconProps,
   NotePencil,
+  Plus,
   Tag,
 } from "phosphor-react";
 import React from "react";
@@ -29,26 +30,36 @@ const buttonStyles = cva("peer flex items-center justify-center", {
     size: {
       lg: "w-14 h-14",
       regular: "w-10 h-10",
+      rectangle: "gap-2 py-2 px-4",
+    },
+    reverse: {
+      true: "flex-row-reverse",
+      false: "flex-row",
     },
   },
   defaultVariants: {
     roundedFull: false,
     shadow: false,
-    size: "regular",
+    reverse: false,
   },
 });
 
+type ButtonIconNames =
+  | "note-pencil"
+  | "tag"
+  | "arrow-square-out"
+  | "three-dots"
+  | "caret-down"
+  | "plus";
+
 // Base Button Props
 type ButtonProps = {
-  icon?:
-    | "note-pencil"
-    | "tag"
-    | "arrow-square-out"
-    | "three-dots"
-    | "caret-down";
+  icon?: ButtonIconNames;
   label: string;
+  iconOnly?: boolean;
   tooltipPosition: TooltipPosition;
   tooltipAlignment: TooltipAlignment;
+  onClick?: (onClickProps: unknown) => void;
 };
 
 // Merged props
@@ -60,32 +71,44 @@ interface Props
 
 // Icons and styling props
 // const IconProps: IconProps = { size: 28, weight: "bold" };
-const icons = {
+const icons: Record<ButtonIconNames, JSX.Element> = {
   "note-pencil": <NotePencil size={28} weight="bold" />,
   tag: <Tag size={28} weight="bold" />,
   "arrow-square-out": <ArrowSquareOut size={24} weight="bold" />,
   "three-dots": <DotsThreeOutlineVertical size={24} weight="fill" />,
-  "caret-down": <CaretDown size={20} weight="bold" />,
+  "caret-down": <CaretDown size={24} weight="bold" />,
+  plus: <Plus size={24} weight="bold" />,
 } as const;
 
 function Button({
+  // markup props
   icon,
   label,
-  roundedFull,
-  intent,
   tooltipPosition,
   tooltipAlignment,
+  onClick,
+  iconOnly = false,
+  // styling props
+  intent,
+  roundedFull,
   shadow,
   size,
+  reverse,
 }: Props) {
   return (
     <div className="relative">
-      <button className={buttonStyles({ intent, roundedFull, shadow, size })}>
+      <button
+        className={buttonStyles({ intent, roundedFull, shadow, size, reverse })}
+        onClick={onClick}
+      >
         {icon && icons[icon]}
+        {!iconOnly && <span>{label}</span>}
       </button>
-      <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
-        {label}
-      </Tooltip>
+      {iconOnly && (
+        <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
+          {label}
+        </Tooltip>
+      )}
     </div>
   );
 }

@@ -2,31 +2,68 @@ import Button from "./Button";
 import TagPill, { type Tag } from "./TagPill";
 import Tooltip from "./Tooltip";
 
-function HiddenTagPillContainer({ hiddenTags }: { hiddenTags: Tag[] }) {
+function HiddenTagPillContainer({
+  hiddenTags,
+  flipTags,
+}: {
+  hiddenTags: Tag[];
+  flipTags: boolean;
+}) {
   return (
-    <div className="relative">
-      <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900">
-        {hiddenTags.length} more {hiddenTags.length === 1 ? "tag" : "tags"}
-      </p>
-      <Tooltip tooltipPosition="bottom" alignment="xCenter">
-        <div className="flex flex-col gap-2 md:flex-row">
-          {hiddenTags.map((tag, index) => (
-            <TagPill key={index} label={tag.label} color={tag.color} />
-          ))}
-        </div>
-      </Tooltip>
-    </div>
+    <>
+      {/* Mobile */}
+      <div className="relative block md:hidden">
+        <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900">
+          {hiddenTags.length} more {hiddenTags.length === 1 ? "tag" : "tags"}
+        </p>
+        <Tooltip
+          tooltipPosition={flipTags ? "top" : "bottom"}
+          alignment="xCenter"
+        >
+          <div className="flex flex-col gap-2 md:flex-row">
+            {hiddenTags.map((tag, index) => (
+              <TagPill key={index} label={tag.label} color={tag.color} />
+            ))}
+          </div>
+        </Tooltip>
+      </div>
+      {/* Desktop */}
+      <div className="relative hidden md:block">
+        <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900">
+          {hiddenTags.length} more {hiddenTags.length === 1 ? "tag" : "tags"}
+        </p>
+        <Tooltip tooltipPosition="bottom" alignment="xCenter">
+          <div className="flex flex-col gap-2 md:flex-row">
+            {hiddenTags.map((tag, index) => (
+              <TagPill key={index} label={tag.label} color={tag.color} />
+            ))}
+          </div>
+        </Tooltip>
+      </div>
+    </>
   );
 }
 
-function TagPillContainer({ tags }: { tags: Tag[] }) {
+function TagPillContainer({
+  tags,
+  flipTags = false,
+}: {
+  tags: Tag[];
+  flipTags: boolean;
+}) {
   return (
     <>
       {/* Mobile Tag container */}
       <div className="flex w-auto items-center gap-3 md:hidden">
         {tags[0] && <TagPill label={tags[0].label} color={tags[0].color} />}
         {tags.length - 1 > 0 && (
-          <HiddenTagPillContainer hiddenTags={tags.slice(1, tags.length)} />
+          <HiddenTagPillContainer
+            flipTags={flipTags}
+            hiddenTags={tags.slice(1, tags.length)}
+          />
+        )}
+        {tags.length === 0 && (
+          <span className="text-gray-500">No tags for this note yet!</span>
         )}
       </div>
       {/* Desktop Tag container */}
@@ -34,7 +71,13 @@ function TagPillContainer({ tags }: { tags: Tag[] }) {
         {tags[0] && <TagPill label={tags[0].label} color={tags[0].color} />}
         {tags[1] && <TagPill label={tags[1].label} color={tags[1].color} />}
         {tags.length - 2 > 0 && (
-          <HiddenTagPillContainer hiddenTags={tags.slice(2, tags.length)} />
+          <HiddenTagPillContainer
+            flipTags={flipTags}
+            hiddenTags={tags.slice(2, tags.length)}
+          />
+        )}
+        {tags.length === 0 && (
+          <span className="text-gray-500">No tags for this note yet!</span>
         )}
       </div>
     </>
@@ -45,7 +88,9 @@ function NoteCard({
   title,
   lastUpdated,
   tags,
+  flipTags = false,
 }: {
+  flipTags?: boolean;
   title: string;
   lastUpdated: Date;
   tags: Tag[];
@@ -61,7 +106,7 @@ function NoteCard({
           {/* WARNING: Dirty hack to avoid hydration errors */}
           Just testing
         </p>
-        <TagPillContainer tags={tags} />
+        <TagPillContainer flipTags={flipTags} tags={tags} />
       </div>
       <div className="mt-0 flex flex-col items-center gap-1 transition-all group-hover:opacity-100">
         <Button
@@ -70,6 +115,8 @@ function NoteCard({
           tooltipPosition="left"
           tooltipAlignment="yCenter"
           icon="arrow-square-out"
+          iconOnly
+          size="regular"
         />
         <Button
           intent="secondary"
@@ -77,6 +124,8 @@ function NoteCard({
           tooltipPosition="left"
           tooltipAlignment="yCenter"
           icon="three-dots"
+          iconOnly
+          size="regular"
         />
       </div>
     </div>
