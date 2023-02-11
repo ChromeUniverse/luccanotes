@@ -30,12 +30,17 @@ const buttonStyles = cva("peer flex items-center justify-center", {
     size: {
       lg: "w-14 h-14",
       regular: "w-10 h-10",
+      rectangle: "gap-2 py-2 px-4",
+    },
+    reverse: {
+      true: "flex-row-reverse",
+      false: "flex-row",
     },
   },
   defaultVariants: {
     roundedFull: false,
     shadow: false,
-    size: "regular",
+    reverse: false,
   },
 });
 
@@ -51,6 +56,7 @@ type ButtonIconNames =
 type ButtonProps = {
   icon?: ButtonIconNames;
   label: string;
+  iconOnly?: boolean;
   tooltipPosition: TooltipPosition;
   tooltipAlignment: TooltipAlignment;
   onClick?: (onClickProps: unknown) => void;
@@ -75,27 +81,34 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
 } as const;
 
 function Button({
+  // markup props
   icon,
   label,
-  roundedFull,
-  intent,
   tooltipPosition,
   tooltipAlignment,
+  onClick,
+  iconOnly = false,
+  // styling props
+  intent,
+  roundedFull,
   shadow,
   size,
-  onClick,
+  reverse,
 }: Props) {
   return (
     <div className="relative">
       <button
-        className={buttonStyles({ intent, roundedFull, shadow, size })}
+        className={buttonStyles({ intent, roundedFull, shadow, size, reverse })}
         onClick={onClick}
       >
         {icon && icons[icon]}
+        {!iconOnly && <span>{label}</span>}
       </button>
-      <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
-        {label}
-      </Tooltip>
+      {iconOnly && (
+        <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
+          {label}
+        </Tooltip>
+      )}
     </div>
   );
 }
