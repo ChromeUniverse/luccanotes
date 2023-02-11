@@ -1,11 +1,8 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "phosphor-react";
+import Tooltip from "./Tooltip";
 
-export type Tag = {
-  label: string;
-  color: TagColors;
-};
-
-const tagPillStyles = cva("rounded-full py-1 px-4", {
+const tagPillStyles = cva("py-1 px-4", {
   variants: {
     color: {
       sky: "bg-sky-200 text-sky-700",
@@ -16,19 +13,74 @@ const tagPillStyles = cva("rounded-full py-1 px-4", {
       lightGray: "bg-gray-300 text-gray-700",
       darkGray: "bg-gray-700 text-gray-300",
     },
+    deletable: {
+      true: "rounded-l-full",
+      false: "rounded-full",
+    },
+  },
+  defaultVariants: {
+    deletable: false,
   },
 });
 
-interface TagPillProps {
+type TagPillProps = {
   label: string;
-}
+  onClickDelete?: (onClickDeleteProps: any) => void;
+};
 
-type TagPillVariantProps = Required<VariantProps<typeof tagPillStyles>>;
-type TagColors = TagPillVariantProps["color"];
+type TagPillVariantProps = VariantProps<typeof tagPillStyles>;
+export type TagColor = NonNullable<TagPillVariantProps["color"]>;
 interface Props extends TagPillProps, TagPillVariantProps {}
 
-function TagPill({ label, color }: Props) {
-  return <div className={tagPillStyles({ color })}>{label}</div>;
+// type TagPillVariantProps = VariantProps<typeof tagPillStyles>;
+// export type TagColor = NonNullable<TagPillVariantProps["color"]>;
+// type ProcessedVariantProps =
+//   | Omit<TagPillVariantProps, "deletable">
+//   | (Required<TagPillVariantProps> & {
+//       onClickDelete: (onClickDeleteProps: any) => void;
+//     });
+// // interface Props extends TagPillProps, Omit<TagPillVariantProps, "deletable"> {}
+// interface Props extends TagPillProps, ProcessedVariantProps {}
+
+export const tagColorNames: Record<TagColor, string> = {
+  sky: "Sky",
+  red: "Red",
+  green: "Green",
+  violet: "Violet",
+  yellow: "Yellow",
+  lightGray: "Light Gray",
+  darkGray: "Dark Gray",
+} as const;
+
+export type Tag = {
+  id: string;
+  label: string;
+  color: TagColor;
+};
+
+function TagPill({ label, color, deletable, onClickDelete }: Props) {
+  return (
+    <div className="flex">
+      <div className={tagPillStyles({ color, deletable })}>{label}</div>
+      {deletable && (
+        <div className="relative">
+          <button
+            className="group peer flex h-full items-center justify-center rounded-r-full bg-gray-200 pl-1 pr-2.5"
+            onClick={onClickDelete}
+          >
+            <X
+              className="text-gray-400 group-hover:text-gray-600 group-focus:text-gray-600"
+              weight="bold"
+              size="18"
+            />
+          </button>
+          <Tooltip tooltipPosition="bottom" alignment="xCenter">
+            <span>Delete tag</span>
+          </Tooltip>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default TagPill;
