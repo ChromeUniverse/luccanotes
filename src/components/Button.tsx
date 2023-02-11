@@ -5,6 +5,7 @@ import {
   DotsThreeOutlineVertical,
   IconProps,
   NotePencil,
+  Plus,
   Tag,
 } from "phosphor-react";
 import React from "react";
@@ -38,17 +39,21 @@ const buttonStyles = cva("peer flex items-center justify-center", {
   },
 });
 
+type ButtonIconNames =
+  | "note-pencil"
+  | "tag"
+  | "arrow-square-out"
+  | "three-dots"
+  | "caret-down"
+  | "plus";
+
 // Base Button Props
 type ButtonProps = {
-  icon?:
-    | "note-pencil"
-    | "tag"
-    | "arrow-square-out"
-    | "three-dots"
-    | "caret-down";
+  icon?: ButtonIconNames;
   label: string;
   tooltipPosition: TooltipPosition;
   tooltipAlignment: TooltipAlignment;
+  onClick?: (onClickProps: unknown) => void;
 };
 
 // Merged props
@@ -60,12 +65,13 @@ interface Props
 
 // Icons and styling props
 // const IconProps: IconProps = { size: 28, weight: "bold" };
-const icons = {
+const icons: Record<ButtonIconNames, JSX.Element> = {
   "note-pencil": <NotePencil size={28} weight="bold" />,
   tag: <Tag size={28} weight="bold" />,
   "arrow-square-out": <ArrowSquareOut size={24} weight="bold" />,
   "three-dots": <DotsThreeOutlineVertical size={24} weight="fill" />,
-  "caret-down": <CaretDown size={20} weight="bold" />,
+  "caret-down": <CaretDown size={24} weight="bold" />,
+  plus: <Plus size={24} weight="bold" />,
 } as const;
 
 function Button({
@@ -77,10 +83,14 @@ function Button({
   tooltipAlignment,
   shadow,
   size,
+  onClick,
 }: Props) {
   return (
     <div className="relative">
-      <button className={buttonStyles({ intent, roundedFull, shadow, size })}>
+      <button
+        className={buttonStyles({ intent, roundedFull, shadow, size })}
+        onClick={onClick}
+      >
         {icon && icons[icon]}
       </button>
       <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
