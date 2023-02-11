@@ -12,39 +12,51 @@ import Button from "../components/Button";
 // import { type Note } from "../index.d.ts";
 
 import { useMemo, useState } from "react";
-import { type Tag } from "../components/TagPill";
+import TagPill, { Tag, TagColor, tagColorNames } from "../components/TagPill";
 import { type Note } from "..";
 import SearchBar, { type SortField } from "../components/SearchBar";
 import Layout from "../components/Layout";
+import { Dialog, Listbox } from "@headlessui/react";
+import CaretUpDownIcon from "../components/CaretUpDownIcon";
+import { Check } from "phosphor-react";
+import { nanoid } from "nanoid";
 
 type TagsKeys = "coding" | "music" | "school" | "general" | "tasks" | "work";
 
-const tags: { [key in TagsKeys]: Tag } = {
+const tags: Record<TagsKeys, Tag> = {
   coding: {
+    id: nanoid(),
     label: "Coding",
     color: "red",
   },
   music: {
+    id: nanoid(),
     label: "Music",
     color: "sky",
   },
   school: {
+    id: nanoid(),
     label: "School",
     color: "yellow",
   },
   general: {
+    id: nanoid(),
     label: "General",
     color: "lightGray",
   },
   tasks: {
+    id: nanoid(),
     label: "Tasks",
     color: "violet",
   },
   work: {
+    id: nanoid(),
     label: "Work",
     color: "green",
   },
 } as const;
+
+const TagsList = Object.values(tags);
 
 const defaultDate = new Date();
 
@@ -54,8 +66,9 @@ function subtractSeconds(date: Date, seconds: number) {
   return bufferDate;
 }
 
-const notes: Note[] = [
+const notesList: Note[] = [
   {
+    id: nanoid(),
     title: "My First Note",
     lastUpdated: subtractSeconds(defaultDate, 20),
     createdAt: subtractSeconds(defaultDate, 30),
@@ -69,18 +82,21 @@ const notes: Note[] = [
     ],
   },
   {
+    id: nanoid(),
     title: "Second Note",
     lastUpdated: subtractSeconds(defaultDate, 30),
     createdAt: subtractSeconds(defaultDate, 20),
     tags: [tags.work, tags.general, tags.work, tags.general],
   },
   {
+    id: nanoid(),
     title: "Note Number 3",
     lastUpdated: defaultDate,
     createdAt: subtractSeconds(defaultDate, 10),
     tags: [tags.school, tags.tasks, tags.work, tags.general, tags.coding],
   },
   {
+    id: nanoid(),
     title: "The 4th Note",
     lastUpdated: subtractSeconds(defaultDate, 10),
     createdAt: defaultDate,
@@ -131,6 +147,15 @@ function sortNotes(
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
+  // data
+  const [tags, setTags] = useState<Tag[]>(TagsList);
+  const [notes, setNotes] = useState<Note[]>(notesList);
+
+  // modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [newTagLabel, setNewTagLabel] = useState<string>("");
+  const [newTagColor, setNewTagColor] = useState<TagColor>("sky");
+
   // Search parameters state
   const [searchInput, setSearchInput] = useState("");
   const [sortField, setSortField] = useState<SortField>("title");
@@ -143,7 +168,7 @@ const Home: NextPage = () => {
     return sortedNotes.filter((note) =>
       note.title.toLowerCase().includes(searchInput.toLowerCase())
     );
-  }, [searchInput, sortField, sortOrder]);
+  }, [searchInput, sortField, sortOrder, notes]);
 
   const searchBarProps = {
     tags: Object.values(tags),
@@ -155,28 +180,31 @@ const Home: NextPage = () => {
     setSortOrder,
   };
 
-  <div className="fixed right-0 bottom-0 flex flex-col gap-2 px-5 py-5 md:hidden">
-    <Button //
-      intent="secondary"
-      icon="tag"
-      label="Manage tags"
-      roundedFull
-      tooltipPosition="left"
-      tooltipAlignment="yCenter"
-      size="lg"
-      shadow
-    />
-    <Button
-      intent="primary"
-      icon="note-pencil"
-      label="New note"
-      roundedFull
-      tooltipPosition="left"
-      tooltipAlignment="yCenter"
-      size="lg"
-      shadow
-    />
-  </div>;
+  function TagButtonClickHandler() {
+    console.log("clicked");
+    setModalOpen(true);
+  }
+
+  function createNewTag() {
+    if (!newTagLabel) return;
+    const newTag: Tag = {
+      id: nanoid(),
+      label: newTagLabel,
+      color: newTagColor,
+    };
+    setNewTagLabel("");
+    setTags((prevTags) => [...prevTags, newTag]);
+  }
+
+  function deleteTag(targetId: string) {
+    setTags((prevTags) => prevTags.filter((tag) => tag.id !== targetId));
+    setNotes((prevNotes) =>
+      prevNotes.map((note) => ({
+        ...note,
+        tags: note.tags.filter((tag: Tag) => tag.id !== targetId),
+      }))
+    );
+  }
 
   return (
     <Layout>
@@ -191,6 +219,7 @@ const Home: NextPage = () => {
             tooltipPosition="bottom"
             tooltipAlignment="xCenter"
             size="lg"
+            onClick={TagButtonClickHandler}
           />
           <Button
             intent="primary"
@@ -210,6 +239,9 @@ const Home: NextPage = () => {
             title={title}
             lastUpdated={lastUpdated}
             tags={tags}
+            flipTags={
+              index === visibleNotes.length - 1 && visibleNotes.length >= 3
+            }
           />
         ))}
       </div>
@@ -224,6 +256,7 @@ const Home: NextPage = () => {
           tooltipAlignment="yCenter"
           size="lg"
           shadow
+          onClick={TagButtonClickHandler}
         />
         <Button
           intent="primary"
@@ -236,6 +269,99 @@ const Home: NextPage = () => {
           shadow
         />
       </div>
+      {/* Modals */}
+
+      <Dialog open={modalOpen} onClose={setModalOpen}>
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-25">
+          <Dialog.Panel className="w-[90%] space-y-6 rounded-lg bg-white px-6 py-6 md:w-[500px] md:px-10">
+            <Dialog.Title className="text-2xl font-semibold text-gray-900">
+              Manage Tags
+            </Dialog.Title>
+            <Dialog.Description className="hidden">
+              This dialog allows you to manage your tags
+            </Dialog.Description>
+
+            {/* <p>
+              Are you sure you want to deactivate your account? All of your data
+              will be permanently removed. This action cannot be undone.
+            </p> */}
+
+            {/* Tags containers */}
+            <h3 className="text-xl font-normal text-gray-600">All tags</h3>
+            <div className="flex flex-wrap gap-2">
+              {Object.values(tags).map((tag) => (
+                <TagPill
+                  key={tag.id}
+                  label={tag.label}
+                  color={tag.color}
+                  deletable
+                  onClickDelete={() => deleteTag(tag.id)}
+                />
+              ))}
+            </div>
+
+            {/* Create new tag */}
+            <h3 className="text-xl font-normal text-gray-600">
+              Create new tag
+            </h3>
+
+            <div className="flex flex-col gap-2">
+              {/* New tag label input */}
+              <input
+                className="w-full rounded-lg bg-gray-100 px-4 py-2 text-gray-700 outline-gray-500 placeholder:text-gray-400"
+                placeholder="New tag label here..."
+                type="text"
+                value={newTagLabel}
+                onChange={(e) => setNewTagLabel(e.target.value)}
+              />
+
+              {/* New tag color selector */}
+              <div className="flex justify-between gap-2">
+                <Listbox
+                  as="div"
+                  value={newTagColor}
+                  onChange={setNewTagColor}
+                  className="relative"
+                >
+                  {/* Button */}
+                  <Listbox.Button className="flex w-36 items-center justify-between gap-4 whitespace-nowrap rounded-lg border-2 bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-100">
+                    {tagColorNames[newTagColor]}
+                    <CaretUpDownIcon />
+                  </Listbox.Button>
+
+                  {/* Options */}
+                  <Listbox.Options className="absolute right-0 bottom-full z-20 mb-2 w-full items-center rounded-lg bg-gray-200 py-2 drop-shadow-lg">
+                    {/* Light option */}
+                    {Object.keys(tagColorNames).map((color, index) => (
+                      <Listbox.Option
+                        key={index}
+                        className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600"
+                        value={color}
+                      >
+                        <Check
+                          weight="bold"
+                          size={20}
+                          className="ml-1 mr-2 text-blue-500 opacity-0 ui-selected:opacity-100 ui-active:text-blue-600"
+                        />
+                        {tagColorNames[color as TagColor]}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Listbox>
+
+                <Button
+                  icon="plus"
+                  intent="primary"
+                  label="Create tag"
+                  tooltipPosition="bottom"
+                  tooltipAlignment="xCenter"
+                  onClick={() => createNewTag()}
+                />
+              </div>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </Layout>
   );
 };
