@@ -21,6 +21,7 @@
     "@trpc/react-query": "^10.9.0",
     "@trpc/server": "^10.9.0",
     "class-variance-authority": "^0.4.0",
+    "nanoid": "^4.0.1",
     "next": "13.1.6",
     "next-auth": "^4.19.0",
     "phosphor-react": "^1.4.1",
