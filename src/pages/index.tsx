@@ -220,6 +220,7 @@ const Home: NextPage = () => {
             tooltipAlignment="xCenter"
             size="lg"
             onClick={TagButtonClickHandler}
+            iconOnly
           />
           <Button
             intent="primary"
@@ -228,6 +229,7 @@ const Home: NextPage = () => {
             tooltipPosition="bottom"
             tooltipAlignment="xCenter"
             size="lg"
+            iconOnly
           />
         </div>
       </div>
@@ -257,6 +259,7 @@ const Home: NextPage = () => {
           size="lg"
           shadow
           onClick={TagButtonClickHandler}
+          iconOnly
         />
         <Button
           intent="primary"
@@ -267,6 +270,7 @@ const Home: NextPage = () => {
           tooltipAlignment="yCenter"
           size="lg"
           shadow
+          iconOnly
         />
       </div>
       {/* Modals */}
@@ -305,7 +309,7 @@ const Home: NextPage = () => {
               Create new tag
             </h3>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 md:flex-row">
               {/* New tag label input */}
               <input
                 className="w-full rounded-lg bg-gray-100 px-4 py-2 text-gray-700 outline-gray-500 placeholder:text-gray-400"
@@ -349,14 +353,31 @@ const Home: NextPage = () => {
                   </Listbox.Options>
                 </Listbox>
 
-                <Button
-                  icon="plus"
-                  intent="primary"
-                  label="Create tag"
-                  tooltipPosition="bottom"
-                  tooltipAlignment="xCenter"
-                  onClick={() => createNewTag()}
-                />
+                <div className="hidden md:block">
+                  <Button
+                    icon="plus"
+                    intent="primary"
+                    label="Create tag"
+                    tooltipPosition="bottom"
+                    tooltipAlignment="xCenter"
+                    onClick={() => createNewTag()}
+                    iconOnly
+                    size="regular"
+                  />
+                </div>
+
+                <div className="block md:hidden">
+                  <Button
+                    icon="plus"
+                    intent="primary"
+                    label="Create tag"
+                    tooltipPosition="bottom"
+                    tooltipAlignment="xCenter"
+                    onClick={() => createNewTag()}
+                    size="rectangle"
+                    reverse
+                  />
+                </div>
               </div>
             </div>
           </Dialog.Panel>

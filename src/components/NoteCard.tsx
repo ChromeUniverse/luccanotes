@@ -115,6 +115,8 @@ function NoteCard({
           tooltipPosition="left"
           tooltipAlignment="yCenter"
           icon="arrow-square-out"
+          iconOnly
+          size="regular"
         />
         <Button
           intent="secondary"
@@ -122,6 +124,8 @@ function NoteCard({
           tooltipPosition="left"
           tooltipAlignment="yCenter"
           icon="three-dots"
+          iconOnly
+          size="regular"
         />
       </div>
     </div>
