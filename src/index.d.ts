@@ -5,3 +5,11 @@ export type Note = {
   createdAt: Date;
   lastUpdated: Date;
 };
+
+export type TagsKeys =
+  | "coding"
+  | "music"
+  | "school"
+  | "general"
+  | "tasks"
+  | "work";
