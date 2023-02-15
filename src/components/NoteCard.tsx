@@ -1,3 +1,4 @@
+import { type Note } from "..";
 import Button from "./Button";
 import TagPill, { type Tag } from "./TagPill";
 import Tooltip from "./Tooltip";
@@ -85,28 +86,28 @@ function TagPillContainer({
 }
 
 function NoteCard({
-  title,
-  lastUpdated,
+  note,
   tags,
   flipTags = false,
+  setSelectedNoteId,
 }: {
-  flipTags?: boolean;
-  title: string;
-  lastUpdated: Date;
+  note: Note;
   tags: Tag[];
+  flipTags?: boolean;
+  setSelectedNoteId: (newSelectedNoteId: string) => void;
 }) {
   return (
     <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-colors focus-within:border-blue-600 hover:border-blue-600 md:px-7">
       <div className="flex flex-col">
         {/* Note title */}
-        <h2 className="text-2xl font-semibold text-gray-900">{title}</h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{note.title}</h2>
         {/* Last updated */}
         <p className="pt-2 pb-3 text-gray-500">
           {/* Last edited {Date.now() - lastUpdated.getTime()} ms ago */}
           {/* WARNING: Dirty hack to avoid hydration errors */}
           Just testing
         </p>
-        <TagPillContainer flipTags={flipTags} tags={tags} />
+        <TagPillContainer flipTags={flipTags} tags={note.tags} />
       </div>
       <div className="mt-0 flex flex-col items-center gap-1 transition-all group-hover:opacity-100">
         <Button
@@ -126,8 +127,11 @@ function NoteCard({
           icon="three-dots"
           iconOnly
           size="regular"
+          onClick={() => setSelectedNoteId(note.id)}
         />
       </div>
+      {/* Modal */}
+      {/* <NoteOptionsModal open={modalOpen} onClose={setModalOpen} /> */}
     </div>
   );
 }
