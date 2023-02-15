@@ -1,7 +1,7 @@
 import React from "react";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 
-function Layout({ children }: { children: React.ReactNode }) {
+function PageLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar username="lucca.dr" />
@@ -14,4 +14,4 @@ function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default Layout;
+export default PageLayout;
