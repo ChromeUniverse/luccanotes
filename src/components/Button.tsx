@@ -1,15 +1,18 @@
-import { cva, VariantProps } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import {
   ArrowSquareOut,
   CaretDown,
   DotsThreeOutlineVertical,
-  IconProps,
   NotePencil,
+  PencilSimple,
   Plus,
   Tag,
+  Trash,
 } from "phosphor-react";
-import React from "react";
-import Tooltip, { TooltipAlignment, TooltipPosition } from "./Tooltip";
+import Tooltip, {
+  type TooltipAlignment,
+  type TooltipPosition,
+} from "./Tooltip";
 
 // CVA Variants
 const buttonStyles = cva("peer flex items-center justify-center", {
@@ -19,6 +22,10 @@ const buttonStyles = cva("peer flex items-center justify-center", {
         "bg-blue-600 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
       secondary:
         "bg-white text-gray-400 hover:brightness-95 hover:text-blue-600 focus-visible:brightness-95 focus-visible:text-blue-600",
+      dangerPrimary:
+        "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
+      dangerSecondary:
+        "bg-white text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 border-2 border-red-500",
     },
     roundedFull: {
       true: "rounded-[28px] hover:rounded-xl transition-all",
@@ -36,11 +43,16 @@ const buttonStyles = cva("peer flex items-center justify-center", {
       true: "flex-row-reverse",
       false: "flex-row",
     },
+    disabled: {
+      true: "brightness-75 hover:brightness-75 focus-visible:brightness-75",
+      false: "brightness-100",
+    },
   },
   defaultVariants: {
     roundedFull: false,
     shadow: false,
     reverse: false,
+    disabled: false,
   },
 });
 
@@ -50,7 +62,9 @@ type ButtonIconNames =
   | "arrow-square-out"
   | "three-dots"
   | "caret-down"
-  | "plus";
+  | "plus"
+  | "pencil-simple"
+  | "trash";
 
 // Base Button Props
 type ButtonProps = {
@@ -78,6 +92,8 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   "three-dots": <DotsThreeOutlineVertical size={24} weight="fill" />,
   "caret-down": <CaretDown size={24} weight="bold" />,
   plus: <Plus size={24} weight="bold" />,
+  "pencil-simple": <PencilSimple size={24} weight="bold" />,
+  trash: <Trash size={24} weight="bold" />,
 } as const;
 
 function Button({
@@ -94,17 +110,26 @@ function Button({
   shadow,
   size,
   reverse,
+  disabled,
 }: Props) {
   return (
     <div className="relative">
       <button
-        className={buttonStyles({ intent, roundedFull, shadow, size, reverse })}
+        disabled={disabled ?? false}
+        className={buttonStyles({
+          intent,
+          roundedFull,
+          shadow,
+          size,
+          reverse,
+          disabled,
+        })}
         onClick={onClick}
       >
         {icon && icons[icon]}
         {!iconOnly && <span>{label}</span>}
       </button>
-      {iconOnly && (
+      {iconOnly && !disabled && (
         <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
           {label}
         </Tooltip>

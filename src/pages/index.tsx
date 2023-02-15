@@ -17,7 +17,8 @@ import { type Tag, type TagColor } from "../components/TagPill";
 import SearchBar, { type SortField } from "../components/SearchBar";
 
 import { type TagsKeys, type Note } from "..";
-import ManageTagsModal from "../components/Modals/ManageTagsModal";
+import ManageTagsModal from "../components/Modals/ManageTags";
+import NoteOptionsModal from "../components/Modals/NoteOptions";
 
 const tags: Record<TagsKeys, Tag> = {
   coding: {
@@ -68,21 +69,14 @@ const notesList: Note[] = [
     title: "My First Note",
     lastUpdated: subtractSeconds(defaultDate, 20),
     createdAt: subtractSeconds(defaultDate, 30),
-    tags: [
-      tags.coding,
-      tags.music,
-      tags.work,
-      tags.general,
-      tags.work,
-      tags.general,
-    ],
+    tags: [tags.coding, tags.music, tags.work, tags.general],
   },
   {
     id: nanoid(),
     title: "Second Note",
     lastUpdated: subtractSeconds(defaultDate, 30),
     createdAt: subtractSeconds(defaultDate, 20),
-    tags: [tags.work, tags.general, tags.work, tags.general],
+    tags: [tags.work, tags.general, tags.coding, tags.music],
   },
   {
     id: nanoid(),
@@ -101,9 +95,8 @@ const notesList: Note[] = [
       tags.tasks,
       tags.work,
       tags.general,
-      tags.coding,
-      tags.work,
-      tags.general,
+      tags.music,
+      tags.school,
     ],
   },
 ];
@@ -144,9 +137,12 @@ const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   // data
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [tags, setTags] = useState<Tag[]>(TagsList);
   const [notes, setNotes] = useState<Note[]>(notesList);
+
+  // modals state
+  const [tagModalOpen, setTagModalOpen] = useState<boolean>(false);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   // Search parameters state
   const [searchInput, setSearchInput] = useState("");
@@ -174,7 +170,7 @@ const Home: NextPage = () => {
 
   function TagButtonClickHandler() {
     console.log("clicked");
-    setModalOpen(true);
+    setTagModalOpen(true);
   }
 
   function createNewTag({
@@ -200,6 +196,64 @@ const Home: NextPage = () => {
         ...note,
         tags: note.tags.filter((tag: Tag) => tag.id !== targetId),
       }))
+    );
+  }
+
+  // TODO: implement this function
+  function renameNote({
+    newNoteTitle,
+    noteId,
+  }: {
+    newNoteTitle: string;
+    noteId: string;
+  }) {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note.id === noteId ? { ...note, title: newNoteTitle } : note
+      )
+    );
+  }
+
+  // TODO: implement this function
+  function deleteNote(noteId: string) {
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+  }
+
+  // TODO: implement this function
+  function addTagToNote({ tagId, noteId }: { tagId: string; noteId: string }) {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) => {
+        if (note.id !== noteId) return note;
+        if (note.tags.map((t: Tag) => t.id).includes(tagId)) {
+          throw new Error(`Note ID ${noteId} already has tag ID ${tagId}`);
+        }
+        return {
+          ...note,
+          tags: [...(note.tags as Tag[]), tags.find((t) => t.id === tagId)],
+        };
+      })
+    );
+  }
+
+  // TODO: implement this function
+  function deleteTagFromNote({
+    tagId,
+    noteId,
+  }: {
+    tagId: string;
+    noteId: string;
+  }) {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) => {
+        if (note.id !== noteId) return note;
+        if (!note.tags.map((t: Tag) => t.id).includes(tagId)) {
+          throw new Error(`Note ID ${noteId} doesn't have tag ID ${tagId}`);
+        }
+        return {
+          ...note,
+          tags: note.tags.filter((t: Tag) => t.id !== tagId),
+        };
+      })
     );
   }
 
@@ -232,15 +286,15 @@ const Home: NextPage = () => {
       </div>
       {/* Note card container */}
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {visibleNotes.map(({ lastUpdated, title, tags }, index) => (
+        {visibleNotes.map((note, index) => (
           <NoteCard
-            key={index}
-            title={title}
-            lastUpdated={lastUpdated}
+            key={note.id}
+            note={note}
             tags={tags}
             flipTags={
               index === visibleNotes.length - 1 && visibleNotes.length >= 3
             }
+            setSelectedNoteId={setSelectedNoteId}
           />
         ))}
       </div>
@@ -272,12 +326,25 @@ const Home: NextPage = () => {
       </div>
       {/* Modals */}
       <ManageTagsModal
+        open={tagModalOpen}
+        onClose={setTagModalOpen}
+        tags={tags}
         createNewTag={createNewTag}
         deleteTag={deleteTag}
-        open={modalOpen}
-        onClose={setModalOpen}
-        tags={tags}
       />
+      {selectedNoteId && (
+        <NoteOptionsModal
+          open={selectedNoteId !== null}
+          onClose={() => setSelectedNoteId(null)}
+          setSelectedNoteId={setSelectedNoteId}
+          selectedNote={notes.find((n) => n.id === selectedNoteId) ?? null}
+          tags={tags}
+          renameNote={renameNote}
+          deleteNote={deleteNote}
+          addTagToNote={addTagToNote}
+          deleteTagFromNote={deleteTagFromNote}
+        />
+      )}
     </PageLayout>
   );
 };
