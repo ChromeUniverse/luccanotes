@@ -1,4 +1,4 @@
-import { cva, VariantProps } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import {
   ArrowSquareOut,
   CaretDown,
@@ -7,9 +7,12 @@ import {
   PencilSimple,
   Plus,
   Tag,
+  Trash,
 } from "phosphor-react";
-import React from "react";
-import Tooltip, { TooltipAlignment, TooltipPosition } from "./Tooltip";
+import Tooltip, {
+  type TooltipAlignment,
+  type TooltipPosition,
+} from "./Tooltip";
 
 // CVA Variants
 const buttonStyles = cva("peer flex items-center justify-center", {
@@ -19,6 +22,10 @@ const buttonStyles = cva("peer flex items-center justify-center", {
         "bg-blue-600 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
       secondary:
         "bg-white text-gray-400 hover:brightness-95 hover:text-blue-600 focus-visible:brightness-95 focus-visible:text-blue-600",
+      dangerPrimary:
+        "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
+      dangerSecondary:
+        "bg-white text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 border-2 border-red-500",
     },
     roundedFull: {
       true: "rounded-[28px] hover:rounded-xl transition-all",
@@ -56,7 +63,8 @@ type ButtonIconNames =
   | "three-dots"
   | "caret-down"
   | "plus"
-  | "pencil-simple";
+  | "pencil-simple"
+  | "trash";
 
 // Base Button Props
 type ButtonProps = {
@@ -85,6 +93,7 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   "caret-down": <CaretDown size={24} weight="bold" />,
   plus: <Plus size={24} weight="bold" />,
   "pencil-simple": <PencilSimple size={24} weight="bold" />,
+  trash: <Trash size={24} weight="bold" />,
 } as const;
 
 function Button({
