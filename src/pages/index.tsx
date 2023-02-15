@@ -7,21 +7,14 @@ import { type NextPage } from "next";
 import { useMemo, useState } from "react";
 
 // package imports
-import { Dialog, Listbox } from "@headlessui/react";
-import { Check } from "phosphor-react";
 import { nanoid } from "nanoid";
 
 // custom components
-import Layout from "../components/Layout";
+import PageLayout from "../components/Layouts/Page";
 import NoteCard from "../components/NoteCard";
 import Button from "../components/Button";
-import TagPill, {
-  type Tag,
-  type TagColor,
-  tagColorNames,
-} from "../components/TagPill";
+import { type Tag, type TagColor } from "../components/TagPill";
 import SearchBar, { type SortField } from "../components/SearchBar";
-import CaretUpDownIcon from "../components/CaretUpDownIcon";
 
 import { type TagsKeys, type Note } from "..";
 import ManageTagsModal from "../components/Modals/ManageTagsModal";
@@ -211,7 +204,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <Layout>
+    <PageLayout>
       {/* Top row */}
       <div className="flex gap-3">
         <SearchBar {...searchBarProps} />
@@ -285,7 +278,7 @@ const Home: NextPage = () => {
         onClose={setModalOpen}
         tags={tags}
       />
-    </Layout>
+    </PageLayout>
   );
 };
 
