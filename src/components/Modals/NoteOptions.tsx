@@ -6,19 +6,23 @@ import Button from "../Button";
 import CaretUpDownIcon from "../CaretUpDownIcon";
 import ModalLayout from "../Layouts/Modal";
 import TagPill, { Tag } from "../TagPill";
+import DeleteNoteModal from "./DeleteNote";
 
 function NoteOptionsModal({
   open,
   onClose,
   selectedNote,
+  setSelectedNoteId,
   tags,
   renameNote,
+  deleteNote,
   addTagToNote,
   deleteTagFromNote,
 }: {
   open: boolean;
   onClose: (newOpen: boolean) => void;
   selectedNote: null | Note;
+  setSelectedNoteId: (newId: string | null) => void;
   tags: Tag[];
   // modifier functions
   renameNote: ({
@@ -28,6 +32,7 @@ function NoteOptionsModal({
     newNoteTitle: string;
     noteId: string;
   }) => void;
+  deleteNote: (noteId: string) => void;
   addTagToNote: ({ tagId, noteId }: { tagId: string; noteId: string }) => void;
   deleteTagFromNote: ({
     tagId,
@@ -37,13 +42,14 @@ function NoteOptionsModal({
     noteId: string;
   }) => void;
 }) {
-  const tagsAvailable = tags.filter((t) => !selectedNote?.tags.includes(t));
-
+  // modal state
   const [noteTitle, setNoteTitle] = useState(
     selectedNote ? selectedNote.title : ""
   );
-
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const tagsAvailable = tags.filter((t) => !selectedNote?.tags.includes(t));
 
   if (selectedNote === null) return <div></div>;
 
@@ -162,6 +168,26 @@ function NoteOptionsModal({
             />
           </div>
         </>
+      )}
+
+      <h3 className="text-xl font-normal text-gray-600">Danger zone</h3>
+      <Button
+        icon="trash"
+        intent="dangerSecondary"
+        label="Delete note"
+        tooltipPosition="right"
+        tooltipAlignment="yCenter"
+        onClick={() => setDeleteModalOpen(true)}
+        size="rectangle"
+      />
+      {deleteModalOpen && (
+        <DeleteNoteModal
+          open={deleteModalOpen}
+          onClose={setDeleteModalOpen}
+          deleteNote={deleteNote}
+          selectedNote={selectedNote}
+          setSelectedNoteId={setSelectedNoteId}
+        />
       )}
     </ModalLayout>
   );

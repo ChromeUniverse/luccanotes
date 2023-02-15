@@ -336,9 +336,11 @@ const Home: NextPage = () => {
         <NoteOptionsModal
           open={selectedNoteId !== null}
           onClose={() => setSelectedNoteId(null)}
+          setSelectedNoteId={setSelectedNoteId}
           selectedNote={notes.find((n) => n.id === selectedNoteId) ?? null}
           tags={tags}
           renameNote={renameNote}
+          deleteNote={deleteNote}
           addTagToNote={addTagToNote}
           deleteTagFromNote={deleteTagFromNote}
         />
