@@ -31,7 +31,7 @@ function ManageTagsModal({
 
   return (
     <ModalLayout open={open} onClose={onClose}>
-      <Dialog.Title className="text-2xl font-semibold text-gray-900">
+      <Dialog.Title className="text-2xl font-semibold text-gray-900 dark:text-white">
         Manage Tags
       </Dialog.Title>
       <Dialog.Description className="hidden">
@@ -39,7 +39,9 @@ function ManageTagsModal({
       </Dialog.Description>
 
       {/* Tags containers */}
-      <h3 className="text-xl font-normal text-gray-600">All tags</h3>
+      <h3 className="text-xl font-normal text-gray-600 dark:text-gray-400">
+        All tags
+      </h3>
       <div className="flex flex-wrap gap-2">
         {tags.length !== 0 ? (
           tags.map((tag) => (
@@ -57,12 +59,12 @@ function ManageTagsModal({
       </div>
 
       {/* Create new tag */}
-      <h3 className="text-xl font-normal text-gray-600">Create new tag</h3>
+      <h3 className="text-xl font-normal dark:text-gray-400">Create new tag</h3>
 
-      <div className="flex flex-col gap-2 md:flex-row">
+      <div className="flex flex-col gap-4 md:flex-row md:gap-2">
         {/* New tag label input */}
         <input
-          className="w-full rounded-lg bg-gray-100 px-4 py-2 text-gray-700 outline-gray-500 placeholder:text-gray-400"
+          className="w-full rounded-lg bg-gray-100 px-4 py-2 text-gray-700 outline-gray-500 placeholder:text-gray-400 dark:bg-gray-950 dark:text-gray-300 dark:placeholder:text-gray-500"
           placeholder="New tag label here..."
           type="text"
           value={newTagLabel}
@@ -116,6 +118,7 @@ function ManageTagsModal({
               }}
               iconOnly
               size="regular"
+              disabled={!newTagLabel}
             />
           </div>
 
@@ -131,6 +134,7 @@ function ManageTagsModal({
                 createNewTag({ newTagColor, newTagLabel });
               }}
               size="rectangle"
+              disabled={!newTagLabel}
               reverse
             />
           </div>

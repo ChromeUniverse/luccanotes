@@ -1,11 +1,11 @@
 import { Dialog, Listbox } from "@headlessui/react";
 import { Check } from "phosphor-react";
-import React, { useEffect, useState } from "react";
-import { Note } from "../..";
+import { useState } from "react";
+import { type Note } from "../..";
 import Button from "../Button";
 import CaretUpDownIcon from "../CaretUpDownIcon";
 import ModalLayout from "../Layouts/Modal";
-import TagPill, { Tag } from "../TagPill";
+import TagPill, { type Tag } from "../TagPill";
 import DeleteNoteModal from "./DeleteNote";
 
 function NoteOptionsModal({
@@ -56,7 +56,7 @@ function NoteOptionsModal({
   return (
     <ModalLayout open={open} onClose={onClose}>
       {/* Title & Description */}
-      <Dialog.Title className="text-2xl font-semibold text-gray-900">
+      <Dialog.Title className="text-2xl font-semibold text-gray-900 dark:text-white">
         Note Options
       </Dialog.Title>
       <Dialog.Description className="hidden">
@@ -64,11 +64,13 @@ function NoteOptionsModal({
       </Dialog.Description>
 
       {/* Title */}
-      <h3 className="text-xl font-normal text-gray-600">Title</h3>
+      <h3 className="text-xl font-normal text-gray-600 dark:text-gray-400">
+        Title
+      </h3>
       <div className="flex gap-2">
         <input
           type="text"
-          className="w-full rounded-lg bg-gray-100 px-4 py-2 text-gray-700 outline-gray-500 placeholder:text-gray-400"
+          className="w-full rounded-lg bg-gray-100 px-4 py-2 text-gray-700  placeholder:text-gray-400 dark:bg-gray-950 dark:text-gray-300 dark:placeholder:text-gray-500"
           placeholder="My awesome note"
           value={noteTitle}
           onChange={(e) => setNoteTitle(e.target.value)}
@@ -89,7 +91,9 @@ function NoteOptionsModal({
       </div>
 
       {/* Tags */}
-      <h3 className="text-xl font-normal text-gray-600">Tags</h3>
+      <h3 className="text-xl font-normal text-gray-600 dark:text-gray-400">
+        Tags
+      </h3>
       <div className="flex flex-wrap gap-2">
         {selectedNote.tags.length !== 0 ? (
           selectedNote.tags.map((tag: Tag) => (
@@ -111,7 +115,9 @@ function NoteOptionsModal({
       {/* Add tags */}
       {tagsAvailable.length !== 0 && (
         <>
-          <h3 className="text-xl font-normal text-gray-600">Add tags</h3>
+          <h3 className="text-xl font-normal text-gray-600 dark:text-gray-400">
+            Add tags
+          </h3>
           {/* New tag color selector */}
           <div className="flex gap-2">
             <Listbox
@@ -170,7 +176,9 @@ function NoteOptionsModal({
         </>
       )}
 
-      <h3 className="text-xl font-normal text-gray-600">Danger zone</h3>
+      <h3 className="text-xl font-normal text-gray-600 dark:text-gray-400">
+        Danger zone
+      </h3>
       <Button
         icon="trash"
         intent="dangerSecondary"

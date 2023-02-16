@@ -168,11 +168,6 @@ const Home: NextPage = () => {
     setSortOrder,
   };
 
-  function TagButtonClickHandler() {
-    console.log("clicked");
-    setTagModalOpen(true);
-  }
-
   function createNewTag({
     newTagLabel,
     newTagColor,
@@ -270,7 +265,7 @@ const Home: NextPage = () => {
             tooltipPosition="bottom"
             tooltipAlignment="xCenter"
             size="lg"
-            onClick={TagButtonClickHandler}
+            onClick={() => setTagModalOpen(true)}
             iconOnly
           />
           <Button
@@ -309,7 +304,7 @@ const Home: NextPage = () => {
           tooltipAlignment="yCenter"
           size="lg"
           shadow
-          onClick={TagButtonClickHandler}
+          onClick={() => setTagModalOpen(true)}
           iconOnly
         />
         <Button

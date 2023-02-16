@@ -10,11 +10,11 @@ const NotePage: NextPage = () => {
   const [previewOpen, setPreviewOpen] = useState(true);
 
   return (
-    <PageLayout>
+    <PageLayout noteTitle="My First Note">
       {/* Editor */}
-      <section className="flex-1 bg-gray-100">
+      <section className="flex-1 bg-gray-100 dark:bg-gray-900">
         {/* Topbar */}
-        <div className="flex h-16 justify-between px-8 text-gray-500">
+        <div className="flex h-16 justify-between px-8 text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-2.5">
             <FontAwesomeIcon className="scale-125" icon={faMarkdown} />
             <span className="font-semibold">Editor</span>
@@ -69,9 +69,9 @@ const NotePage: NextPage = () => {
       </section>
       {/* Preview */}
       {previewOpen && (
-        <section className="flex-1">
+        <section className="flex-1 dark:bg-gray-850">
           {/* Topbar */}
-          <div className="flex h-16 items-center gap-2.5 px-8 text-gray-500">
+          <div className="flex h-16 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400">
             <Note size={24} weight="bold" />
             <span className="font-semibold">Preview</span>
           </div>
