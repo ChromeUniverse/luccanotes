@@ -258,7 +258,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout container>
       {/* Top row */}
       <div className="flex gap-3">
         <SearchBar {...searchBarProps} />
