@@ -3,6 +3,9 @@ import {
   ArrowSquareOut,
   CaretDown,
   DotsThreeOutlineVertical,
+  Download,
+  Eye,
+  EyeSlash,
   NotePencil,
   PencilSimple,
   Plus,
@@ -22,6 +25,8 @@ const buttonStyles = cva("peer flex items-center justify-center", {
         "bg-blue-600 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
       secondary:
         "bg-white text-gray-400 hover:brightness-95 hover:text-blue-600 focus-visible:brightness-95 focus-visible:text-blue-600",
+      secondaryAlt:
+        "bg-transparent text-gray-600 hover:bg-gray-200 hover:brightness-95 hover:text-blue-600 focus-visible:brightness-95 focus-visible:text-blue-600",
       dangerPrimary:
         "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
       dangerSecondary:
@@ -58,13 +63,17 @@ const buttonStyles = cva("peer flex items-center justify-center", {
 
 type ButtonIconNames =
   | "note-pencil"
+  | "note-pencil-sm"
   | "tag"
   | "arrow-square-out"
   | "three-dots"
   | "caret-down"
   | "plus"
   | "pencil-simple"
-  | "trash";
+  | "trash"
+  | "eye"
+  | "eye-slash"
+  | "download";
 
 // Base Button Props
 type ButtonProps = {
@@ -87,6 +96,7 @@ interface Props
 // const IconProps: IconProps = { size: 28, weight: "bold" };
 const icons: Record<ButtonIconNames, JSX.Element> = {
   "note-pencil": <NotePencil size={28} weight="bold" />,
+  "note-pencil-sm": <NotePencil size={24} weight="bold" />,
   tag: <Tag size={28} weight="bold" />,
   "arrow-square-out": <ArrowSquareOut size={24} weight="bold" />,
   "three-dots": <DotsThreeOutlineVertical size={24} weight="fill" />,
@@ -94,6 +104,9 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   plus: <Plus size={24} weight="bold" />,
   "pencil-simple": <PencilSimple size={24} weight="bold" />,
   trash: <Trash size={24} weight="bold" />,
+  eye: <Eye size={24} weight="bold" />,
+  "eye-slash": <EyeSlash size={24} weight="bold" />,
+  download: <Download size={24} weight="bold" />,
 } as const;
 
 function Button({

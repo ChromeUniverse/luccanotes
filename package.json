@@ -10,6 +10,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.3.0",
+    "@fortawesome/free-brands-svg-icons": "^6.3.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.9",
     "@headlessui/tailwindcss": "^0.1.2",
     "@next-auth/prisma-adapter": "^1.0.5",
