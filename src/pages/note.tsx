@@ -14,7 +14,7 @@ const NotePage: NextPage = () => {
       {/* Editor */}
       <section className="flex-1 bg-gray-100">
         {/* Topbar */}
-        <div className="flex justify-between px-8 py-4 text-gray-500">
+        <div className="flex h-16 justify-between px-8 text-gray-500">
           <div className="flex items-center gap-2.5">
             <FontAwesomeIcon className="scale-125" icon={faMarkdown} />
             <span className="font-semibold">Editor</span>
@@ -71,7 +71,7 @@ const NotePage: NextPage = () => {
       {previewOpen && (
         <section className="flex-1">
           {/* Topbar */}
-          <div className="flex gap-2.5 px-8 py-4 text-gray-500">
+          <div className="flex h-16 items-center gap-2.5 px-8 text-gray-500">
             <Note size={24} weight="bold" />
             <span className="font-semibold">Preview</span>
           </div>
