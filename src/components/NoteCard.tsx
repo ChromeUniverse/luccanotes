@@ -14,7 +14,7 @@ function HiddenTagPillContainer({
     <>
       {/* Mobile */}
       <div className="relative block md:hidden">
-        <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900">
+        <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900 hover:decoration-gray-900 dark:text-gray-400 dark:decoration-gray-400 dark:hover:text-gray-200 dark:hover:decoration-gray-200">
           {hiddenTags.length} more {hiddenTags.length === 1 ? "tag" : "tags"}
         </p>
         <Tooltip
@@ -30,7 +30,7 @@ function HiddenTagPillContainer({
       </div>
       {/* Desktop */}
       <div className="relative hidden md:block">
-        <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900">
+        <p className="peer cursor-pointer text-gray-600 underline decoration-gray-600 decoration-1 hover:text-gray-900 hover:decoration-gray-900 dark:text-gray-400 dark:decoration-gray-400 dark:hover:text-gray-200 dark:hover:decoration-gray-200">
           {hiddenTags.length} more {hiddenTags.length === 1 ? "tag" : "tags"}
         </p>
         <Tooltip tooltipPosition="bottom" alignment="xCenter">
@@ -97,10 +97,12 @@ function NoteCard({
   setSelectedNoteId: (newSelectedNoteId: string) => void;
 }) {
   return (
-    <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-colors focus-within:border-blue-600 hover:border-blue-600 md:px-7">
+    <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-[border-color] focus-within:border-blue-600 hover:border-blue-600 dark:bg-gray-950 md:px-7">
       <div className="flex flex-col">
         {/* Note title */}
-        <h2 className="text-2xl font-semibold text-gray-900">{note.title}</h2>
+        <h2 className="text-2xl font-semibold text-gray-900 underline decoration-transparent transition-[text-decoration-color] group-hover:decoration-gray-900 dark:text-white dark:group-focus-within:decoration-white dark:group-hover:decoration-white dark:group-focus-visible:decoration-white">
+          {note.title}
+        </h2>
         {/* Last updated */}
         <p className="pt-2 pb-3 text-gray-500">
           {/* Last edited {Date.now() - lastUpdated.getTime()} ms ago */}
@@ -118,6 +120,7 @@ function NoteCard({
           icon="arrow-square-out"
           iconOnly
           size="regular"
+          href="/note"
         />
         <Button
           intent="secondary"

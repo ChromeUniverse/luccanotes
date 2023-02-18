@@ -168,11 +168,6 @@ const Home: NextPage = () => {
     setSortOrder,
   };
 
-  function TagButtonClickHandler() {
-    console.log("clicked");
-    setTagModalOpen(true);
-  }
-
   function createNewTag({
     newTagLabel,
     newTagColor,
@@ -270,7 +265,7 @@ const Home: NextPage = () => {
             tooltipPosition="bottom"
             tooltipAlignment="xCenter"
             size="lg"
-            onClick={TagButtonClickHandler}
+            onClick={() => setTagModalOpen(true)}
             iconOnly
           />
           <Button
@@ -301,7 +296,7 @@ const Home: NextPage = () => {
       {/* Mobile button container */}
       <div className="fixed right-0 bottom-0 flex flex-col gap-2 px-5 py-5 md:hidden">
         <Button //
-          intent="secondary"
+          intent="secondaryAlt"
           icon="tag"
           label="Manage tags"
           roundedFull
@@ -309,7 +304,7 @@ const Home: NextPage = () => {
           tooltipAlignment="yCenter"
           size="lg"
           shadow
-          onClick={TagButtonClickHandler}
+          onClick={() => setTagModalOpen(true)}
           iconOnly
         />
         <Button

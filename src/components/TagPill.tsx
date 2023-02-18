@@ -65,11 +65,11 @@ function TagPill({ label, color, deletable, onClickDelete }: Props) {
       {deletable && (
         <div className="relative">
           <button
-            className="group peer flex h-full items-center justify-center rounded-r-full bg-gray-200 pl-1 pr-2.5"
+            className="group peer flex h-full items-center justify-center rounded-r-full bg-gray-200 pl-1 pr-2.5 dark:bg-gray-800"
             onClick={onClickDelete}
           >
             <X
-              className="text-gray-400 group-hover:text-gray-600 group-focus:text-gray-600"
+              className="text-gray-400 group-hover:text-gray-600 group-focus:text-gray-600 dark:group-hover:text-gray-200 dark:group-focus:text-gray-200"
               weight="bold"
               size="18"
             />

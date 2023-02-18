@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import Link from "next/link";
 import {
   ArrowSquareOut,
   CaretDown,
@@ -18,48 +19,52 @@ import Tooltip, {
 } from "./Tooltip";
 
 // CVA Variants
-const buttonStyles = cva("peer flex items-center justify-center", {
-  variants: {
-    intent: {
-      primary:
-        "bg-blue-600 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
-      secondary:
-        "bg-white text-gray-400 hover:brightness-95 hover:text-blue-600 focus-visible:brightness-95 focus-visible:text-blue-600",
-      secondaryAlt:
-        "bg-transparent text-gray-600 hover:bg-gray-200 hover:brightness-95 hover:text-blue-600 focus-visible:brightness-95 focus-visible:text-blue-600",
-      dangerPrimary:
-        "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
-      dangerSecondary:
-        "bg-white text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 border-2 border-red-500",
+const buttonStyles = cva(
+  "peer flex items-center justify-center disabled:cursor-not-allowed",
+  {
+    variants: {
+      intent: {
+        primary:
+          "bg-blue-600 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
+        secondary:
+          "bg-white dark:bg-gray-950 text-gray-400 dark:text-gray-500 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 dark:hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600 dark:focus-visible:text-blue-600 dark:hover:border-blue-600 dark:focus-visible:border-blue-600 dark:outline-none dark:border-2 dark:border-transparent dark:hover:bg-opacity-50",
+        secondaryAlt:
+          "dark:bg-gray-850 bg-gray-100 text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600",
+        secondaryAltTransparent:
+          "bg-transparent text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600",
+        dangerPrimary:
+          "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
+        dangerSecondary:
+          "bg-white dark:bg-gray-850 text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 dark:hover:bg-gray-900 dark:focus-visible:bg-gray-900 border-2 border-red-500",
+      },
+      roundedFull: {
+        true: "rounded-[28px] hover:rounded-xl transition-[border-radius]",
+        false: "rounded-lg",
+      },
+      shadow: {
+        true: "drop-shadow-lg",
+      },
+      size: {
+        lg: "w-14 h-14",
+        regular: "w-10 h-10",
+        rectangle: "gap-2 py-2 px-4",
+      },
+      reverse: {
+        true: "flex-row-reverse",
+        false: "flex-row",
+      },
+      disabled: {
+        true: "brightness-75 hover:brightness-75 focus-visible:brightness-75",
+      },
     },
-    roundedFull: {
-      true: "rounded-[28px] hover:rounded-xl transition-all",
-      false: "rounded-lg",
+    defaultVariants: {
+      roundedFull: false,
+      shadow: false,
+      reverse: false,
+      disabled: false,
     },
-    shadow: {
-      true: "drop-shadow-lg",
-    },
-    size: {
-      lg: "w-14 h-14",
-      regular: "w-10 h-10",
-      rectangle: "gap-2 py-2 px-4",
-    },
-    reverse: {
-      true: "flex-row-reverse",
-      false: "flex-row",
-    },
-    disabled: {
-      true: "brightness-75 hover:brightness-75 focus-visible:brightness-75",
-      false: "brightness-100",
-    },
-  },
-  defaultVariants: {
-    roundedFull: false,
-    shadow: false,
-    reverse: false,
-    disabled: false,
-  },
-});
+  }
+);
 
 type ButtonIconNames =
   | "note-pencil"
@@ -83,6 +88,7 @@ type ButtonProps = {
   tooltipPosition: TooltipPosition;
   tooltipAlignment: TooltipAlignment;
   onClick?: (onClickProps: unknown) => void;
+  href?: string;
 };
 
 // Merged props
@@ -117,6 +123,7 @@ function Button({
   tooltipAlignment,
   onClick,
   iconOnly = false,
+  href,
   // styling props
   intent,
   roundedFull,
@@ -127,21 +134,38 @@ function Button({
 }: Props) {
   return (
     <div className="relative">
-      <button
-        disabled={disabled ?? false}
-        className={buttonStyles({
-          intent,
-          roundedFull,
-          shadow,
-          size,
-          reverse,
-          disabled,
-        })}
-        onClick={onClick}
-      >
-        {icon && icons[icon]}
-        {!iconOnly && <span>{label}</span>}
-      </button>
+      {href ? (
+        <Link
+          className={buttonStyles({
+            intent,
+            roundedFull,
+            shadow,
+            size,
+            reverse,
+            disabled,
+          })}
+          href={href ?? ""}
+        >
+          {icon && icons[icon]}
+          {!iconOnly && <span>{label}</span>}
+        </Link>
+      ) : (
+        <button
+          disabled={disabled ?? false}
+          className={buttonStyles({
+            intent,
+            roundedFull,
+            shadow,
+            size,
+            reverse,
+            disabled,
+          })}
+          onClick={onClick}
+        >
+          {icon && icons[icon]}
+          {!iconOnly && <span>{label}</span>}
+        </button>
+      )}
       {iconOnly && !disabled && (
         <Tooltip tooltipPosition={tooltipPosition} alignment={tooltipAlignment}>
           {label}

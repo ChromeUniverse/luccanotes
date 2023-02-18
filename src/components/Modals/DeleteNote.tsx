@@ -20,14 +20,16 @@ function DeleteNoteModal({
   return (
     <ModalLayout open={open} onClose={onClose}>
       {/* Title & Description */}
-      <Dialog.Title className="text-2xl font-semibold text-gray-900">
+      <Dialog.Title className="text-2xl font-semibold text-gray-900 dark:text-white">
         Delete note
       </Dialog.Title>
       <Dialog.Description className="hidden">
         This dialog will delete a note
       </Dialog.Description>
 
-      <p>Are you sure you want to delete this note? This cannot be undone.</p>
+      <p className="text-gray-950 dark:text-gray-300">
+        Are you sure you want to delete this note? This cannot be undone.
+      </p>
 
       <Button
         icon="trash"

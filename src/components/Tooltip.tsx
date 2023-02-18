@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 
 const tooltipStyles = cva(
-  "absolute z-10 min-w-max rounded-lg bg-gray-100 py-2 px-4 font-semibold text-gray-800 drop-shadow-lg transition-all scale-0 peer-hover:scale-100 peer-focus-visible:scale-100 group-focus-visible:scale-100 outline-none",
+  "absolute z-10 min-w-max rounded-lg bg-gray-100 dark:bg-gray-800 py-2 px-4 font-semibold text-gray-800 dark:text-gray-200 drop-shadow-lg transition-all scale-0 peer-hover:scale-100 peer-focus-visible:scale-100 group-focus-visible:scale-100 outline-none",
   {
     variants: {
       tooltipPosition: {
