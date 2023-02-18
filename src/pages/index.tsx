@@ -296,7 +296,7 @@ const Home: NextPage = () => {
       {/* Mobile button container */}
       <div className="fixed right-0 bottom-0 flex flex-col gap-2 px-5 py-5 md:hidden">
         <Button //
-          intent="secondary"
+          intent="secondaryAlt"
           icon="tag"
           label="Manage tags"
           roundedFull

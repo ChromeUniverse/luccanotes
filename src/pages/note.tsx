@@ -25,7 +25,7 @@ const NotePage: NextPage = () => {
               <Button
                 icon="note-pencil-sm"
                 iconOnly
-                intent="secondaryAlt"
+                intent="secondaryAltTransparent"
                 label="Note options"
                 tooltipAlignment="xCenter"
                 tooltipPosition="bottom"
@@ -35,7 +35,7 @@ const NotePage: NextPage = () => {
                 <Button
                   icon="eye-slash"
                   iconOnly
-                  intent="secondaryAlt"
+                  intent="secondaryAltTransparent"
                   label="Hide preview"
                   tooltipAlignment="xCenter"
                   tooltipPosition="bottom"
@@ -46,7 +46,7 @@ const NotePage: NextPage = () => {
                 <Button
                   icon="eye"
                   iconOnly
-                  intent="secondaryAlt"
+                  intent="secondaryAltTransparent"
                   label="Show preview"
                   tooltipAlignment="xCenter"
                   tooltipPosition="bottom"
@@ -57,7 +57,7 @@ const NotePage: NextPage = () => {
               <Button
                 icon="download"
                 iconOnly
-                intent="secondaryAlt"
+                intent="secondaryAltTransparent"
                 label="Download"
                 tooltipAlignment={previewOpen ? "xCenter" : "left"}
                 tooltipPosition="bottom"

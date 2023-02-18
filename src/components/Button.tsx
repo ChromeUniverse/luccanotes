@@ -29,6 +29,8 @@ const buttonStyles = cva(
         secondary:
           "bg-white dark:bg-gray-950 text-gray-400 dark:text-gray-500 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 dark:hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600 dark:focus-visible:text-blue-600 dark:hover:border-blue-600 dark:focus-visible:border-blue-600 dark:outline-none dark:border-2 dark:border-transparent dark:hover:bg-opacity-50",
         secondaryAlt:
+          "dark:bg-gray-850 bg-gray-100 text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600",
+        secondaryAltTransparent:
           "bg-transparent text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600",
         dangerPrimary:
           "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
@@ -36,7 +38,7 @@ const buttonStyles = cva(
           "bg-white dark:bg-gray-950 text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 border-2 border-red-500",
       },
       roundedFull: {
-        true: "rounded-[28px] hover:rounded-xl transition-all",
+        true: "rounded-[28px] hover:rounded-xl transition-[border-radius]",
         false: "rounded-lg",
       },
       shadow: {
@@ -53,7 +55,6 @@ const buttonStyles = cva(
       },
       disabled: {
         true: "brightness-75 hover:brightness-75 focus-visible:brightness-75",
-        false: "brightness-100",
       },
     },
     defaultVariants: {
