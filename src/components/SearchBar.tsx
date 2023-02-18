@@ -49,13 +49,13 @@ function SortingSection({
             className="relative"
           >
             {/* Button */}
-            <Listbox.Button className="flex w-44 items-center justify-between gap-4 whitespace-nowrap rounded-lg border-2 border-transparent bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-600">
+            <Listbox.Button className="flex w-44 items-center justify-between gap-4 whitespace-nowrap rounded-lg border-2 border-transparent  bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:hover:border-gray-600 dark:hover:bg-gray-850">
               {sortFieldLabels[sortField]}
               <CaretUpDownIcon />
             </Listbox.Button>
 
             {/* Dropdown menu */}
-            <Listbox.Options className="absolute left-0 top-full z-20 mt-1 rounded-lg border-2 border-transparent bg-gray-200 py-2 drop-shadow-lg dark:border-gray-950 dark:bg-gray-800">
+            <Listbox.Options className="absolute left-0 top-full z-20 mt-1 rounded-lg border-2 border-transparent border-gray-400 bg-gray-200 py-2 drop-shadow-lg dark:border-gray-950 dark:bg-gray-850">
               {Object.keys(sortFieldLabels).map((sortFieldOption, index) => (
                 <Listbox.Option
                   className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600 dark:text-gray-100 dark:ui-active:bg-blue-900 dark:ui-active:bg-opacity-60"
@@ -65,7 +65,7 @@ function SortingSection({
                   <Check
                     weight="bold"
                     size={20}
-                    className="ml-1 mr-2 text-blue-500 opacity-0 ui-selected:opacity-100 ui-active:text-blue-600"
+                    className="ml-1 mr-2 text-blue-500 opacity-0 ui-selected:opacity-100 ui-active:text-blue-600 dark:ui-active:text-blue-400"
                   />
                   {sortFieldLabels[sortFieldOption as SortField]}
                 </Listbox.Option>

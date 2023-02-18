@@ -65,23 +65,23 @@ function ThemeSelector({
       className="relative ml-auto"
     >
       {/* Button */}
-      <Listbox.Button className="flex w-24 items-center justify-between gap-4 whitespace-nowrap rounded-lg border-2 bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-100">
+      <Listbox.Button className="flex w-24 items-center justify-between gap-4 whitespace-nowrap rounded-lg bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-850">
         {theme === "light" ? "Light" : "Dark"}
         <CaretUpDownIcon />
       </Listbox.Button>
 
       {/* Options */}
-      <Listbox.Options className="absolute right-0 top-full z-20 mt-1 w-28 items-center rounded-lg bg-gray-200 py-2 drop-shadow-lg">
+      <Listbox.Options className="absolute right-0 top-full z-20 mt-1 w-28 items-center rounded-lg border-2 border-transparent border-gray-400 bg-gray-200 py-2 drop-shadow-lg dark:border-gray-950 dark:bg-gray-850">
         {/* Light option */}
         <Listbox.Option
-          className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600"
+          className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600 dark:text-gray-100 dark:ui-active:bg-blue-900 dark:ui-active:bg-opacity-60 "
           value="light"
         >
           <ThemeOption theme="light" />
         </Listbox.Option>
         {/* Dark option */}
         <Listbox.Option
-          className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600"
+          className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600 dark:text-gray-100 dark:ui-active:bg-blue-900 dark:ui-active:bg-opacity-60 "
           value="dark"
         >
           <ThemeOption theme="dark" />

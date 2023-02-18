@@ -80,24 +80,24 @@ function ManageTagsModal({
             className="relative"
           >
             {/* Button */}
-            <Listbox.Button className="flex w-36 items-center justify-between gap-4 whitespace-nowrap rounded-lg border-2 bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-100">
+            <Listbox.Button className="flex w-36 items-center justify-between gap-4 whitespace-nowrap rounded-lg border-2 border-transparent bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-600 dark:hover:bg-gray-850">
               {tagColorNames[newTagColor]}
               <CaretUpDownIcon />
             </Listbox.Button>
 
             {/* Options */}
-            <Listbox.Options className="absolute right-0 bottom-full z-20 mb-2 w-full items-center rounded-lg bg-gray-200 py-2 drop-shadow-lg">
+            <Listbox.Options className="absolute right-0 bottom-full z-20 mb-2 w-full items-center rounded-lg border-2 border-gray-400 border-transparent bg-gray-200 py-2 drop-shadow-lg dark:border-gray-950 dark:bg-gray-850">
               {/* Light option */}
               {Object.keys(tagColorNames).map((color, index) => (
                 <Listbox.Option
                   key={index}
-                  className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600"
+                  className="flex items-center whitespace-nowrap py-1 pl-2 pr-6 text-gray-900 ui-active:bg-blue-200 ui-active:text-blue-600 dark:text-gray-100 dark:ui-active:bg-blue-900 dark:ui-active:bg-opacity-60"
                   value={color}
                 >
                   <Check
                     weight="bold"
                     size={20}
-                    className="ml-1 mr-2 text-blue-500 opacity-0 ui-selected:opacity-100 ui-active:text-blue-600"
+                    className="ml-1 mr-2 text-blue-500 opacity-0 ui-selected:opacity-100 ui-active:text-blue-600 dark:ui-active:text-blue-400"
                   />
                   {tagColorNames[color as TagColor]}
                 </Listbox.Option>
