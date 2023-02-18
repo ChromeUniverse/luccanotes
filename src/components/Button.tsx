@@ -35,7 +35,7 @@ const buttonStyles = cva(
         dangerPrimary:
           "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
         dangerSecondary:
-          "bg-white dark:bg-gray-950 text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 border-2 border-red-500",
+          "bg-white dark:bg-gray-850 text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 dark:hover:bg-gray-900 dark:focus-visible:bg-gray-900 border-2 border-red-500",
       },
       roundedFull: {
         true: "rounded-[28px] hover:rounded-xl transition-[border-radius]",
