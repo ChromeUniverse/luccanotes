@@ -19,6 +19,7 @@ import SearchBar, { type SortField } from "../components/SearchBar";
 import { type TagsKeys, type Note } from "..";
 import ManageTagsModal from "../components/Modals/ManageTags";
 import NoteOptionsModal from "../components/Modals/NoteOptions";
+import CreateNoteModal from "../components/Modals/CreateNote";
 
 const tags: Record<TagsKeys, Tag> = {
   coding: {
@@ -141,7 +142,8 @@ const Home: NextPage = () => {
   const [notes, setNotes] = useState<Note[]>(notesList);
 
   // modals state
-  const [tagModalOpen, setTagModalOpen] = useState<boolean>(false);
+  const [tagModalOpen, setTagModalOpen] = useState(false);
+  const [createNoteModalOpen, setCreateNoteModalOpen] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   // Search parameters state
@@ -194,7 +196,6 @@ const Home: NextPage = () => {
     );
   }
 
-  // TODO: implement this function
   function renameNote({
     newNoteTitle,
     noteId,
@@ -209,12 +210,10 @@ const Home: NextPage = () => {
     );
   }
 
-  // TODO: implement this function
   function deleteNote(noteId: string) {
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
   }
 
-  // TODO: implement this function
   function addTagToNote({ tagId, noteId }: { tagId: string; noteId: string }) {
     setNotes((prevNotes) =>
       prevNotes.map((note) => {
@@ -230,7 +229,6 @@ const Home: NextPage = () => {
     );
   }
 
-  // TODO: implement this function
   function deleteTagFromNote({
     tagId,
     noteId,
@@ -250,6 +248,24 @@ const Home: NextPage = () => {
         };
       })
     );
+  }
+
+  function createNote({
+    noteTitle,
+    noteTags,
+  }: {
+    noteTitle: string;
+    noteTags: Tag[];
+  }) {
+    const newNote: Note = {
+      id: nanoid(),
+      title: noteTitle,
+      tags: noteTags,
+      createdAt: new Date(),
+      lastUpdated: new Date(),
+    };
+
+    setNotes((prevNotes) => [...prevNotes, newNote]);
   }
 
   return (
@@ -276,6 +292,7 @@ const Home: NextPage = () => {
             tooltipAlignment="xCenter"
             size="lg"
             iconOnly
+            onClick={() => setCreateNoteModalOpen(true)}
           />
         </div>
       </div>
@@ -317,6 +334,7 @@ const Home: NextPage = () => {
           size="lg"
           shadow
           iconOnly
+          onClick={() => setCreateNoteModalOpen(true)}
         />
       </div>
       {/* Modals */}
@@ -338,6 +356,14 @@ const Home: NextPage = () => {
           deleteNote={deleteNote}
           addTagToNote={addTagToNote}
           deleteTagFromNote={deleteTagFromNote}
+        />
+      )}
+      {createNoteModalOpen && (
+        <CreateNoteModal
+          open={createNoteModalOpen}
+          onClose={setCreateNoteModalOpen}
+          tags={tags}
+          createNote={createNote}
         />
       )}
     </PageLayout>
