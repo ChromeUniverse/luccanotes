@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* codemirror editor */
+.cm-content {
+  font-family: monospace;
+  font-size: 16px;
+  border: none;
+  outline: none;
+}
+
+.cm-wrap {
+  height: 100%;
+}
+.cm-scroller {
+  overflow: auto;
+}
+
+/* markdown preview */
+.preview {
+  @apply text-gray-800 dark:text-gray-200;
+}
+
+.preview h1,
+.preview h2 {
+  @apply my-3 border-b-2 border-gray-300 pb-1 tracking-tight dark:border-gray-700;
+}
+
+.preview h3,
+.preview h4 {
+  @apply mb-3 tracking-tight;
+}
+
+.preview h1 {
+  @apply text-3xl font-bold;
+}
+
+.preview h2 {
+  @apply text-2xl font-bold;
+}
+
+.preview h3 {
+  @apply text-xl font-bold;
+}
+
+.preview h4 {
+  @apply text-lg font-bold;
+}
+
+.preview p {
+  @apply my-4;
+}
+
+.preview a {
+  @apply text-blue-400 underline decoration-transparent hover:decoration-blue-400;
+}
+
+.preview img {
+  @apply mx-auto my-6 max-h-[600px] rounded-md;
+}
+
+.preview code {
+  @apply rounded-md bg-gray-300 px-2 py-0.5 font-normal dark:bg-gray-700 dark:text-white;
+}
