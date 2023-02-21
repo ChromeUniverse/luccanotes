@@ -52,14 +52,19 @@
   @apply my-4;
 }
 
-.preview a {
-  @apply text-blue-400 underline decoration-transparent hover:decoration-blue-400;
-}
-
 .preview img {
   @apply mx-auto my-6 max-h-[600px] rounded-md;
 }
 
 .preview code {
   @apply rounded-md bg-gray-300 px-2 py-0.5 font-normal dark:bg-gray-700 dark:text-white;
+}
+
+.preview a,
+.preview a code {
+  @apply text-blue-600 underline decoration-transparent hover:decoration-blue-600 dark:text-blue-400 dark:hover:decoration-blue-400;
+}
+
+.preview code[class*="language-"] {
+  @apply px-0;
 }
