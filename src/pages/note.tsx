@@ -4,7 +4,8 @@ import mdStyles from "../styles/markdown.module.css";
 // next & react
 import { type NextPage } from "next";
 import { Note } from "phosphor-react";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
+import { useDebounce } from "use-debounce";
 
 // custom components
 import Button from "../components/Button";
@@ -16,10 +17,11 @@ import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeMirror, { type BasicSetupOptions } from "@uiw/react-codemirror";
-import useThemeStore from "../stores/theme";
+import useThemeStore, { ThemeType } from "../stores/theme";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { EditorView, keymap, type ViewUpdate } from "@codemirror/view";
+import { Extension } from "@codemirror/state";
 
 // codemirror themes
 import { tokyoNight, tokyoNightInit } from "@uiw/codemirror-theme-tokyo-night";
@@ -90,9 +92,63 @@ func main() {
 \`\`\`
 `;
 
+const customDarkTheme = auraInit({
+  settings: { background: "#00000000" },
+});
+const customLightTheme = tokyoNightDayInit({
+  settings: { background: "#00000000" },
+});
+
+const editorOptions: BasicSetupOptions = {
+  // lineNumbers: false,
+  // foldGutter: false,
+  // syntaxHighlighting: true,
+};
+
+const MarkdownPreview = ({
+  editorContent,
+  theme,
+}: {
+  editorContent: string;
+  theme: ThemeType;
+}) => {
+  console.log("Re-rendered");
+
+  return (
+    <ReactMarkdown
+      className="preview"
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code({ node, inline, className, children, style, ...props }) {
+          const match = /language-(\w+)/.exec(className || "");
+          return !inline && match ? (
+            <SyntaxHighlighter
+              style={theme === "light" ? oneLight : oneDark}
+              language={match[1]}
+              PreTag="div"
+              {...props}
+            >
+              {String(children).replace(/\n$/, "")}
+            </SyntaxHighlighter>
+          ) : (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          );
+        },
+      }}
+    >
+      {editorContent}
+    </ReactMarkdown>
+  );
+};
+
+const MemoedMarkdownPreview = memo(MarkdownPreview);
+
 const NotePage: NextPage = () => {
   const [previewOpen, setPreviewOpen] = useState(true);
   const [editorContent, setEditorContent] = useState(markdownSample);
+  const [debouncedEditorContent] = useDebounce(editorContent, 500);
 
   const { theme } = useThemeStore();
 
@@ -102,19 +158,6 @@ const NotePage: NextPage = () => {
     },
     []
   );
-
-  const editorOptions: BasicSetupOptions = {
-    // lineNumbers: false,
-    // foldGutter: false,
-    // syntaxHighlighting: true,
-  };
-
-  const customDarkTheme = auraInit({
-    settings: { background: "#00000000" },
-  });
-  const customLightTheme = tokyoNightDayInit({
-    settings: { background: "#00000000" },
-  });
 
   return (
     <PageLayout noteTitle="My First Note">
@@ -202,31 +245,10 @@ const NotePage: NextPage = () => {
             </div>
             {/* Markdown Preview */}
             <div className="overflow-x-auto px-8">
-              <ReactMarkdown
-                className="preview"
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  code({ node, inline, className, children, ...props }) {
-                    const match = /language-(\w+)/.exec(className || "");
-                    return !inline && match ? (
-                      <SyntaxHighlighter
-                        style={theme === "light" ? oneLight : oneDark}
-                        language={match[1]}
-                        PreTag="div"
-                        {...props}
-                      >
-                        {String(children).replace(/\n$/, "")}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-              >
-                {editorContent}
-              </ReactMarkdown>
+              <MemoedMarkdownPreview
+                theme={theme}
+                editorContent={debouncedEditorContent}
+              />
             </div>
           </section>
         )}
