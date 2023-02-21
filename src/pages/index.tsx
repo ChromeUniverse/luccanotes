@@ -366,6 +366,10 @@ const Home: NextPage = () => {
           createNote={createNote}
         />
       )}
+
+      <button onClick={() => void signIn()}>
+        Click here to sign in with NextAuth
+      </button>
     </PageLayout>
   );
 };
