@@ -8,8 +8,8 @@ import { memo, useCallback, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 // custom components
-import Button from "../components/Button";
-import PageLayout from "../components/Layouts/Page";
+import Button from "../../components/Button";
+import PageLayout from "../../components/Layouts/Page";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 
@@ -17,7 +17,7 @@ import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeMirror, { type BasicSetupOptions } from "@uiw/react-codemirror";
-import useThemeStore, { ThemeType } from "../stores/theme";
+import useThemeStore, { ThemeType } from "../../stores/theme";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { EditorView, keymap, type ViewUpdate } from "@codemirror/view";
