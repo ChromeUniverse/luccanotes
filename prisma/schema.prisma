@@ -70,21 +70,23 @@ enum Color {
 }
 
 model Tag {
-    id     String  @id @default(cuid())
-    label  String
-    color  Color
-    Note   Note?   @relation(fields: [noteId], references: [id])
-    noteId String?
-    User   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String?
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    label     String
+    color     Color
+    Note      Note?    @relation(fields: [noteId], references: [id])
+    noteId    String?
+    User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String?
 }
 
 model Note {
-    id      String  @id @default(cuid())
-    content String  @db.Text
-    tags    Tag[]
-    User    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId  String?
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    content   String   @db.Text
+    tags      Tag[]
+    User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String?
 }
 
 model VerificationToken {
