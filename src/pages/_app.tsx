@@ -28,9 +28,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
       : document.body.classList.remove("dark");
   }, [theme]);
 
-  if (!hasHydrated) {
-    return <span>Loading...</span>;
-  }
+  // if (!hasHydrated) {
+  //   return <span>Loading...</span>;
+  // }
 
   return (
     <>

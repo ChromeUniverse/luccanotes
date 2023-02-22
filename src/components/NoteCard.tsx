@@ -120,7 +120,7 @@ function NoteCard({
           icon="arrow-square-out"
           iconOnly
           size="regular"
-          href="/note"
+          href="/notes/123"
         />
         <Button
           intent="secondary"

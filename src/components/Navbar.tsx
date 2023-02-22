@@ -37,7 +37,7 @@ function DropdownLine({ children }: { children?: React.ReactNode }) {
 
 function Logo() {
   return (
-    <Link className="flex items-center gap-3" href="/">
+    <Link className="flex items-center gap-3" href="/notes">
       {/* Icon */}
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600">
         <BookBookmark color="white" size={28} />

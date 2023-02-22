@@ -2,7 +2,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { api } from "../utils/api";
+import { api } from "../../utils/api";
 import { type NextPage } from "next";
 import { useMemo, useState } from "react";
 
@@ -10,16 +10,16 @@ import { useMemo, useState } from "react";
 import { nanoid } from "nanoid";
 
 // custom components
-import PageLayout from "../components/Layouts/Page";
-import NoteCard from "../components/NoteCard";
-import Button from "../components/Button";
-import { type Tag, type TagColor } from "../components/TagPill";
-import SearchBar, { type SortField } from "../components/SearchBar";
+import PageLayout from "../../components/Layouts/Page";
+import NoteCard from "../../components/NoteCard";
+import Button from "../../components/Button";
+import { type Tag, type TagColor } from "../../components/TagPill";
+import SearchBar, { type SortField } from "../../components/SearchBar";
 
-import { type TagsKeys, type Note } from "..";
-import ManageTagsModal from "../components/Modals/ManageTags";
-import NoteOptionsModal from "../components/Modals/NoteOptions";
-import CreateNoteModal from "../components/Modals/CreateNote";
+import { type TagsKeys, type Note } from "../..";
+import ManageTagsModal from "../../components/Modals/ManageTags";
+import NoteOptionsModal from "../../components/Modals/NoteOptions";
+import CreateNoteModal from "../../components/Modals/CreateNote";
 
 const tags: Record<TagsKeys, Tag> = {
   coding: {
@@ -136,6 +136,10 @@ function sortNotes(
 
 const Home: NextPage = () => {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+
+  const { data, status } = useSession();
+
+  console.log(data?.user.name, status);
 
   // data
   const [tags, setTags] = useState<Tag[]>(TagsList);
@@ -366,6 +370,14 @@ const Home: NextPage = () => {
           createNote={createNote}
         />
       )}
+
+      <div className="flex flex-col gap-3">
+        <button onClick={() => void signIn()}>
+          Click here to sign in with NextAuth
+        </button>
+
+        <button onClick={() => void signOut()}>Click here to log out</button>
+      </div>
     </PageLayout>
   );
 };
