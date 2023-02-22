@@ -1,5 +1,12 @@
-import { Listbox, Popover, Transition } from "@headlessui/react";
+// React, Next, Zustand
+import React, { useState } from "react";
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { Session } from "next-auth";
+import useThemeStore from "../stores/theme";
+
+// Components
+import { Listbox, Popover, Transition } from "@headlessui/react";
 import {
   BookBookmark,
   Gear,
@@ -9,8 +16,6 @@ import {
   SignOut,
   Sun,
 } from "phosphor-react";
-import React, { useState } from "react";
-import useThemeStore from "../stores/theme";
 import CaretUpDownIcon from "./CaretUpDownIcon";
 
 function ThemeOption({ theme }: { theme: "light" | "dark" }) {
@@ -94,20 +99,28 @@ function ThemeSelector({
 function Navbar({
   username,
   noteTitle,
+  session,
 }: {
   username: string;
   noteTitle?: string;
+  session?: Session;
 }) {
   const { theme, setTheme } = useThemeStore();
+
+  console.log("Navbar session:", session);
 
   return (
     <nav className="flex items-center gap-2 bg-white py-3 px-4 dark:bg-gray-950 md:px-8">
       <Logo />
-      <Slash />
-      {/* Username */}
-      <span className="text-xl text-gray-700 dark:text-gray-300">
-        {username}
-      </span>
+      {session && (
+        <>
+          <Slash />
+          {/* Username */}
+          <span className="text-xl text-gray-700 dark:text-gray-300">
+            {session.user.name}
+          </span>
+        </>
+      )}
       {/* Note title */}
       {noteTitle && (
         <>

@@ -2,8 +2,13 @@
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { type Session } from "next-auth";
 import { api } from "../../utils/api";
-import { type NextPage } from "next";
+import {
+  GetServerSideProps,
+  InferGetServerSidePropsType,
+  type NextPage,
+} from "next";
 import { useMemo, useState } from "react";
 
 // package imports
@@ -20,6 +25,7 @@ import { type TagsKeys, type Note } from "../..";
 import ManageTagsModal from "../../components/Modals/ManageTags";
 import NoteOptionsModal from "../../components/Modals/NoteOptions";
 import CreateNoteModal from "../../components/Modals/CreateNote";
+import { getServerAuthSession } from "../../server/auth";
 
 const tags: Record<TagsKeys, Tag> = {
   coding: {
@@ -134,12 +140,32 @@ function sortNotes(
   }
 }
 
-const Home: NextPage = () => {
+export const getServerSideProps: GetServerSideProps<{
+  session: Session;
+}> = async (context) => {
+  const session = await getServerAuthSession(context);
+
+  console.log("getServerSideProps session:", session);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  // Pass data to the page via props
+  return { props: { session } };
+};
+
+function NotesPage({
+  session,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
-  const { data, status } = useSession();
-
-  console.log(data?.user.name, status);
+  console.log("Notes page session:", session);
 
   // data
   const [tags, setTags] = useState<Tag[]>(TagsList);
@@ -273,7 +299,7 @@ const Home: NextPage = () => {
   }
 
   return (
-    <PageLayout container>
+    <PageLayout container session={session}>
       {/* Top row */}
       <div className="flex gap-3">
         <SearchBar {...searchBarProps} />
@@ -380,30 +406,6 @@ const Home: NextPage = () => {
       </div>
     </PageLayout>
   );
-};
+}
 
-export default Home;
-
-// const AuthShowcase: React.FC = () => {
-//   const { data: sessionData } = useSession();
-
-//   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-//     undefined, // no input
-//     { enabled: sessionData?.user !== undefined },
-//   );
-
-//   return (
-//     <div className="flex flex-col items-center justify-center gap-4">
-//       <p className="text-center text-2xl text-white">
-//         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-//         {secretMessage && <span> - {secretMessage}</span>}
-//       </p>
-//       <button
-//         className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-//         onClick={sessionData ? () => void signOut() : () => void signIn()}
-//       >
-//         {sessionData ? "Sign out" : "Sign in"}
-//       </button>
-//     </div>
-//   );
-// };
+export default NotesPage;
