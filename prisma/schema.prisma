@@ -74,19 +74,19 @@ model Tag {
     createdAt DateTime @default(now())
     label     String
     color     Color
-    Note      Note?    @relation(fields: [noteId], references: [id])
-    noteId    String?
-    User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId    String?
+    Note      Note[]
+    User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
 }
 
 model Note {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
+    title     String
     content   String   @db.Text
     tags      Tag[]
-    User      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId    String?
+    User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
 }
 
 model VerificationToken {
