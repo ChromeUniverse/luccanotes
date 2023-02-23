@@ -8,7 +8,7 @@ import "../styles/globals.css";
 
 import { Inter } from "@next/font/google";
 import useThemeStore from "../stores/theme";
-import useHasHydrated from "../hooks/useHasHydrated";
+// import useHasHydrated from "../hooks/useHasHydrated";
 import { useEffect } from "react";
 
 const inter = Inter({
@@ -18,19 +18,15 @@ const inter = Inter({
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
+  // pageProps,
 }) => {
   const { theme } = useThemeStore();
-  const hasHydrated = useHasHydrated();
 
   useEffect(() => {
     theme === "dark"
       ? document.body.classList.add("dark")
       : document.body.classList.remove("dark");
   }, [theme]);
-
-  // if (!hasHydrated) {
-  //   return <span>Loading...</span>;
-  // }
 
   return (
     <>

@@ -10,6 +10,7 @@ import {
   NotePencil,
   PencilSimple,
   Plus,
+  SignIn,
   Tag,
   Trash,
 } from "phosphor-react";
@@ -20,7 +21,7 @@ import Tooltip, {
 
 // CVA Variants
 const buttonStyles = cva(
-  "peer flex items-center justify-center disabled:cursor-not-allowed",
+  "peer flex items-center justify-center disabled:cursor-not-allowed font-semibold",
   {
     variants: {
       intent: {
@@ -78,7 +79,8 @@ type ButtonIconNames =
   | "trash"
   | "eye"
   | "eye-slash"
-  | "download";
+  | "download"
+  | "sign-in";
 
 // Base Button Props
 type ButtonProps = {
@@ -113,6 +115,7 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   eye: <Eye size={24} weight="bold" />,
   "eye-slash": <EyeSlash size={24} weight="bold" />,
   download: <Download size={24} weight="bold" />,
+  "sign-in": <SignIn size={24} />,
 } as const;
 
 function Button({
