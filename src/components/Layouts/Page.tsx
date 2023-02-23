@@ -13,11 +13,9 @@ function PageLayout({
   children: React.ReactNode;
   session?: Session;
 }) {
-  console.log("page layout session:", session);
-
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar username="lucca.dr" noteTitle={noteTitle} session={session} />
+      <Navbar noteTitle={noteTitle} session={session} />
       {container ? (
         <main className="flex-grow bg-gray-200 pt-4 pb-20 dark:bg-gray-900">
           <div className="mx-auto px-4 md:w-[90%] md:max-w-[1200px]">

@@ -2,7 +2,7 @@
 import mdStyles from "../styles/markdown.module.css";
 
 // next & react
-import { type NextPage } from "next";
+import { GetServerSideProps, type NextPage } from "next";
 import { Note } from "phosphor-react";
 import { memo, useCallback, useState } from "react";
 import { useDebounce } from "use-debounce";
@@ -40,6 +40,9 @@ import {
   oneLight,
   materialDark,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { getServerAuthSession } from "../../server/auth";
+import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 
 const markdownSample = `# Heading 1
 
@@ -151,6 +154,7 @@ const NotePage: NextPage = () => {
   const [debouncedEditorContent] = useDebounce(editorContent, 500);
 
   const { theme } = useThemeStore();
+  const session = useSession().data as Session;
 
   const onEditorChange = useCallback(
     (value: string, viewUpdate: ViewUpdate) => {
@@ -160,7 +164,7 @@ const NotePage: NextPage = () => {
   );
 
   return (
-    <PageLayout noteTitle="My First Note">
+    <PageLayout noteTitle="My First Note" session={session}>
       <div
         className={`grid w-full ${previewOpen ? "grid-cols-2" : "grid-cols-1"}`}
       >
@@ -255,6 +259,26 @@ const NotePage: NextPage = () => {
       </div>
     </PageLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps<{
+  session: Session;
+}> = async (context) => {
+  const session = await getServerAuthSession(context);
+
+  console.log("getServerSideProps session:", session);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  // Pass data to the page via props
+  return { props: { session } };
 };
 
 export default NotePage;

@@ -27,39 +27,6 @@ import NoteOptionsModal from "../../components/Modals/NoteOptions";
 import CreateNoteModal from "../../components/Modals/CreateNote";
 import { getServerAuthSession } from "../../server/auth";
 
-const tags: Record<TagsKeys, Tag> = {
-  coding: {
-    id: nanoid(),
-    label: "Coding",
-    color: "red",
-  },
-  music: {
-    id: nanoid(),
-    label: "Music",
-    color: "sky",
-  },
-  school: {
-    id: nanoid(),
-    label: "School",
-    color: "yellow",
-  },
-  general: {
-    id: nanoid(),
-    label: "General",
-    color: "lightGray",
-  },
-  tasks: {
-    id: nanoid(),
-    label: "Tasks",
-    color: "violet",
-  },
-  work: {
-    id: nanoid(),
-    label: "Work",
-    color: "green",
-  },
-} as const;
-
 const TagsList = Object.values(tags);
 
 const defaultDate = new Date();
@@ -140,32 +107,9 @@ function sortNotes(
   }
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  session: Session;
-}> = async (context) => {
-  const session = await getServerAuthSession(context);
-
-  console.log("getServerSideProps session:", session);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  // Pass data to the page via props
-  return { props: { session } };
-};
-
-function NotesPage({
-  session,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function NotesPage() {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
-  console.log("Notes page session:", session);
+  const session = useSession().data as Session;
 
   // data
   const [tags, setTags] = useState<Tag[]>(TagsList);
@@ -396,16 +340,28 @@ function NotesPage({
           createNote={createNote}
         />
       )}
-
-      <div className="flex flex-col gap-3">
-        <button onClick={() => void signIn()}>
-          Click here to sign in with NextAuth
-        </button>
-
-        <button onClick={() => void signOut()}>Click here to log out</button>
-      </div>
     </PageLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<{
+  session: Session;
+}> = async (context) => {
+  const session = await getServerAuthSession(context);
+
+  console.log("getServerSideProps session:", session);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  // Pass data to the page via props
+  return { props: { session } };
+};
 
 export default NotesPage;
