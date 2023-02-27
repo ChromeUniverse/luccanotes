@@ -1,33 +1,68 @@
 import { Dialog, Listbox } from "@headlessui/react";
+import { Color, type Tag } from "@prisma/client";
 import { Check } from "phosphor-react";
 import { useState } from "react";
+import { api } from "../../utils/api";
 import Button from "../Button";
 import CaretUpDownIcon from "../CaretUpDownIcon";
 import ModalLayout from "../Layouts/Modal";
-import TagPill, { type TagColor, type Tag, tagColorNames } from "../TagPill";
+import TagPill, { tagColorNames } from "../TagPill";
 
 function ManageTagsModal({
   open,
   onClose,
   tags,
-  createNewTag,
-  deleteTag,
 }: {
   open: boolean;
   onClose: (newOpen: boolean) => void;
   tags: Tag[];
-  createNewTag: ({
-    newTagLabel,
-    newTagColor,
-  }: {
-    newTagLabel: string;
-    newTagColor: TagColor;
-  }) => void;
-  deleteTag: (targetId: string) => void;
 }) {
   // modal state
   const [newTagLabel, setNewTagLabel] = useState<string>("");
-  const [newTagColor, setNewTagColor] = useState<TagColor>("sky");
+  const [newTagColor, setNewTagColor] = useState<Color | null>(null);
+
+  // tprc stuff
+  const createTagMutation = api.tags.create.useMutation();
+  const deleteTagMutation = api.tags.delete.useMutation();
+  const utils = api.useContext();
+
+  const resetInputs = () => {
+    setNewTagLabel("");
+    setNewTagColor(null);
+  };
+
+  const onClickCreate = () => {
+    console.log("clicked");
+
+    if (!newTagLabel || !newTagColor) return;
+    createTagMutation.mutate(
+      { color: newTagColor, label: newTagLabel },
+      {
+        onSuccess: (newTag, variables, context) => {
+          utils.tags.getAll.setData(undefined, (oldTags) =>
+            oldTags ? [...oldTags, newTag] : [newTag]
+          );
+          void utils.tags.getAll.invalidate();
+          resetInputs();
+        },
+      }
+    );
+  };
+
+  const onClickDelete = (id: string) => {
+    deleteTagMutation.mutate(
+      { id },
+      {
+        onSuccess: (deletedTag, variables, context) => {
+          utils.tags.getAll.setData(undefined, (oldTags) =>
+            oldTags ? oldTags.filter((t) => t.id !== deletedTag.id) : []
+          );
+          void utils.tags.getAll.invalidate();
+          void utils.notes.getAll.invalidate();
+        },
+      }
+    );
+  };
 
   return (
     <ModalLayout open={open} onClose={onClose}>
@@ -50,7 +85,9 @@ function ManageTagsModal({
               label={tag.label}
               color={tag.color}
               deletable
-              onClickDelete={() => deleteTag(tag.id)}
+              onClickDelete={() => onClickDelete(tag.id)}
+              loading={deleteTagMutation.variables?.id === tag.id}
+              destructive
             />
           ))
         ) : (
@@ -81,7 +118,13 @@ function ManageTagsModal({
           >
             {/* Button */}
             <Listbox.Button className="flex w-36 items-center justify-between gap-4 whitespace-nowrap rounded-lg border-2 border-transparent bg-gray-200 px-3 py-1.5 font-semibold text-gray-700 transition-all hover:border-gray-400 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-600 dark:hover:bg-gray-850">
-              {tagColorNames[newTagColor]}
+              {newTagColor ? (
+                tagColorNames[newTagColor]
+              ) : (
+                <span className="text-sm font-normal text-gray-500">
+                  Select color
+                </span>
+              )}
               <CaretUpDownIcon />
             </Listbox.Button>
 
@@ -99,12 +142,13 @@ function ManageTagsModal({
                     size={20}
                     className="ml-1 mr-2 text-blue-500 opacity-0 ui-selected:opacity-100 ui-active:text-blue-600 dark:ui-active:text-blue-400"
                   />
-                  {tagColorNames[color as TagColor]}
+                  {tagColorNames[color as Color]}
                 </Listbox.Option>
               ))}
             </Listbox.Options>
           </Listbox>
 
+          {/* Desktop */}
           <div className="hidden md:block">
             <Button
               icon="plus"
@@ -112,29 +156,25 @@ function ManageTagsModal({
               label="Create tag"
               tooltipPosition="bottom"
               tooltipAlignment="xCenter"
-              onClick={() => {
-                setNewTagLabel("");
-                createNewTag({ newTagColor, newTagLabel });
-              }}
+              onClick={onClickCreate}
               iconOnly
               size="regular"
-              disabled={!newTagLabel}
+              disabled={!newTagLabel || !newTagColor}
+              loading={createTagMutation.isLoading}
             />
           </div>
 
+          {/* Mobile */}
           <div className="block md:hidden">
             <Button
               icon="plus"
               intent="primary"
-              label="Create tag"
+              label="Create"
               tooltipPosition="bottom"
               tooltipAlignment="xCenter"
-              onClick={() => {
-                setNewTagLabel("");
-                createNewTag({ newTagColor, newTagLabel });
-              }}
+              onClick={onClickCreate}
               size="rectangle"
-              disabled={!newTagLabel}
+              disabled={!newTagLabel || !newTagColor}
               reverse
             />
           </div>

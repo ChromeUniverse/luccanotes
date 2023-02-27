@@ -1,6 +1,8 @@
-import { type Note } from "..";
+import { Note, Tag } from "@prisma/client";
+import { NoteWithTags } from "..";
+import { formatDate } from "../utils/dates";
 import Button from "./Button";
-import TagPill, { type Tag } from "./TagPill";
+import TagPill from "./TagPill";
 import Tooltip from "./Tooltip";
 
 function HiddenTagPillContainer({
@@ -87,14 +89,14 @@ function TagPillContainer({
 
 function NoteCard({
   note,
-  tags,
   flipTags = false,
   setSelectedNoteId,
+  dateType = "lastUpdated",
 }: {
-  note: Note;
-  tags: Tag[];
+  note: NoteWithTags;
   flipTags?: boolean;
   setSelectedNoteId: (newSelectedNoteId: string) => void;
+  dateType?: "lastUpdated" | "createdAt";
 }) {
   return (
     <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-[border-color] focus-within:border-blue-600 hover:border-blue-600 dark:bg-gray-950 md:px-7">
@@ -104,11 +106,16 @@ function NoteCard({
           {note.title}
         </h2>
         {/* Last updated */}
-        <p className="pt-2 pb-3 text-gray-500">
-          {/* Last edited {Date.now() - lastUpdated.getTime()} ms ago */}
-          {/* WARNING: Dirty hack to avoid hydration errors */}
-          Just testing
-        </p>
+        {dateType === "lastUpdated" ? (
+          <p className="pt-2 pb-3 text-gray-500">
+            Last edited {formatDate(note.lastUpdated)}
+          </p>
+        ) : (
+          <p className="pt-2 pb-3 text-gray-500">
+            Created {formatDate(note.createdAt)}
+          </p>
+        )}
+
         <TagPillContainer flipTags={flipTags} tags={note.tags} />
       </div>
       <div className="mt-0 flex flex-col items-center gap-1 transition-all group-hover:opacity-100">
@@ -120,7 +127,7 @@ function NoteCard({
           icon="arrow-square-out"
           iconOnly
           size="regular"
-          href="/notes/123"
+          href={`/notes/${note.id}`}
         />
         <Button
           intent="secondary"
@@ -133,8 +140,6 @@ function NoteCard({
           onClick={() => setSelectedNoteId(note.id)}
         />
       </div>
-      {/* Modal */}
-      {/* <NoteOptionsModal open={modalOpen} onClose={setModalOpen} /> */}
     </div>
   );
 }

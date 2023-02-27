@@ -117,8 +117,6 @@ function Navbar({
 }) {
   const { theme, setTheme } = useThemeStore();
 
-  console.log("Navbar session:", session);
-
   return (
     <nav className="flex items-center gap-2 bg-white py-3 px-4 dark:bg-gray-950 md:px-8">
       <Logo session={session} />

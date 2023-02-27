@@ -1,40 +1,56 @@
 import { Dialog, Listbox } from "@headlessui/react";
+import { Tag } from "@prisma/client";
+import { useRouter } from "next/router";
 import { Check } from "phosphor-react";
 import { useState } from "react";
+import { api } from "../../utils/api";
 import Button from "../Button";
 import CaretUpDownIcon from "../CaretUpDownIcon";
 import ModalLayout from "../Layouts/Modal";
-import TagPill, { type Tag } from "../TagPill";
+import TagPill from "../TagPill";
 
 function CreateNoteModal({
   open,
   onClose,
   tags,
-  createNote,
 }: {
   open: boolean;
   onClose: (newOpen: boolean) => void;
   tags: Tag[];
-  // modifier functions
-  createNote: ({
-    noteTitle,
-    noteTags,
-  }: {
-    noteTitle: string;
-    noteTags: Tag[];
-  }) => void;
 }) {
   // modal state
   const [noteTitle, setNoteTitle] = useState("");
   const [noteTags, setNoteTags] = useState<Tag[]>([]);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-
   const tagsAvailable = tags.filter((t) => !noteTags.includes(t));
+
+  // next router
+  const router = useRouter();
+
+  // trpc
+  const utils = api.useContext();
+  const createNoteMutation = api.notes.create.useMutation();
 
   function addTag() {
     if (!selectedTag) return;
     setSelectedTag(null);
     setNoteTags((prevNoteTags) => [...prevNoteTags, selectedTag]);
+  }
+
+  function onClickCreateNote() {
+    createNoteMutation.mutate(
+      { tagIds: noteTags.map((t) => t.id), title: noteTitle },
+      {
+        onSuccess: (createdNote, variables, context) => {
+          utils.notes.getAll.setData(undefined, (oldNotes) =>
+            oldNotes ? [...oldNotes, createdNote] : [createdNote]
+          );
+          void utils.notes.getAll.invalidate();
+          // onClose(false);
+          void router.push(`/notes/${createdNote.id}`);
+        },
+      }
+    );
   }
 
   return (
@@ -149,10 +165,7 @@ function CreateNoteModal({
         label="Create note"
         tooltipPosition="bottom"
         tooltipAlignment="xCenter"
-        onClick={() => {
-          createNote({ noteTags, noteTitle });
-          onClose(false);
-        }}
+        onClick={onClickCreateNote}
         size="rectangle"
         disabled={!noteTitle}
       />

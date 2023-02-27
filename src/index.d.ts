@@ -1,15 +1,3 @@
-export type Note = {
-  id: string;
-  title: string;
-  tags: Tag[];
-  createdAt: Date;
-  lastUpdated: Date;
-};
+import { type Note, type Tag } from "@prisma/client";
 
-export type TagsKeys =
-  | "coding"
-  | "music"
-  | "school"
-  | "general"
-  | "tasks"
-  | "work";
+export type NoteWithTags = Note & { tags: Tag[] };

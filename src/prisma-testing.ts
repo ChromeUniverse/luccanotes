@@ -1,40 +1,90 @@
 import { prisma } from "./server/db";
 import { Prisma } from "@prisma/client";
 
-const userId = "clehia9kk0000wg764sxumbfz";
+// local Postgres
+const userId = "clef30pju0000wgem8fl2rm6u";
+
+// supabase
+// const userId = "clehia9kk0000wg764sxumbfz";
+
+// railway
+// const userId = "clekgk5pq0000wgnbm6xere11";
 
 const tags: Prisma.TagCreateManyArgs["data"] = [
   {
     label: "Coding",
-    color: "RED",
+    color: "red",
     userId,
   },
   {
     label: "Music",
-    color: "SKY",
+    color: "sky",
     userId,
   },
   {
     label: "School",
-    color: "YELLOW",
+    color: "yellow",
     userId,
   },
   {
     label: "General",
-    color: "LIGHT_GRAY",
+    color: "lightGray",
     userId,
   },
   {
     label: "Tasks",
-    color: "VIOLET",
+    color: "violet",
     userId,
   },
   {
     label: "Work",
-    color: "GREEN",
+    color: "green",
+    userId,
+  },
+  {
+    label: "Reading",
+    color: "darkGray",
     userId,
   },
 ];
+
+// const notesList: Note[] = [
+//   {
+//     id: nanoid(),
+//     title: "My First Note",
+//     lastUpdated: subtractSeconds(defaultDate, 20),
+//     createdAt: subtractSeconds(defaultDate, 30),
+//     tags: [tags.coding, tags.music, tags.work, tags.general],
+//   },
+//   {
+//     id: nanoid(),
+//     title: "Second Note",
+//     lastUpdated: subtractSeconds(defaultDate, 30),
+//     createdAt: subtractSeconds(defaultDate, 20),
+//     tags: [tags.work, tags.general, tags.coding, tags.music],
+//   },
+//   {
+//     id: nanoid(),
+//     title: "Note Number 3",
+//     lastUpdated: defaultDate,
+//     createdAt: subtractSeconds(defaultDate, 10),
+//     tags: [tags.school, tags.tasks, tags.work, tags.general, tags.coding],
+//   },
+//   {
+//     id: nanoid(),
+//     title: "The 4th Note",
+//     lastUpdated: subtractSeconds(defaultDate, 10),
+//     createdAt: defaultDate,
+//     tags: [
+//       tags.coding,
+//       tags.tasks,
+//       tags.work,
+//       tags.general,
+//       tags.music,
+//       tags.school,
+//     ],
+//   },
+// ];
 
 const notes: Prisma.NoteCreateArgs["data"][] = [
   // {
@@ -91,8 +141,8 @@ async function main() {
   // users
   // void (await getUsers());
   // tags
-  // void (await seedTags());
-  // void (await getTags());
+  void (await seedTags());
+  void (await getTags());
   // void (await deleteTags());
   // notes
   // void (await seedNotes());
