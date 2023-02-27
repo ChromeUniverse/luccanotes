@@ -87,6 +87,7 @@ function ManageTagsModal({
               deletable
               onClickDelete={() => onClickDelete(tag.id)}
               loading={deleteTagMutation.variables?.id === tag.id}
+              destructive
             />
           ))
         ) : (

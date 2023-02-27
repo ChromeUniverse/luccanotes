@@ -9,6 +9,7 @@ import {
   MagnifyingGlass,
 } from "phosphor-react";
 import { useState } from "react";
+import useSearchStore from "../stores/search";
 import Button from "./Button";
 import CaretUpDownIcon from "./CaretUpDownIcon";
 import TagPill from "./TagPill";
@@ -22,17 +23,9 @@ const sortFieldLabels = {
 } as const;
 export type SortField = keyof typeof sortFieldLabels;
 
-function SortingSection({
-  sortField,
-  setSortField,
-  sortOrder,
-  setSortOrder,
-}: {
-  sortField: SortField;
-  setSortField: (newSortField: SortField) => void;
-  sortOrder: "asc" | "desc";
-  setSortOrder: (newSortOrder: "asc" | "desc") => void;
-}) {
+function SortingSection() {
+  const { sortField, setSortField, sortOrder, setSortOrder } = useSearchStore();
+
   return (
     <div className="space-y-3">
       <h3 className="mb-0 text-lg font-semibold text-gray-900 dark:text-gray-300">
@@ -127,37 +120,44 @@ function SortingSection({
 }
 
 function TagsSection({ tags }: { tags: Tag[] }) {
+  const { selectedTagIds, toggleSelectedTag } = useSearchStore();
+
+  console.log("selectedTagIds is", selectedTagIds);
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <p className="text-lg font-semibold text-gray-900 dark:text-gray-300">
-        Tags
+        Filter by Tags{" "}
+        <span className="ml-3 text-base font-normal text-gray-400">
+          Click tags to toggle filter
+        </span>
       </p>
-      <div className="flex flex-wrap gap-1">
-        {tags.map(({ id, label, color }, index) => (
-          <TagPill key={id} label={label} color={color} />
+      <div className="flex flex-wrap gap-x-2 gap-y-2">
+        {tags.map(({ id, label, color }) => (
+          <div
+            key={id}
+            className="cursor-pointer"
+            onClick={() => toggleSelectedTag(id)}
+          >
+            <TagPill
+              label={label}
+              color={color}
+              dark={
+                selectedTagIds.length === 0
+                  ? false
+                  : !selectedTagIds.includes(id)
+              }
+            />
+          </div>
         ))}
       </div>
     </div>
   );
 }
 
-function SearchBar({
-  tags,
-  searchInput,
-  setSearchInput,
-  sortField,
-  setSortField,
-  sortOrder,
-  setSortOrder,
-}: {
-  tags: Tag[];
-  searchInput: string;
-  setSearchInput: (newSearchInput: string) => void;
-  sortField: SortField;
-  setSortField: (newSortField: SortField) => void;
-  sortOrder: "asc" | "desc";
-  setSortOrder: (newSortOrder: "asc" | "desc") => void;
-}) {
+function SearchBar({ tags }: { tags: Tag[] }) {
+  const { searchInput, setSearchInput } = useSearchStore();
+
   return (
     <div className="relative flex w-full items-center rounded-lg border-2 border-transparent bg-white py-1.5 pl-5 pr-3 transition-[border-color] focus-within:border-blue-600 dark:bg-gray-950">
       <MagnifyingGlass className="text-gray-400" size={20} weight="bold" />
@@ -215,13 +215,7 @@ function SearchBar({
           leaveTo="opacity-0"
         >
           <Popover.Panel className="absolute right-0 left-0 top-full z-10 mt-3 flex flex-col gap-5 rounded-lg bg-gray-100 px-6 py-4 drop-shadow-lg ui-open:scale-100 dark:bg-gray-800">
-            <SortingSection
-              sortField={sortField}
-              setSortField={setSortField}
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
-            />
-
+            <SortingSection />
             <TagsSection tags={tags} />
           </Popover.Panel>
         </Transition>

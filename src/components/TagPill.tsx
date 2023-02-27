@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Spinner, X } from "phosphor-react";
 import Tooltip from "./Tooltip";
 
-const tagPillStyles = cva("py-1 px-4", {
+const tagPillStyles = cva("py-1 px-4 rounded-full select-none", {
   variants: {
     color: {
       sky: "bg-sky-200 text-sky-700",
@@ -15,12 +15,15 @@ const tagPillStyles = cva("py-1 px-4", {
       darkGray: "bg-gray-700 text-gray-300",
     },
     deletable: {
-      true: "rounded-l-full",
-      false: "rounded-full",
+      true: "rounded-r-none",
+    },
+    dark: {
+      true: "brightness-50",
     },
   },
   defaultVariants: {
     deletable: false,
+    dark: false,
   },
 });
 
@@ -28,6 +31,7 @@ type TagPillProps = {
   label: string;
   onClickDelete?: (onClickDeleteProps: any) => void;
   loading?: boolean;
+  destructive?: boolean;
 };
 
 type TagPillVariantProps = VariantProps<typeof tagPillStyles>;
@@ -54,10 +58,18 @@ export const tagColorNames: Record<Color, string> = {
   darkGray: "Dark Gray",
 } as const;
 
-function TagPill({ label, color, deletable, onClickDelete, loading }: Props) {
+function TagPill({
+  label,
+  color,
+  deletable,
+  onClickDelete,
+  loading = false,
+  destructive = false,
+  dark,
+}: Props) {
   return (
     <div className="flex">
-      <div className={tagPillStyles({ color, deletable })}>{label}</div>
+      <div className={tagPillStyles({ color, deletable, dark })}>{label}</div>
       {deletable && (
         <div className="relative">
           <button
@@ -81,7 +93,7 @@ function TagPill({ label, color, deletable, onClickDelete, loading }: Props) {
           </button>
           {!loading && (
             <Tooltip tooltipPosition="bottom" alignment="xCenter">
-              <span>Delete tag</span>
+              <span>{destructive ? "Delete tag" : "Remove tag"}</span>
             </Tooltip>
           )}
         </div>

@@ -30,6 +30,7 @@ import { appRouter } from "../../server/api/root";
 import { Note, Prisma, Tag } from "@prisma/client";
 import { prisma } from "../../server/db";
 import { NoteWithTags } from "../..";
+import useSearchStore from "../../stores/search";
 
 const defaultDate = new Date();
 
@@ -80,7 +81,9 @@ function NotesPage(
   // fetch data
   const tagsQuery = api.tags.getAll.useQuery();
   const notesQuery = api.notes.getAll.useQuery();
-  const notes = notesQuery.data ?? [];
+  const notes = useMemo(() => {
+    return notesQuery.data ?? [];
+  }, [notesQuery.data]);
   const tags = tagsQuery.data ?? [];
 
   // modals state
@@ -89,28 +92,37 @@ function NotesPage(
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   // Search parameters state
-  const [searchInput, setSearchInput] = useState("");
-  const [sortField, setSortField] = useState<SortField>("title");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  // const [searchInput, setSearchInput] = useState("");
+  // const [sortField, setSortField] = useState<SortField>("title");
+  // const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  // const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+
+  const { searchInput, sortField, sortOrder, selectedTagIds } =
+    useSearchStore();
 
   const visibleNotes = useMemo(() => {
     // sort notes
     const sortedNotes = sortNotes(notes, sortField, sortOrder);
+
+    // match selected tags
+    const tagFilteredNotes = sortedNotes.filter((note) => {
+      // pass all notes if there are no selected tags
+      if (selectedTagIds.length === 0) return true;
+      // check if `selectedTagIds` is a subset of `noteTagIds`
+      const noteTagIds = note.tags.map((t) => t.id);
+      for (const selectedTagId of selectedTagIds) {
+        if (!noteTagIds.includes(selectedTagId)) return false;
+      }
+      return true;
+    });
+
     // match note title
-    return sortedNotes.filter((note) =>
+    const titleFilteredNotes = tagFilteredNotes.filter((note) =>
       note.title.toLowerCase().includes(searchInput.toLowerCase())
     );
-  }, [searchInput, sortField, sortOrder, notes]);
 
-  const searchBarProps = {
-    tags,
-    searchInput,
-    setSearchInput,
-    sortField,
-    setSortField,
-    sortOrder,
-    setSortOrder,
-  };
+    return titleFilteredNotes;
+  }, [searchInput, sortField, sortOrder, notes, selectedTagIds]);
 
   if (!notes && !tags) return <span>Loading...</span>;
 
@@ -118,7 +130,7 @@ function NotesPage(
     <PageLayout container session={session}>
       {/* Top row */}
       <div className="flex gap-3">
-        <SearchBar {...searchBarProps} />
+        <SearchBar tags={tags} />
         <div className="hidden gap-3 md:flex">
           <Button
             intent="secondary"
@@ -153,12 +165,21 @@ function NotesPage(
                 index === visibleNotes.length - 1 && visibleNotes.length >= 3
               }
               setSelectedNoteId={setSelectedNoteId}
+              dateType={sortField === "createdAt" ? "createdAt" : "lastUpdated"}
             />
           ))}
         </div>
-      ) : (
+      ) : selectedTagIds.length === 0 && !searchInput ? (
         <p className="mt-20 text-center text-lg text-gray-400 dark:text-gray-600">
           No notes to see here.
+          <br />
+          Try clicking{" "}
+          <span className="font-semibold text-blue-600">New note</span> to
+          create one!
+        </p>
+      ) : (
+        <p className="mt-20 text-center text-lg text-gray-400 dark:text-gray-600">
+          No notes match these filters.
           <br />
           Try clicking{" "}
           <span className="font-semibold text-blue-600">New note</span> to
