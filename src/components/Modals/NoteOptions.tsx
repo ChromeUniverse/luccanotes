@@ -1,46 +1,25 @@
 import { Dialog, Listbox } from "@headlessui/react";
 import { Check } from "phosphor-react";
 import { useState } from "react";
-import { type Note } from "../..";
+import { type Tag, type Note } from "@prisma/client";
 import Button from "../Button";
 import CaretUpDownIcon from "../CaretUpDownIcon";
 import ModalLayout from "../Layouts/Modal";
-import TagPill, { type Tag } from "../TagPill";
+import TagPill from "../TagPill";
 import DeleteNoteModal from "./DeleteNote";
+import { NoteWithTags } from "../..";
+import { api } from "../../utils/api";
 
 function NoteOptionsModal({
   open,
   onClose,
   selectedNote,
-  setSelectedNoteId,
   tags,
-  renameNote,
-  deleteNote,
-  addTagToNote,
-  deleteTagFromNote,
 }: {
   open: boolean;
   onClose: (newOpen: boolean) => void;
-  selectedNote: null | Note;
-  setSelectedNoteId: (newId: string | null) => void;
+  selectedNote: null | NoteWithTags;
   tags: Tag[];
-  // modifier functions
-  renameNote: ({
-    newNoteTitle,
-    noteId,
-  }: {
-    newNoteTitle: string;
-    noteId: string;
-  }) => void;
-  deleteNote: (noteId: string) => void;
-  addTagToNote: ({ tagId, noteId }: { tagId: string; noteId: string }) => void;
-  deleteTagFromNote: ({
-    tagId,
-    noteId,
-  }: {
-    tagId: string;
-    noteId: string;
-  }) => void;
 }) {
   // modal state
   const [noteTitle, setNoteTitle] = useState(
@@ -49,7 +28,79 @@ function NoteOptionsModal({
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const tagsAvailable = tags.filter((t) => !selectedNote?.tags.includes(t));
+  const tagsAvailable = selectedNote
+    ? tags.filter((t) => {
+        const noteTagIds = selectedNote.tags.map((noteTag) => noteTag.id);
+        return !noteTagIds.includes(t.id);
+      })
+    : tags;
+
+  console.log("tagsAvailable:", tagsAvailable);
+
+  // trpc
+  const renameMutation = api.notes.rename.useMutation();
+  const addTagMutation = api.notes.addTag.useMutation();
+  const removeTagMutation = api.notes.removeTag.useMutation();
+  const utils = api.useContext();
+
+  // TODO: implement this function
+  function onClickRenameNote() {
+    //
+
+    if (!selectedNote) return;
+
+    renameMutation.mutate(
+      { id: selectedNote.id, newTitle: noteTitle },
+      {
+        onSuccess: (updatedNote, variables, context) => {
+          utils.notes.getAll.setData(undefined, (oldNotes) =>
+            oldNotes?.map((oldNote) =>
+              oldNote.id === variables.id ? updatedNote : oldNote
+            )
+          );
+          void utils.notes.invalidate();
+        },
+      }
+    );
+  }
+
+  // TODO: implement this function
+  function onClickAddTagToNote() {
+    if (!selectedNote || !selectedTag) return;
+
+    addTagMutation.mutate(
+      { id: selectedNote.id, tagId: selectedTag.id },
+      {
+        onSuccess: (updatedNote, variables, context) => {
+          utils.notes.getAll.setData(undefined, (oldNotes) =>
+            oldNotes?.map((oldNote) =>
+              oldNote.id === variables.id ? updatedNote : oldNote
+            )
+          );
+          void utils.notes.invalidate();
+          setSelectedTag(null);
+        },
+      }
+    );
+  }
+
+  function onClickRemoveTag(tagId: string) {
+    if (!selectedNote) return;
+
+    removeTagMutation.mutate(
+      { id: selectedNote.id, tagId },
+      {
+        onSuccess: (updatedNote, variables, context) => {
+          utils.notes.getAll.setData(undefined, (oldNotes) =>
+            oldNotes?.map((oldNote) =>
+              oldNote.id === updatedNote.id ? updatedNote : oldNote
+            )
+          );
+          void utils.notes.invalidate();
+        },
+      }
+    );
+  }
 
   if (selectedNote === null) return <div></div>;
 
@@ -81,12 +132,11 @@ function NoteOptionsModal({
           label="Rename note"
           tooltipPosition="bottom"
           tooltipAlignment="xCenter"
-          onClick={() =>
-            renameNote({ newNoteTitle: noteTitle, noteId: selectedNote.id })
-          }
+          onClick={onClickRenameNote}
           iconOnly
           size="regular"
           disabled={!noteTitle}
+          loading={renameMutation.isLoading}
         />
       </div>
 
@@ -102,8 +152,10 @@ function NoteOptionsModal({
               label={tag.label}
               color={tag.color}
               deletable
-              onClickDelete={() =>
-                deleteTagFromNote({ noteId: selectedNote.id, tagId: tag.id })
+              onClickDelete={() => onClickRemoveTag(tag.id)}
+              loading={
+                removeTagMutation.isLoading &&
+                removeTagMutation.variables?.tagId === tag.id
               }
             />
           ))
@@ -163,21 +215,17 @@ function NoteOptionsModal({
               label="Add tag to note"
               tooltipPosition="bottom"
               tooltipAlignment="xCenter"
-              onClick={() => {
-                setSelectedTag(null);
-                addTagToNote({
-                  noteId: selectedNote.id,
-                  tagId: selectedTag?.id as string,
-                });
-              }}
+              onClick={onClickAddTagToNote}
               iconOnly
               size="regular"
               disabled={!selectedTag}
+              loading={addTagMutation.isLoading}
             />
           </div>
         </>
       )}
 
+      {/* Danger Zone */}
       <h3 className="text-xl font-normal text-gray-600 dark:text-gray-400">
         Danger zone
       </h3>
@@ -190,13 +238,13 @@ function NoteOptionsModal({
         onClick={() => setDeleteModalOpen(true)}
         size="rectangle"
       />
+
+      {/* Delete note modal */}
       {deleteModalOpen && (
         <DeleteNoteModal
           open={deleteModalOpen}
           onClose={setDeleteModalOpen}
-          deleteNote={deleteNote}
           selectedNote={selectedNote}
-          setSelectedNoteId={setSelectedNoteId}
         />
       )}
     </ModalLayout>

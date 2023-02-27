@@ -1,6 +1,8 @@
 import { Dialog } from "@headlessui/react";
+import { useRouter } from "next/router";
 import React from "react";
-import { Note } from "../..";
+import { type NoteWithTags } from "../..";
+import { api } from "../../utils/api";
 import Button from "../Button";
 import ModalLayout from "../Layouts/Modal";
 
@@ -8,15 +10,33 @@ function DeleteNoteModal({
   open,
   onClose,
   selectedNote,
-  setSelectedNoteId,
-  deleteNote,
 }: {
   open: boolean;
   onClose: (newOpen: boolean) => void;
-  selectedNote: Note;
-  setSelectedNoteId: (newId: string | null) => void;
-  deleteNote: (noteId: string) => void;
+  selectedNote: NoteWithTags;
 }) {
+  // next router
+  const router = useRouter();
+
+  // trpc
+  const deleteMutation = api.notes.delete.useMutation();
+  const utils = api.useContext();
+
+  // TODO: implement this function
+  function onClickDeleteNote() {
+    deleteMutation.mutate(
+      { id: selectedNote.id },
+      {
+        onSuccess: (deletedNote, variables, context) => {
+          utils.notes.getAll.setData(undefined, (oldNotes) =>
+            oldNotes?.filter((oldNote) => oldNote.id !== deletedNote.id)
+          );
+          void utils.notes.getAll.invalidate();
+          void router.push("/notes");
+        },
+      }
+    );
+  }
   return (
     <ModalLayout open={open} onClose={onClose}>
       {/* Title & Description */}
@@ -37,10 +57,7 @@ function DeleteNoteModal({
         label="Yes, delete this note"
         tooltipPosition="right"
         tooltipAlignment="yCenter"
-        onClick={() => {
-          setSelectedNoteId(null);
-          deleteNote(selectedNote.id);
-        }}
+        onClick={onClickDeleteNote}
         size="rectangle"
       />
     </ModalLayout>
