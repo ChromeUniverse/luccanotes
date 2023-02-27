@@ -1,4 +1,5 @@
 import { Listbox, Popover, RadioGroup, Transition } from "@headlessui/react";
+import { Tag } from "@prisma/client";
 import {
   ArrowCircleDown,
   ArrowCircleUp,
@@ -10,7 +11,7 @@ import {
 import { useState } from "react";
 import Button from "./Button";
 import CaretUpDownIcon from "./CaretUpDownIcon";
-import TagPill, { Tag } from "./TagPill";
+import TagPill from "./TagPill";
 import Tooltip from "./Tooltip";
 
 // Sort fields
@@ -132,8 +133,8 @@ function TagsSection({ tags }: { tags: Tag[] }) {
         Tags
       </p>
       <div className="flex flex-wrap gap-1">
-        {tags.map((tag, index) => (
-          <TagPill key={index} label={tag.label} color={tag.color} />
+        {tags.map(({ id, label, color }, index) => (
+          <TagPill key={id} label={label} color={color} />
         ))}
       </div>
     </div>

@@ -1,6 +1,8 @@
-import { type Note } from "..";
+import { Note, Tag } from "@prisma/client";
+import { NoteWithTags } from "..";
+import { formatDate } from "../utils/dates";
 import Button from "./Button";
-import TagPill, { type Tag } from "./TagPill";
+import TagPill from "./TagPill";
 import Tooltip from "./Tooltip";
 
 function HiddenTagPillContainer({
@@ -87,12 +89,10 @@ function TagPillContainer({
 
 function NoteCard({
   note,
-  tags,
   flipTags = false,
   setSelectedNoteId,
 }: {
-  note: Note;
-  tags: Tag[];
+  note: NoteWithTags;
   flipTags?: boolean;
   setSelectedNoteId: (newSelectedNoteId: string) => void;
 }) {
@@ -105,9 +105,7 @@ function NoteCard({
         </h2>
         {/* Last updated */}
         <p className="pt-2 pb-3 text-gray-500">
-          {/* Last edited {Date.now() - lastUpdated.getTime()} ms ago */}
-          {/* WARNING: Dirty hack to avoid hydration errors */}
-          Just testing
+          Last edited {formatDate(note.lastUpdated)}
         </p>
         <TagPillContainer flipTags={flipTags} tags={note.tags} />
       </div>
@@ -120,7 +118,7 @@ function NoteCard({
           icon="arrow-square-out"
           iconOnly
           size="regular"
-          href="/notes/123"
+          href={`/notes/${note.id}`}
         />
         <Button
           intent="secondary"
@@ -133,8 +131,6 @@ function NoteCard({
           onClick={() => setSelectedNoteId(note.id)}
         />
       </div>
-      {/* Modal */}
-      {/* <NoteOptionsModal open={modalOpen} onClose={setModalOpen} /> */}
     </div>
   );
 }
