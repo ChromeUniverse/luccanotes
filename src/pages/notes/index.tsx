@@ -6,6 +6,7 @@ import { type Session } from "next-auth";
 import { api } from "../../utils/api";
 import {
   GetServerSideProps,
+  GetServerSidePropsContext,
   InferGetServerSidePropsType,
   type NextPage,
 } from "next";
@@ -18,16 +19,17 @@ import { nanoid } from "nanoid";
 import PageLayout from "../../components/Layouts/Page";
 import NoteCard from "../../components/NoteCard";
 import Button from "../../components/Button";
-import { type Tag, type TagColor } from "../../components/TagPill";
+import { type TagColor } from "../../components/TagPill";
 import SearchBar, { type SortField } from "../../components/SearchBar";
 
-import { type TagsKeys, type Note } from "../..";
 import ManageTagsModal from "../../components/Modals/ManageTags";
 import NoteOptionsModal from "../../components/Modals/NoteOptions";
 import CreateNoteModal from "../../components/Modals/CreateNote";
 import { getServerAuthSession } from "../../server/auth";
-
-const TagsList = Object.values(tags);
+import { appRouter } from "../../server/api/root";
+import { Note, Prisma, Tag } from "@prisma/client";
+import { prisma } from "../../server/db";
+import { NoteWithTags } from "../..";
 
 const defaultDate = new Date();
 
@@ -37,49 +39,11 @@ function subtractSeconds(date: Date, seconds: number) {
   return bufferDate;
 }
 
-const notesList: Note[] = [
-  {
-    id: nanoid(),
-    title: "My First Note",
-    lastUpdated: subtractSeconds(defaultDate, 20),
-    createdAt: subtractSeconds(defaultDate, 30),
-    tags: [tags.coding, tags.music, tags.work, tags.general],
-  },
-  {
-    id: nanoid(),
-    title: "Second Note",
-    lastUpdated: subtractSeconds(defaultDate, 30),
-    createdAt: subtractSeconds(defaultDate, 20),
-    tags: [tags.work, tags.general, tags.coding, tags.music],
-  },
-  {
-    id: nanoid(),
-    title: "Note Number 3",
-    lastUpdated: defaultDate,
-    createdAt: subtractSeconds(defaultDate, 10),
-    tags: [tags.school, tags.tasks, tags.work, tags.general, tags.coding],
-  },
-  {
-    id: nanoid(),
-    title: "The 4th Note",
-    lastUpdated: subtractSeconds(defaultDate, 10),
-    createdAt: defaultDate,
-    tags: [
-      tags.coding,
-      tags.tasks,
-      tags.work,
-      tags.general,
-      tags.music,
-      tags.school,
-    ],
-  },
-];
-
 function sortNotes(
-  notes: Note[],
+  notes: NoteWithTags[],
   sortField: SortField,
   sortOrder: "asc" | "desc"
-): Note[] {
+) {
   switch (sortField) {
     case "title":
       return notes //
@@ -107,13 +71,17 @@ function sortNotes(
   }
 }
 
-function NotesPage() {
+function NotesPage(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
   // const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const session = useSession().data as Session;
 
-  // data
-  const [tags, setTags] = useState<Tag[]>(TagsList);
-  const [notes, setNotes] = useState<Note[]>(notesList);
+  // fetch data
+  const tagsQuery = api.tags.getAll.useQuery();
+  const notesQuery = api.notes.getAll.useQuery();
+  const notes = notesQuery.data ?? [];
+  const tags = tagsQuery.data ?? [];
 
   // modals state
   const [tagModalOpen, setTagModalOpen] = useState(false);
@@ -135,7 +103,7 @@ function NotesPage() {
   }, [searchInput, sortField, sortOrder, notes]);
 
   const searchBarProps = {
-    tags: Object.values(tags),
+    tags,
     searchInput,
     setSearchInput,
     sortField,
@@ -144,103 +112,7 @@ function NotesPage() {
     setSortOrder,
   };
 
-  function createNewTag({
-    newTagLabel,
-    newTagColor,
-  }: {
-    newTagLabel: string;
-    newTagColor: TagColor;
-  }) {
-    if (!newTagLabel) return;
-    const newTag: Tag = {
-      id: nanoid(),
-      label: newTagLabel,
-      color: newTagColor,
-    };
-    setTags((prevTags) => [...prevTags, newTag]);
-  }
-
-  function deleteTag(targetId: string) {
-    setTags((prevTags) => prevTags.filter((tag) => tag.id !== targetId));
-    setNotes((prevNotes) =>
-      prevNotes.map((note) => ({
-        ...note,
-        tags: note.tags.filter((tag: Tag) => tag.id !== targetId),
-      }))
-    );
-  }
-
-  function renameNote({
-    newNoteTitle,
-    noteId,
-  }: {
-    newNoteTitle: string;
-    noteId: string;
-  }) {
-    setNotes((prevNotes) =>
-      prevNotes.map((note) =>
-        note.id === noteId ? { ...note, title: newNoteTitle } : note
-      )
-    );
-  }
-
-  function deleteNote(noteId: string) {
-    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
-  }
-
-  function addTagToNote({ tagId, noteId }: { tagId: string; noteId: string }) {
-    setNotes((prevNotes) =>
-      prevNotes.map((note) => {
-        if (note.id !== noteId) return note;
-        if (note.tags.map((t: Tag) => t.id).includes(tagId)) {
-          throw new Error(`Note ID ${noteId} already has tag ID ${tagId}`);
-        }
-        return {
-          ...note,
-          tags: [...(note.tags as Tag[]), tags.find((t) => t.id === tagId)],
-        };
-      })
-    );
-  }
-
-  function deleteTagFromNote({
-    tagId,
-    noteId,
-  }: {
-    tagId: string;
-    noteId: string;
-  }) {
-    setNotes((prevNotes) =>
-      prevNotes.map((note) => {
-        if (note.id !== noteId) return note;
-        if (!note.tags.map((t: Tag) => t.id).includes(tagId)) {
-          throw new Error(`Note ID ${noteId} doesn't have tag ID ${tagId}`);
-        }
-        return {
-          ...note,
-          tags: note.tags.filter((t: Tag) => t.id !== tagId),
-        };
-      })
-    );
-  }
-
-  function createNote({
-    noteTitle,
-    noteTags,
-  }: {
-    noteTitle: string;
-    noteTags: Tag[];
-  }) {
-    const newNote: Note = {
-      id: nanoid(),
-      title: noteTitle,
-      tags: noteTags,
-      createdAt: new Date(),
-      lastUpdated: new Date(),
-    };
-
-    setNotes((prevNotes) => [...prevNotes, newNote]);
-  }
+  if (!notes && !tags) return <span>Loading...</span>;
 
   return (
     <PageLayout container session={session}>
@@ -271,19 +143,28 @@ function NotesPage() {
         </div>
       </div>
       {/* Note card container */}
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {visibleNotes.map((note, index) => (
-          <NoteCard
-            key={note.id}
-            note={note}
-            tags={tags}
-            flipTags={
-              index === visibleNotes.length - 1 && visibleNotes.length >= 3
-            }
-            setSelectedNoteId={setSelectedNoteId}
-          />
-        ))}
-      </div>
+      {visibleNotes.length ? (
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {visibleNotes.map((note, index) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              flipTags={
+                index === visibleNotes.length - 1 && visibleNotes.length >= 3
+              }
+              setSelectedNoteId={setSelectedNoteId}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="mt-20 text-center text-lg text-gray-400 dark:text-gray-600">
+          No notes to see here.
+          <br />
+          Try clicking{" "}
+          <span className="font-semibold text-blue-600">New note</span> to
+          create one!
+        </p>
+      )}
       {/* Mobile button container */}
       <div className="fixed right-0 bottom-0 flex flex-col gap-2 px-5 py-5 md:hidden">
         <Button //
@@ -312,24 +193,20 @@ function NotesPage() {
         />
       </div>
       {/* Modals */}
-      <ManageTagsModal
-        open={tagModalOpen}
-        onClose={setTagModalOpen}
-        tags={tags}
-        createNewTag={createNewTag}
-        deleteTag={deleteTag}
-      />
+      {tagModalOpen && (
+        <ManageTagsModal
+          open={tagModalOpen}
+          onClose={setTagModalOpen}
+          tags={tags}
+        />
+      )}
       {selectedNoteId && (
         <NoteOptionsModal
           open={selectedNoteId !== null}
           onClose={() => setSelectedNoteId(null)}
-          setSelectedNoteId={setSelectedNoteId}
-          selectedNote={notes.find((n) => n.id === selectedNoteId) ?? null}
+          // setSelectedNoteId={setSelectedNoteId}
+          selectedNote={notes?.find((n) => n.id === selectedNoteId) ?? null}
           tags={tags}
-          renameNote={renameNote}
-          deleteNote={deleteNote}
-          addTagToNote={addTagToNote}
-          deleteTagFromNote={deleteTagFromNote}
         />
       )}
       {createNoteModalOpen && (
@@ -337,19 +214,16 @@ function NotesPage() {
           open={createNoteModalOpen}
           onClose={setCreateNoteModalOpen}
           tags={tags}
-          createNote={createNote}
         />
       )}
     </PageLayout>
   );
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  session: Session;
-}> = async (context) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
   const session = await getServerAuthSession(context);
-
-  console.log("getServerSideProps session:", session);
 
   if (!session) {
     return {

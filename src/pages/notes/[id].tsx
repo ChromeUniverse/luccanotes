@@ -2,7 +2,12 @@
 import mdStyles from "../styles/markdown.module.css";
 
 // next & react
-import { GetServerSideProps, type NextPage } from "next";
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType,
+  type NextPage,
+} from "next";
 import { Note } from "phosphor-react";
 import { memo, useCallback, useState } from "react";
 import { useDebounce } from "use-debounce";
@@ -43,6 +48,13 @@ import {
 import { getServerAuthSession } from "../../server/auth";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
+import { prisma } from "../../server/db";
+import { z } from "zod";
+import { deserialize, serialize } from "superjson";
+import { NoteWithTags } from "../..";
+import NoteOptionsModal from "../../components/Modals/NoteOptions";
+import { api } from "../../utils/api";
+import { formatDate } from "../../utils/dates";
 
 const markdownSample = `# Heading 1
 
@@ -148,13 +160,24 @@ const MarkdownPreview = ({
 
 const MemoedMarkdownPreview = memo(MarkdownPreview);
 
-const NotePage: NextPage = () => {
+const NotePage = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
+  // zustand store
+  const { theme } = useThemeStore();
+
+  // nextAuth
+  const session = useSession().data as Session;
+
+  // trpc
+  const noteQuery = api.notes.getSingle.useQuery({ id: props.noteId });
+  const tagsQuery = api.tags.getAll.useQuery();
+
+  // editor state
   const [previewOpen, setPreviewOpen] = useState(true);
   const [editorContent, setEditorContent] = useState(markdownSample);
   const [debouncedEditorContent] = useDebounce(editorContent, 500);
-
-  const { theme } = useThemeStore();
-  const session = useSession().data as Session;
+  const [modalOpen, setModalOpen] = useState(false);
 
   const onEditorChange = useCallback(
     (value: string, viewUpdate: ViewUpdate) => {
@@ -163,8 +186,13 @@ const NotePage: NextPage = () => {
     []
   );
 
+  if (!noteQuery.data || !tagsQuery.data) return <div>Loading...</div>;
+
+  const note = noteQuery.data;
+  const tags = tagsQuery.data;
+
   return (
-    <PageLayout noteTitle="My First Note" session={session}>
+    <PageLayout noteTitle={note.title} session={session}>
       <div
         className={`grid w-full ${previewOpen ? "grid-cols-2" : "grid-cols-1"}`}
       >
@@ -177,7 +205,9 @@ const NotePage: NextPage = () => {
               <span className="font-semibold">Editor</span>
             </div>
             <div className="flex items-center gap-6">
-              <span className="text-sm">Last edited 5 min ago</span>
+              <span className="text-sm">
+                Last edited {formatDate(note.lastUpdated)}
+              </span>
               <div className="flex items-center gap-0">
                 <Button
                   icon="note-pencil-sm"
@@ -187,6 +217,7 @@ const NotePage: NextPage = () => {
                   tooltipAlignment="xCenter"
                   tooltipPosition="bottom"
                   size="regular"
+                  onClick={() => setModalOpen(true)}
                 />
                 {previewOpen ? (
                   <Button
@@ -257,17 +288,26 @@ const NotePage: NextPage = () => {
           </section>
         )}
       </div>
+
+      {/* Modal */}
+      {modalOpen && (
+        <NoteOptionsModal
+          open={modalOpen}
+          onClose={setModalOpen}
+          // setSelectedNoteId={note.id}
+          selectedNote={note}
+          tags={tags}
+        />
+      )}
     </PageLayout>
   );
 };
 
-export const getServerSideProps: GetServerSideProps<{
-  session: Session;
-}> = async (context) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  // check if user is logged in
   const session = await getServerAuthSession(context);
-
-  console.log("getServerSideProps session:", session);
-
   if (!session) {
     return {
       redirect: {
@@ -277,8 +317,44 @@ export const getServerSideProps: GetServerSideProps<{
     };
   }
 
+  // parse note ID
+  const noteIdParser = z.string().safeParse(context.query.id);
+  if (!noteIdParser.success) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
+
+  // check if this note actually exists
+  const note = await prisma.note.findUnique({
+    where: { id: noteIdParser.data },
+    select: { id: true, userId: true },
+  });
+
+  if (!note) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
+
+  // check that user owns this note
+  if (note.userId !== session.user.id) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
+
   // Pass data to the page via props
-  return { props: { session } };
+  return { props: { session, noteId: note.id } };
 };
 
 export default NotePage;
