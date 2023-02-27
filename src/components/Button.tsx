@@ -11,6 +11,8 @@ import {
   PencilSimple,
   Plus,
   SignIn,
+  Spinner,
+  SpinnerGap,
   Tag,
   Trash,
 } from "phosphor-react";
@@ -82,24 +84,6 @@ type ButtonIconNames =
   | "download"
   | "sign-in";
 
-// Base Button Props
-type ButtonProps = {
-  icon?: ButtonIconNames;
-  label: string;
-  iconOnly?: boolean;
-  tooltipPosition: TooltipPosition;
-  tooltipAlignment: TooltipAlignment;
-  onClick?: (onClickProps: unknown) => void;
-  href?: string;
-};
-
-// Merged props
-type buttonVariantsProps = VariantProps<typeof buttonStyles>;
-interface Props
-  extends ButtonProps,
-    Omit<buttonVariantsProps, "intent">,
-    Required<Pick<buttonVariantsProps, "intent">> {}
-
 // Icons and styling props
 // const IconProps: IconProps = { size: 28, weight: "bold" };
 const icons: Record<ButtonIconNames, JSX.Element> = {
@@ -118,6 +102,25 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   "sign-in": <SignIn size={24} />,
 } as const;
 
+// Base Button Props
+type ButtonProps = {
+  icon?: ButtonIconNames;
+  label: string;
+  iconOnly?: boolean;
+  tooltipPosition: TooltipPosition;
+  tooltipAlignment: TooltipAlignment;
+  onClick?: (onClickProps: unknown) => void;
+  href?: string;
+  loading?: boolean;
+};
+
+// Merged props
+type buttonVariantsProps = VariantProps<typeof buttonStyles>;
+interface Props
+  extends ButtonProps,
+    Omit<buttonVariantsProps, "intent">,
+    Required<Pick<buttonVariantsProps, "intent">> {}
+
 function Button({
   // markup props
   icon,
@@ -127,6 +130,7 @@ function Button({
   onClick,
   iconOnly = false,
   href,
+  loading,
   // styling props
   intent,
   roundedFull,
@@ -154,7 +158,7 @@ function Button({
         </Link>
       ) : (
         <button
-          disabled={disabled ?? false}
+          disabled={loading ? true : disabled ?? false}
           className={buttonStyles({
             intent,
             roundedFull,
@@ -165,7 +169,11 @@ function Button({
           })}
           onClick={onClick}
         >
-          {icon && icons[icon]}
+          {loading ? (
+            <Spinner className="animate-spin" size={28} weight="bold" />
+          ) : (
+            icon && icons[icon]
+          )}
           {!iconOnly && <span>{label}</span>}
         </button>
       )}

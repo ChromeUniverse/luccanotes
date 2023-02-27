@@ -1,5 +1,6 @@
+import { Color } from "@prisma/client";
 import { cva, type VariantProps } from "class-variance-authority";
-import { X } from "phosphor-react";
+import { Spinner, X } from "phosphor-react";
 import Tooltip from "./Tooltip";
 
 const tagPillStyles = cva("py-1 px-4", {
@@ -26,6 +27,7 @@ const tagPillStyles = cva("py-1 px-4", {
 type TagPillProps = {
   label: string;
   onClickDelete?: (onClickDeleteProps: any) => void;
+  loading?: boolean;
 };
 
 type TagPillVariantProps = VariantProps<typeof tagPillStyles>;
@@ -42,7 +44,7 @@ interface Props extends TagPillProps, TagPillVariantProps {}
 // // interface Props extends TagPillProps, Omit<TagPillVariantProps, "deletable"> {}
 // interface Props extends TagPillProps, ProcessedVariantProps {}
 
-export const tagColorNames: Record<TagColor, string> = {
+export const tagColorNames: Record<Color, string> = {
   sky: "Sky",
   red: "Red",
   green: "Green",
@@ -52,13 +54,7 @@ export const tagColorNames: Record<TagColor, string> = {
   darkGray: "Dark Gray",
 } as const;
 
-export type Tag = {
-  id: string;
-  label: string;
-  color: TagColor;
-};
-
-function TagPill({ label, color, deletable, onClickDelete }: Props) {
+function TagPill({ label, color, deletable, onClickDelete, loading }: Props) {
   return (
     <div className="flex">
       <div className={tagPillStyles({ color, deletable })}>{label}</div>
@@ -67,16 +63,27 @@ function TagPill({ label, color, deletable, onClickDelete }: Props) {
           <button
             className="group peer flex h-full items-center justify-center rounded-r-full bg-gray-200 pl-1 pr-2.5 dark:bg-gray-800"
             onClick={onClickDelete}
+            disabled={loading}
           >
-            <X
-              className="text-gray-400 group-hover:text-gray-600 group-focus:text-gray-600 dark:group-hover:text-gray-200 dark:group-focus:text-gray-200"
-              weight="bold"
-              size="18"
-            />
+            {loading ? (
+              <Spinner
+                className="animate-spin text-gray-400"
+                weight="bold"
+                size="18"
+              />
+            ) : (
+              <X
+                className="text-gray-400 group-hover:text-gray-600 group-focus:text-gray-600 dark:group-hover:text-gray-200 dark:group-focus:text-gray-200"
+                weight="bold"
+                size="18"
+              />
+            )}
           </button>
-          <Tooltip tooltipPosition="bottom" alignment="xCenter">
-            <span>Delete tag</span>
-          </Tooltip>
+          {!loading && (
+            <Tooltip tooltipPosition="bottom" alignment="xCenter">
+              <span>Delete tag</span>
+            </Tooltip>
+          )}
         </div>
       )}
     </div>
