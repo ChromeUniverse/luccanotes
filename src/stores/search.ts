@@ -34,10 +34,10 @@ const useSearchStore = create<ThemeStore>()(
       searchInput: "",
       setSearchInput: (newSearchInput) => set({ searchInput: newSearchInput }),
       // sort field
-      sortField: "title",
+      sortField: "lastUpdated",
       setSortField: (newSortField) => set({ sortField: newSortField }),
       // sort order
-      sortOrder: "asc",
+      sortOrder: "desc",
       setSortOrder: (newSortOrder) => set({ sortOrder: newSortOrder }),
       // selected tags
       selectedTagIds: [],
