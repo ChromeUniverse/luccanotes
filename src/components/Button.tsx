@@ -7,12 +7,12 @@ import {
   Download,
   Eye,
   EyeSlash,
+  FloppyDisk,
   NotePencil,
   PencilSimple,
   Plus,
   SignIn,
   Spinner,
-  SpinnerGap,
   Tag,
   Trash,
 } from "phosphor-react";
@@ -82,7 +82,8 @@ type ButtonIconNames =
   | "eye"
   | "eye-slash"
   | "download"
-  | "sign-in";
+  | "sign-in"
+  | "floppy";
 
 // Icons and styling props
 // const IconProps: IconProps = { size: 28, weight: "bold" };
@@ -100,6 +101,7 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   "eye-slash": <EyeSlash size={24} weight="bold" />,
   download: <Download size={24} weight="bold" />,
   "sign-in": <SignIn size={24} />,
+  floppy: <FloppyDisk size={24} weight="bold" />,
 } as const;
 
 // Base Button Props

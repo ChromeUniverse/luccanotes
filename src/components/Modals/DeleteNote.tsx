@@ -9,11 +9,13 @@ import ModalLayout from "../Layouts/Modal";
 function DeleteNoteModal({
   open,
   onClose,
-  selectedNote,
+  optionsOnClose,
+  note,
 }: {
   open: boolean;
   onClose: (newOpen: boolean) => void;
-  selectedNote: NoteWithTags;
+  optionsOnClose: (newOpen: boolean) => void;
+  note: NoteWithTags;
 }) {
   // next router
   const router = useRouter();
@@ -25,7 +27,7 @@ function DeleteNoteModal({
   // TODO: implement this function
   function onClickDeleteNote() {
     deleteMutation.mutate(
-      { id: selectedNote.id },
+      { id: note.id },
       {
         onSuccess: (deletedNote, variables, context) => {
           utils.notes.getAll.setData(undefined, (oldNotes) =>
@@ -33,6 +35,8 @@ function DeleteNoteModal({
           );
           void utils.notes.getAll.invalidate();
           void router.push("/notes");
+          onClose(false);
+          optionsOnClose(false);
         },
       }
     );

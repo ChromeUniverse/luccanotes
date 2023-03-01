@@ -68,7 +68,7 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      **/
   ],
-  debug: true,
+  debug: false,
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error", // Error code passed in query string as ?error=

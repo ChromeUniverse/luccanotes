@@ -1,16 +1,15 @@
 import { Listbox, Popover, RadioGroup, Transition } from "@headlessui/react";
-import { Tag } from "@prisma/client";
+import { type Tag } from "@prisma/client";
 import {
   ArrowCircleDown,
   ArrowCircleUp,
   CaretDown,
-  CaretUp,
   Check,
   MagnifyingGlass,
 } from "phosphor-react";
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import useSearchStore from "../stores/search";
-import Button from "./Button";
 import CaretUpDownIcon from "./CaretUpDownIcon";
 import TagPill from "./TagPill";
 import Tooltip from "./Tooltip";
@@ -156,14 +155,25 @@ function TagsSection({ tags }: { tags: Tag[] }) {
 }
 
 function SearchBar({ tags }: { tags: Tag[] }) {
-  const { searchInput, setSearchInput } = useSearchStore();
+  const { setSearchInput } = useSearchStore();
+
+  const [input, setInput] = useState("");
+
+  const debouncedSetInput = useDebouncedCallback((textInput: string) => {
+    setSearchInput(textInput);
+  }, 200);
+
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+    debouncedSetInput(e.target.value);
+  };
 
   return (
     <div className="relative flex w-full items-center rounded-lg border-2 border-transparent bg-white py-1.5 pl-5 pr-3 transition-[border-color] focus-within:border-blue-600 dark:bg-gray-950">
       <MagnifyingGlass className="text-gray-400" size={20} weight="bold" />
       <input
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
+        value={input}
+        onChange={onChange}
         className="font-lg placeholder:text-gray- mx-4 w-full bg-transparent text-gray-900 outline-none dark:text-white"
         type="text"
         placeholder="Search notes by title..."

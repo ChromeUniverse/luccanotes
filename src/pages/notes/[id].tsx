@@ -1,20 +1,16 @@
-// styles
-import mdStyles from "../styles/markdown.module.css";
-
 // next & react
 import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-  type NextPage,
+  type GetServerSidePropsContext,
+  type InferGetServerSidePropsType,
 } from "next";
 import { Note } from "phosphor-react";
-import { memo, useCallback, useState } from "react";
-import { useDebounce } from "use-debounce";
+import { memo, useCallback, useEffect, useState } from "react";
+import { useDebounce, useDebouncedCallback } from "use-debounce";
 
 // custom components
-import Button from "../../components/Button";
 import PageLayout from "../../components/Layouts/Page";
+import NoteOptionsModal from "../../components/Modals/NoteOptions";
+import Button from "../../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 
@@ -22,91 +18,38 @@ import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import CodeMirror, { type BasicSetupOptions } from "@uiw/react-codemirror";
-import useThemeStore, { ThemeType } from "../../stores/theme";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { EditorView, keymap, type ViewUpdate } from "@codemirror/view";
 import { Extension } from "@codemirror/state";
 
 // codemirror themes
-import { tokyoNight, tokyoNightInit } from "@uiw/codemirror-theme-tokyo-night";
-import {
-  tokyoNightDay,
-  tokyoNightDayInit,
-} from "@uiw/codemirror-theme-tokyo-night-day";
+import { tokyoNightDayInit } from "@uiw/codemirror-theme-tokyo-night-day";
 import { auraInit } from "@uiw/codemirror-theme-aura";
 
 // syntax highlighting
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
-  dark,
-  atomDark,
   oneDark,
   oneLight,
-  materialDark,
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
+
+// nextauth
 import { getServerAuthSession } from "../../server/auth";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";
-import { prisma } from "../../server/db";
-import { z } from "zod";
-import { deserialize, serialize } from "superjson";
-import { NoteWithTags } from "../..";
-import NoteOptionsModal from "../../components/Modals/NoteOptions";
+
+// other
+import useThemeStore, { type ThemeType } from "../../stores/theme";
 import { api } from "../../utils/api";
+import { prisma } from "../../server/db";
+import { type NoteWithTags } from "../..";
+import { z } from "zod";
 import { formatDate } from "../../utils/dates";
+import DMP from "diff-match-patch";
+import Navbar from "../../components/Navbar";
 
-const markdownSample = `# Heading 1
-
-In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available. It is also used to temporarily replace text in a process called greeking, which allows designers to consider the form of a webpage or publication, without the meaning of the text influencing the design.
-
-In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available. It is also used to temporarily replace text in a process called greeking, which allows designers to consider the form of a webpage or publication, without the meaning of the text influencing the design.
-
-## Heading 2
-
-In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available. It is also used to temporarily replace text in a process called greeking, which allows designers to consider the form of a webpage or publication, without the meaning of the text influencing the design.
-
-### Heading 3
-
-In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available. It is also used to temporarily replace text in a process called greeking, which allows designers to consider the form of a webpage or publication, without the meaning of the text influencing the design.
-
-#### Heading 4
-
-\`\`\`jsx
-// src/components/demo.jsx
-function Demo() {
-  return <div>demo</div>
-}
-\`\`\`
-
-\`\`\`bash
-# Not dependent on uiw.
-npm install @codemirror/lang-markdown --save
-npm install @codemirror/language-data --save
-\`\`\`
-
-[website URL here!](https://uiwjs.github.io/react-codemirror/)
-
-
-Here's an image:
-![apollo 11 saturn v](https://www.nasa.gov/sites/default/files/thumbnails/image/apollo_11_launch_-_gpn-2000-000630_1.jpg)
-
-Here's an animated GIF:
-![maxwell the cat](https://media.tenor.com/SDwGg31pp4AAAAAC/maxwell-the-cat-maxwell.gif)
-
-In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available. It is also used to temporarily replace text in a process called greeking, which allows designers to consider the form of a webpage or publication, without the meaning of the text influencing the design.
-
-Lorem ipsum is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin.
-
-\`\`\`go
-package main
-import "fmt"
-func main() {
-  fmt.Println("Hello, 世界")
-}
-\`\`\`
-`;
-
+// editor customization
 const customDarkTheme = auraInit({
   settings: { background: "#00000000" },
 });
@@ -127,8 +70,6 @@ const MarkdownPreview = ({
   editorContent: string;
   theme: ThemeType;
 }) => {
-  console.log("Re-rendered");
-
   return (
     <ReactMarkdown
       className="preview"
@@ -171,35 +112,94 @@ const NotePage = (
 
   // trpc
   const noteQuery = api.notes.getSingle.useQuery({ id: props.noteId });
+  const noteContentMutation = api.notes.updateContent.useMutation();
   const tagsQuery = api.tags.getAll.useQuery();
+  const note = noteQuery.data;
+  const tags = tagsQuery.data;
+  const utils = api.useContext();
+
+  // diff-match-patch
+  const dmp = new DMP.diff_match_patch();
 
   // editor state
-  const [previewOpen, setPreviewOpen] = useState(true);
-  const [editorContent, setEditorContent] = useState(markdownSample);
+  const [prevEditorContent, setPrevEditorContent] = useState(props.content);
+  const [editorContent, setEditorContent] = useState(props.content);
   const [debouncedEditorContent] = useDebounce(editorContent, 500);
+  const [previewOpen, setPreviewOpen] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // auto-saving with input debouncing
+  const debouncedAutoSave = useDebouncedCallback(() => {
+    console.log("Auto-save fired!");
+    saveNote();
+  }, 2000);
+
+  // editor state update
   const onEditorChange = useCallback(
     (value: string, viewUpdate: ViewUpdate) => {
       setEditorContent(value);
+      debouncedAutoSave();
     },
     []
   );
 
-  if (!noteQuery.data || !tagsQuery.data) return <div>Loading...</div>;
+  // note saving function
+  const saveNote = useCallback(() => {
+    if (!note || !tags) return;
+    const patches = dmp.patch_make(prevEditorContent, editorContent);
+    noteContentMutation.mutate(
+      { id: props.noteId, patches },
+      {
+        onSuccess: (updatedNote, variables, context) => {
+          void utils.notes.getSingle.invalidate({ id: variables.id });
+          setPrevEditorContent(editorContent);
+        },
+      }
+    );
+  }, [
+    dmp,
+    editorContent,
+    note,
+    noteContentMutation,
+    prevEditorContent,
+    props.noteId,
+    tags,
+    utils.notes.getSingle,
+  ]);
 
-  const note = noteQuery.data;
-  const tags = tagsQuery.data;
+  // shortcut handler
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault();
+        console.log("Shortcut hit!!", noteContentMutation.isLoading);
+        if (noteContentMutation.isLoading) {
+          return console.log("Already saving...");
+        }
+        // console.log("Got here!");
+
+        saveNote();
+      }
+    };
+
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [noteContentMutation.isLoading, saveNote]);
+
+  if (!note || !tags) return <div>Loading...</div>;
 
   return (
-    <PageLayout noteTitle={note.title} session={session}>
+    <div className="flex h-screen flex-col">
+      <Navbar noteTitle={note.title} session={session} />
       <div
-        className={`grid w-full ${previewOpen ? "grid-cols-2" : "grid-cols-1"}`}
+        // className={`grid h-[80%] ${
+        //   previewOpen ? "grid-cols-2" : "grid-cols-1"
+        // }`}
+        className="flex h-full overflow-clip"
       >
         {/* Editor Panel */}
-        <section className="bg-gray-100 dark:bg-gray-900">
-          {/* Topbar */}
-          <div className="flex h-16 justify-between px-8 text-gray-500 dark:text-gray-400">
+        <section className="flex h-full flex-1 flex-col overflow-clip bg-gray-100 dark:bg-gray-900">
+          <div className="flex h-16 flex-shrink-0 justify-between px-8 text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-2.5">
               <FontAwesomeIcon className="scale-125" icon={faMarkdown} />
               <span className="font-semibold">Editor</span>
@@ -209,6 +209,19 @@ const NotePage = (
                 Last edited {formatDate(note.lastUpdated)}
               </span>
               <div className="flex items-center gap-0">
+                <Button
+                  icon="floppy"
+                  iconOnly
+                  intent="secondaryAltTransparent"
+                  label={
+                    noteContentMutation.isLoading ? "Saving..." : "Save note"
+                  }
+                  tooltipAlignment="xCenter"
+                  tooltipPosition="bottom"
+                  size="regular"
+                  onClick={() => saveNote()}
+                  loading={noteContentMutation.isLoading}
+                />
                 <Button
                   icon="note-pencil-sm"
                   iconOnly
@@ -254,13 +267,11 @@ const NotePage = (
               </div>
             </div>
           </div>
-          {/* Text editor component */}
+
           <CodeMirror
-            className="overflow-y-clip"
+            className="h-full overflow-auto"
             value={editorContent}
             theme={theme === "light" ? customLightTheme : customDarkTheme}
-            // maxHeight="100%"
-            // height="700px"
             onChange={onEditorChange}
             basicSetup={editorOptions}
             placeholder="Enter your text here..."
@@ -271,22 +282,22 @@ const NotePage = (
           />
         </section>
         {/* Preview Panel */}
-        {previewOpen && (
-          <section className="dark:bg-gray-850">
-            {/* Topbar */}
-            <div className="flex h-16 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400">
-              <Note size={24} weight="bold" />
-              <span className="font-semibold">Preview</span>
-            </div>
-            {/* Markdown Preview */}
-            <div className="overflow-x-auto px-8">
-              <MemoedMarkdownPreview
-                theme={theme}
-                editorContent={debouncedEditorContent}
-              />
-            </div>
-          </section>
-        )}
+        {/* {previewOpen && ( */}
+        <section className="flex h-full flex-1 flex-col overflow-auto bg-gray-200 dark:bg-gray-850">
+          {/* Topbar */}
+          <div className="flex h-16 flex-shrink-0 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400">
+            <Note size={24} weight="bold" />
+            <span className="font-semibold">Preview</span>
+          </div>
+          {/* Markdown Preview */}
+          <div className="overflow-auto px-8">
+            <MemoedMarkdownPreview
+              theme={theme}
+              editorContent={debouncedEditorContent}
+            />
+          </div>
+        </section>
+        {/* )} */}
       </div>
 
       {/* Modal */}
@@ -294,12 +305,11 @@ const NotePage = (
         <NoteOptionsModal
           open={modalOpen}
           onClose={setModalOpen}
-          // setSelectedNoteId={note.id}
-          selectedNote={note}
+          note={note}
           tags={tags}
         />
       )}
-    </PageLayout>
+    </div>
   );
 };
 
@@ -331,7 +341,7 @@ export const getServerSideProps = async (
   // check if this note actually exists
   const note = await prisma.note.findUnique({
     where: { id: noteIdParser.data },
-    select: { id: true, userId: true },
+    select: { id: true, userId: true, content: true },
   });
 
   if (!note) {
@@ -354,7 +364,7 @@ export const getServerSideProps = async (
   }
 
   // Pass data to the page via props
-  return { props: { session, noteId: note.id } };
+  return { props: { session, noteId: note.id, content: note.content } };
 };
 
 export default NotePage;

@@ -26,19 +26,10 @@ import ManageTagsModal from "../../components/Modals/ManageTags";
 import NoteOptionsModal from "../../components/Modals/NoteOptions";
 import CreateNoteModal from "../../components/Modals/CreateNote";
 import { getServerAuthSession } from "../../server/auth";
-import { appRouter } from "../../server/api/root";
 import { Note, Prisma, Tag } from "@prisma/client";
 import { prisma } from "../../server/db";
 import { NoteWithTags } from "../..";
 import useSearchStore from "../../stores/search";
-
-const defaultDate = new Date();
-
-function subtractSeconds(date: Date, seconds: number) {
-  const bufferDate = new Date(date.getTime());
-  bufferDate.setSeconds(bufferDate.getSeconds() - seconds);
-  return bufferDate;
-}
 
 function sortNotes(
   notes: NoteWithTags[],
@@ -75,11 +66,11 @@ function sortNotes(
 function NotesPage(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // next auth
   const session = useSession().data as Session;
 
-  // fetch data
-  const tagsQuery = api.tags.getAll.useQuery();
+  // trpc
+  const tagsQuery = api.tags.getAll.useQuery(undefined, {});
   const notesQuery = api.notes.getAll.useQuery();
   const notes = useMemo(() => {
     return notesQuery.data ?? [];
@@ -89,39 +80,34 @@ function NotesPage(
   // modals state
   const [tagModalOpen, setTagModalOpen] = useState(false);
   const [createNoteModalOpen, setCreateNoteModalOpen] = useState(false);
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
-  // Search parameters state
-  // const [searchInput, setSearchInput] = useState("");
-  // const [sortField, setSortField] = useState<SortField>("title");
-  // const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  // const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-
+  // zustand
   const { searchInput, sortField, sortOrder, selectedTagIds } =
     useSearchStore();
 
+  // compute visible notes
   const visibleNotes = useMemo(() => {
     // sort notes
     const sortedNotes = sortNotes(notes, sortField, sortOrder);
 
-    // match selected tags
-    const tagFilteredNotes = sortedNotes.filter((note) => {
-      // pass all notes if there are no selected tags
-      if (selectedTagIds.length === 0) return true;
-      // check if `selectedTagIds` is a subset of `noteTagIds`
-      const noteTagIds = note.tags.map((t) => t.id);
-      for (const selectedTagId of selectedTagIds) {
-        if (!noteTagIds.includes(selectedTagId)) return false;
-      }
-      return true;
-    });
-
-    // match note title
-    const titleFilteredNotes = tagFilteredNotes.filter((note) =>
-      note.title.toLowerCase().includes(searchInput.toLowerCase())
+    return (
+      sortedNotes
+        // match selected tags
+        .filter((note) => {
+          // pass all notes if there are no selected tags
+          if (selectedTagIds.length === 0) return true;
+          // check if `selectedTagIds` is a subset of `noteTagIds`
+          const noteTagIds = note.tags.map((t) => t.id);
+          for (const selectedTagId of selectedTagIds) {
+            if (!noteTagIds.includes(selectedTagId)) return false;
+          }
+          return true;
+        })
+        // match note title
+        .filter((note) =>
+          note.title.toLowerCase().includes(searchInput.toLowerCase())
+        )
     );
-
-    return titleFilteredNotes;
   }, [searchInput, sortField, sortOrder, notes, selectedTagIds]);
 
   if (!notes && !tags) return <span>Loading...</span>;
@@ -164,8 +150,8 @@ function NotesPage(
               flipTags={
                 index === visibleNotes.length - 1 && visibleNotes.length >= 3
               }
-              setSelectedNoteId={setSelectedNoteId}
               dateType={sortField === "createdAt" ? "createdAt" : "lastUpdated"}
+              tags={tags}
             />
           ))}
         </div>
@@ -221,15 +207,15 @@ function NotesPage(
           tags={tags}
         />
       )}
-      {selectedNoteId && (
+      {/* {false && (
         <NoteOptionsModal
           open={selectedNoteId !== null}
           onClose={() => setSelectedNoteId(null)}
           // setSelectedNoteId={setSelectedNoteId}
-          selectedNote={notes?.find((n) => n.id === selectedNoteId) ?? null}
+          // selectedNote={notes?.find((n) => n.id === selectedNoteId) ?? null}
           tags={tags}
         />
-      )}
+      )} */}
       {createNoteModalOpen && (
         <CreateNoteModal
           open={createNoteModalOpen}

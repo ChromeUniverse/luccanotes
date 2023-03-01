@@ -18,7 +18,7 @@ const tagPillStyles = cva("py-1 px-4 rounded-full select-none", {
       true: "rounded-r-none",
     },
     dark: {
-      true: "brightness-50",
+      true: "brightness-75 opacity-75 dark:brightness-50",
     },
   },
   defaultVariants: {
