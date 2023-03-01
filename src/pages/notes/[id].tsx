@@ -283,7 +283,7 @@ const NotePage = (
         </section>
         {/* Preview Panel */}
         {/* {previewOpen && ( */}
-        <section className="flex h-full flex-1 flex-col overflow-auto bg-gray-50 dark:bg-gray-850">
+        <section className="flex h-full flex-1 flex-col overflow-auto bg-gray-200 dark:bg-gray-850">
           {/* Topbar */}
           <div className="flex h-16 flex-shrink-0 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400">
             <Note size={24} weight="bold" />

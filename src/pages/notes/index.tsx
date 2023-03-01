@@ -80,7 +80,6 @@ function NotesPage(
   // modals state
   const [tagModalOpen, setTagModalOpen] = useState(false);
   const [createNoteModalOpen, setCreateNoteModalOpen] = useState(false);
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
   // zustand
   const { searchInput, sortField, sortOrder, selectedTagIds } =
@@ -151,7 +150,6 @@ function NotesPage(
               flipTags={
                 index === visibleNotes.length - 1 && visibleNotes.length >= 3
               }
-              setSelectedNoteId={setSelectedNoteId}
               dateType={sortField === "createdAt" ? "createdAt" : "lastUpdated"}
               tags={tags}
             />

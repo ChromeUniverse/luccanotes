@@ -92,13 +92,11 @@ function TagPillContainer({
 function NoteCard({
   note,
   flipTags = false,
-  setSelectedNoteId,
   dateType = "lastUpdated",
   tags,
 }: {
   note: NoteWithTags;
   flipTags?: boolean;
-  setSelectedNoteId: (newSelectedNoteId: string) => void;
   dateType?: "lastUpdated" | "createdAt";
   tags: Tag[];
 }) {
