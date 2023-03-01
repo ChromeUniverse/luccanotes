@@ -1,4 +1,4 @@
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 import React from "react";
 import Navbar from "../Navbar";
 
@@ -14,7 +14,7 @@ function PageLayout({
   session?: Session;
 }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col">
       <Navbar noteTitle={noteTitle} session={session} />
       {container ? (
         <main className="flex-grow bg-gray-200 pt-4 pb-20 dark:bg-gray-900">

@@ -1,7 +1,9 @@
 import { Note, Tag } from "@prisma/client";
+import { useState } from "react";
 import { NoteWithTags } from "..";
 import { formatDate } from "../utils/dates";
 import Button from "./Button";
+import NoteOptionsModal from "./Modals/NoteOptions";
 import TagPill from "./TagPill";
 import Tooltip from "./Tooltip";
 
@@ -92,12 +94,16 @@ function NoteCard({
   flipTags = false,
   setSelectedNoteId,
   dateType = "lastUpdated",
+  tags,
 }: {
   note: NoteWithTags;
   flipTags?: boolean;
   setSelectedNoteId: (newSelectedNoteId: string) => void;
   dateType?: "lastUpdated" | "createdAt";
+  tags: Tag[];
 }) {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-[border-color] focus-within:border-blue-600 hover:border-blue-600 dark:bg-gray-950 md:px-7">
       <div className="flex flex-col">
@@ -105,7 +111,8 @@ function NoteCard({
         <h2 className="text-2xl font-semibold text-gray-900 underline decoration-transparent transition-[text-decoration-color] group-hover:decoration-gray-900 dark:text-white dark:group-focus-within:decoration-white dark:group-hover:decoration-white dark:group-focus-visible:decoration-white">
           {note.title}
         </h2>
-        {/* Last updated */}
+
+        {/* Date field */}
         {dateType === "lastUpdated" ? (
           <p className="pt-2 pb-3 text-gray-500">
             Last edited {formatDate(note.lastUpdated)}
@@ -118,6 +125,8 @@ function NoteCard({
 
         <TagPillContainer flipTags={flipTags} tags={note.tags} />
       </div>
+
+      {/* Buttons */}
       <div className="mt-0 flex flex-col items-center gap-1 transition-all group-hover:opacity-100">
         <Button
           intent="secondary"
@@ -137,9 +146,18 @@ function NoteCard({
           icon="three-dots"
           iconOnly
           size="regular"
-          onClick={() => setSelectedNoteId(note.id)}
+          onClick={() => setModalOpen(true)}
         />
       </div>
+
+      <NoteOptionsModal
+        open={modalOpen}
+        onClose={setModalOpen}
+        // setSelectedNoteId={setSelectedNoteId}
+        // selectedNote={notes?.find((n) => n.id === selectedNoteId) ?? null}
+        note={note}
+        tags={tags}
+      />
     </div>
   );
 }

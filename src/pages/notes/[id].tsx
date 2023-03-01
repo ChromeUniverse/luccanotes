@@ -36,17 +36,18 @@ import {
 
 // nextauth
 import { getServerAuthSession } from "../../server/auth";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 
 // other
-import useThemeStore, { ThemeType } from "../../stores/theme";
+import useThemeStore, { type ThemeType } from "../../stores/theme";
 import { api } from "../../utils/api";
 import { prisma } from "../../server/db";
 import { type NoteWithTags } from "../..";
 import { z } from "zod";
 import { formatDate } from "../../utils/dates";
 import DMP from "diff-match-patch";
+import Navbar from "../../components/Navbar";
 
 // editor customization
 const customDarkTheme = auraInit({
@@ -69,8 +70,6 @@ const MarkdownPreview = ({
   editorContent: string;
   theme: ThemeType;
 }) => {
-  console.log("Re-rendered");
-
   return (
     <ReactMarkdown
       className="preview"
@@ -144,6 +143,7 @@ const NotePage = (
     []
   );
 
+  // note saving function
   const saveNote = useCallback(() => {
     if (!note || !tags) return;
     const patches = dmp.patch_make(prevEditorContent, editorContent);
@@ -189,14 +189,17 @@ const NotePage = (
   if (!note || !tags) return <div>Loading...</div>;
 
   return (
-    <PageLayout noteTitle={note.title} session={session}>
+    <div className="flex h-screen flex-col">
+      <Navbar noteTitle={note.title} session={session} />
       <div
-        className={`grid w-full ${previewOpen ? "grid-cols-2" : "grid-cols-1"}`}
+        // className={`grid h-[80%] ${
+        //   previewOpen ? "grid-cols-2" : "grid-cols-1"
+        // }`}
+        className="flex h-full overflow-clip"
       >
         {/* Editor Panel */}
-        <section className="bg-gray-100 dark:bg-gray-900">
-          {/* Topbar */}
-          <div className="flex h-16 justify-between px-8 text-gray-500 dark:text-gray-400">
+        <section className="flex h-full flex-1 flex-col overflow-clip bg-gray-100 dark:bg-gray-900">
+          <div className="flex h-16 flex-shrink-0 justify-between px-8 text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-2.5">
               <FontAwesomeIcon className="scale-125" icon={faMarkdown} />
               <span className="font-semibold">Editor</span>
@@ -264,13 +267,11 @@ const NotePage = (
               </div>
             </div>
           </div>
-          {/* Text editor component */}
+
           <CodeMirror
-            className="overflow-y-clip"
+            className="h-full overflow-auto"
             value={editorContent}
             theme={theme === "light" ? customLightTheme : customDarkTheme}
-            // maxHeight="100%"
-            // height="700px"
             onChange={onEditorChange}
             basicSetup={editorOptions}
             placeholder="Enter your text here..."
@@ -281,22 +282,22 @@ const NotePage = (
           />
         </section>
         {/* Preview Panel */}
-        {previewOpen && (
-          <section className="dark:bg-gray-850">
-            {/* Topbar */}
-            <div className="flex h-16 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400">
-              <Note size={24} weight="bold" />
-              <span className="font-semibold">Preview</span>
-            </div>
-            {/* Markdown Preview */}
-            <div className="overflow-x-auto px-8">
-              <MemoedMarkdownPreview
-                theme={theme}
-                editorContent={debouncedEditorContent}
-              />
-            </div>
-          </section>
-        )}
+        {/* {previewOpen && ( */}
+        <section className="flex h-full flex-1 flex-col overflow-auto bg-gray-50 dark:bg-gray-850">
+          {/* Topbar */}
+          <div className="flex h-16 flex-shrink-0 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400">
+            <Note size={24} weight="bold" />
+            <span className="font-semibold">Preview</span>
+          </div>
+          {/* Markdown Preview */}
+          <div className="overflow-auto px-8">
+            <MemoedMarkdownPreview
+              theme={theme}
+              editorContent={debouncedEditorContent}
+            />
+          </div>
+        </section>
+        {/* )} */}
       </div>
 
       {/* Modal */}
@@ -304,11 +305,11 @@ const NotePage = (
         <NoteOptionsModal
           open={modalOpen}
           onClose={setModalOpen}
-          selectedNote={note}
+          note={note}
           tags={tags}
         />
       )}
-    </PageLayout>
+    </div>
   );
 };
 

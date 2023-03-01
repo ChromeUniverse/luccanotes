@@ -13,29 +13,27 @@ import { api } from "../../utils/api";
 function NoteOptionsModal({
   open,
   onClose,
-  selectedNote,
+  // note,
+  // setnoteId,
+  note,
   tags,
 }: {
   open: boolean;
   onClose: (newOpen: boolean) => void;
-  selectedNote: null | NoteWithTags;
+  // note: null | NoteWithTags;
+  note: NoteWithTags;
+  // setnoteId: (newId: string) => void;
   tags: Tag[];
 }) {
   // modal state
-  const [noteTitle, setNoteTitle] = useState(
-    selectedNote ? selectedNote.title : ""
-  );
+  const [noteTitle, setNoteTitle] = useState(note.title);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const tagsAvailable = selectedNote
-    ? tags.filter((t) => {
-        const noteTagIds = selectedNote.tags.map((noteTag) => noteTag.id);
-        return !noteTagIds.includes(t.id);
-      })
-    : tags;
-
-  console.log("tagsAvailable:", tagsAvailable);
+  const tagsAvailable = tags.filter((t) => {
+    const noteTagIds = note.tags.map((noteTag) => noteTag.id);
+    return !noteTagIds.includes(t.id);
+  });
 
   // trpc
   const renameMutation = api.notes.rename.useMutation();
@@ -47,10 +45,10 @@ function NoteOptionsModal({
   function onClickRenameNote() {
     //
 
-    if (!selectedNote) return;
+    if (!note) return;
 
     renameMutation.mutate(
-      { id: selectedNote.id, newTitle: noteTitle },
+      { id: note.id, newTitle: noteTitle },
       {
         onSuccess: (updatedNote, variables, context) => {
           utils.notes.getAll.setData(undefined, (oldNotes) =>
@@ -66,10 +64,10 @@ function NoteOptionsModal({
 
   // TODO: implement this function
   function onClickAddTagToNote() {
-    if (!selectedNote || !selectedTag) return;
+    if (!note || !selectedTag) return;
 
     addTagMutation.mutate(
-      { id: selectedNote.id, tagId: selectedTag.id },
+      { id: note.id, tagId: selectedTag.id },
       {
         onSuccess: (updatedNote, variables, context) => {
           utils.notes.getAll.setData(undefined, (oldNotes) =>
@@ -85,10 +83,10 @@ function NoteOptionsModal({
   }
 
   function onClickRemoveTag(tagId: string) {
-    if (!selectedNote) return;
+    if (!note) return;
 
     removeTagMutation.mutate(
-      { id: selectedNote.id, tagId },
+      { id: note.id, tagId },
       {
         onSuccess: (updatedNote, variables, context) => {
           utils.notes.getAll.setData(undefined, (oldNotes) =>
@@ -102,7 +100,7 @@ function NoteOptionsModal({
     );
   }
 
-  if (selectedNote === null) return <div></div>;
+  if (note === null) return <div></div>;
 
   return (
     <ModalLayout open={open} onClose={onClose}>
@@ -145,8 +143,8 @@ function NoteOptionsModal({
         Tags
       </h3>
       <div className="flex flex-wrap gap-2">
-        {selectedNote.tags.length !== 0 ? (
-          selectedNote.tags.map((tag: Tag) => (
+        {note.tags.length !== 0 ? (
+          note.tags.map((tag: Tag) => (
             <TagPill
               key={tag.id}
               label={tag.label}
@@ -244,7 +242,8 @@ function NoteOptionsModal({
         <DeleteNoteModal
           open={deleteModalOpen}
           onClose={setDeleteModalOpen}
-          selectedNote={selectedNote}
+          note={note}
+          optionsOnClose={onClose}
         />
       )}
     </ModalLayout>
