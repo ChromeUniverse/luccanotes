@@ -71,7 +71,7 @@ export const authOptions: NextAuthOptions = {
   debug: false,
   pages: {
     signIn: "/auth/signin",
-    error: "/auth/error", // Error code passed in query string as ?error=
+    error: "/auth/signin", // Error code passed in query string as ?error=
   },
 };
 

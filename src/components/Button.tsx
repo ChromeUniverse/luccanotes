@@ -1,4 +1,8 @@
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import {
+  faDiscord,
+  faGithub,
+  faGoogle,
+} from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cva, type VariantProps } from "class-variance-authority";
 import Link from "next/link";
@@ -88,7 +92,9 @@ type ButtonIconNames =
   | "download"
   | "sign-in"
   | "floppy"
-  | "github";
+  | "github"
+  | "discord"
+  | "google";
 
 // Icons and styling props
 // const IconProps: IconProps = { size: 28, weight: "bold" };
@@ -108,6 +114,8 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   "sign-in": <SignIn size={24} />,
   floppy: <FloppyDisk size={24} weight="bold" />,
   github: <FontAwesomeIcon size="lg" icon={faGithub} />,
+  discord: <FontAwesomeIcon icon={faDiscord} className="text-xl text-white" />,
+  google: <FontAwesomeIcon icon={faGoogle} className="text-xl text-white" />,
 } as const;
 
 // Base Button Props

@@ -27,7 +27,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   console.log(pathname);
 
   useEffect(() => {
-    if (pathname === "/") return;
+    if (pathname === "/" || pathname.includes("auth")) return;
 
     theme === "dark"
       ? document.body.classList.add("dark")
