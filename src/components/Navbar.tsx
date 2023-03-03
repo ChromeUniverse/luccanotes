@@ -60,9 +60,11 @@ function Logo({ session }: { session?: Session }) {
         <BookBookmark color="white" size={28} />
       </div>
       {/* App Name */}
+      {/* {session && ( */}
       <span className="hidden text-xl font-medium text-gray-600 dark:text-gray-200 md:block">
         LuccaNotes
       </span>
+      {/* )} */}
     </Link>
   );
 }
@@ -172,14 +174,21 @@ function PfpDropdown({ session }: { session: Session }) {
 }
 
 function Navbar({
+  bgTransparent,
   noteTitle,
   session,
 }: {
+  bgTransparent?: boolean;
   noteTitle?: string;
   session?: Session;
 }) {
   return (
-    <nav className="flex items-center gap-2 bg-white py-3 px-4 dark:bg-gray-950 md:px-8">
+    <nav
+      className={`
+      flex items-center gap-2 bg-white py-3 px-4 dark:bg-gray-950 md:px-8
+      ${bgTransparent ? "bg-transparent" : ""}
+    `}
+    >
       <Logo session={session} />
       {session ? (
         <>
@@ -204,7 +213,27 @@ function Navbar({
           <PfpDropdown session={session} />
         </>
       ) : (
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-8">
+          {/* Nav links */}
+          <a
+            className="text-base font-semibold text-gray-600 hover:text-blue-600" //
+            href="#features"
+          >
+            Features
+          </a>
+          <a
+            className="text-base font-semibold text-gray-600 hover:text-blue-600" //
+            href="#technologies"
+          >
+            Tech
+          </a>
+          <a
+            className="text-base font-semibold text-gray-600 hover:text-blue-600" //
+            href="#cta"
+          >
+            Get started
+          </a>
+
           <Button
             intent="primary"
             label="Sign in"
