@@ -204,8 +204,8 @@ const Home: NextPage = () => {
           {/* Subtitle */}
           <p className="mx-auto mt-4 max-w-4xl text-center text-lg text-gray-600">
             A no-frills web app for all your Markdown note-taking needs,
-            laser-focused on productivity and unobtrusive UX. Powered by awesome
-            open-source tech.
+            laser-focused on productivity and unobtrusive UX, and powered by
+            awesome open-source tech.
           </p>
 
           {/* CTA */}
@@ -250,7 +250,7 @@ const Home: NextPage = () => {
 
             {/* Heading */}
             <p className="text-4xl font-extrabold text-gray-950">
-              Just the essentials
+              Just the essentials.
             </p>
 
             {/* Description */}
@@ -277,7 +277,7 @@ const Home: NextPage = () => {
 
             {/* Title */}
             <p className="text-4xl font-extrabold text-gray-950">
-              Built with awesome open-source tech
+              Built with awesome open-source tech.
             </p>
 
             {/* Description */}
