@@ -18,6 +18,7 @@ import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import Button from "../components/Button";
 import Tooltip from "../components/Tooltip";
 import Navbar from "../components/Navbar";
+import Head from "next/head";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -184,6 +185,10 @@ function Logo() {
 const Home: NextPage = () => {
   return (
     <div>
+      <Head>
+        <title>LuccaNotes • Note-taking app for Markdown lovers 💙</title>
+      </Head>
+
       <main className="flex flex-grow flex-col bg-gray-200 pt-0">
         {/* Hero section */}
         <section
