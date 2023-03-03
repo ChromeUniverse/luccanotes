@@ -14,7 +14,7 @@ function PageLayout({
   session?: Session;
 }) {
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex min-h-screen flex-col">
       <Navbar noteTitle={noteTitle} session={session} />
       {container ? (
         <main className="flex-grow bg-gray-200 pt-4 pb-20 dark:bg-gray-900">
@@ -23,7 +23,9 @@ function PageLayout({
           </div>
         </main>
       ) : (
-        <main className="flex flex-grow bg-gray-200 pt-0">{children}</main>
+        <main className="flex flex-grow flex-col bg-gray-200 pt-0">
+          {children}
+        </main>
       )}
     </div>
   );

@@ -67,13 +67,8 @@ function Logo({ session }: { session?: Session }) {
   );
 }
 
-function ThemeSelector({
-  theme,
-  setTheme,
-}: {
-  theme: "light" | "dark";
-  setTheme: (newTheme: "light" | "dark") => void;
-}) {
+function ThemeSelector() {
+  const { theme, setTheme } = useThemeStore();
   return (
     <Listbox
       as="div"
@@ -108,6 +103,74 @@ function ThemeSelector({
   );
 }
 
+function PfpDropdown({ session }: { session: Session }) {
+  return (
+    <Popover className="relative ml-auto flex items-center">
+      {/* PFP button */}
+      <Popover.Button className="rounded-full outline-2 hover:outline-blue-600 focus:border-transparent focus:outline-blue-600 focus:ring-0 ui-open:outline-blue-600">
+        <img
+          alt="profile picture"
+          src={session.user.image as string}
+          className="ml-auto h-12 w-12 rounded-full bg-slate-300"
+          referrerPolicy="no-referrer"
+        />
+      </Popover.Button>
+
+      {/* Dropdown menu */}
+      <Transition
+        enter="transition ease-out z-10"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition ease-out z-10"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <Popover.Panel className="absolute top-full right-0 z-10 mt-3 flex w-72 flex-col rounded-lg bg-gray-100 py-2 text-gray-600 drop-shadow-lg dark:bg-gray-800 dark:text-gray-100">
+          {/* Account settings */}
+          {/* <DropdownLine>
+            <Gear //
+              className="text-gray-400 dark:text-gray-500"
+              size={24}
+              weight="regular"
+            />
+            <span>Account settings</span>
+          </DropdownLine> */}
+          {/* Theme Selector */}
+          <DropdownLine>
+            <Palette //
+              className="text-gray-400 dark:text-gray-500"
+              size={24}
+              weight="regular"
+            />
+            <span>Theme</span>
+            <ThemeSelector />
+          </DropdownLine>
+
+          {/* About/more info */}
+          {/* <DropdownLine>
+            <Info //
+              className="text-gray-400 dark:text-gray-500"
+              size={24}
+              weight="regular"
+            />
+            <span>About</span>
+          </DropdownLine> */}
+          {/* Logout */}
+          <hr className="my-1 h-[2px] border-none bg-gray-300 dark:bg-gray-700"></hr>
+          <DropdownLine onClick={() => void signOut({ callbackUrl: "/" })}>
+            <SignOut //
+              className="text-gray-400 dark:text-gray-500"
+              size={24}
+              weight="regular"
+            />
+            <span>Log out</span>
+          </DropdownLine>
+        </Popover.Panel>
+      </Transition>
+    </Popover>
+  );
+}
+
 function Navbar({
   noteTitle,
   session,
@@ -115,8 +178,6 @@ function Navbar({
   noteTitle?: string;
   session?: Session;
 }) {
-  const { theme, setTheme } = useThemeStore();
-
   return (
     <nav className="flex items-center gap-2 bg-white py-3 px-4 dark:bg-gray-950 md:px-8">
       <Logo session={session} />
@@ -140,71 +201,7 @@ function Navbar({
           )}
 
           {/* Profile picture dropdown */}
-          <Popover className="relative ml-auto flex items-center">
-            {/* PFP button */}
-            <Popover.Button className="rounded-full outline-2 hover:outline-blue-600 focus:border-transparent focus:outline-blue-600 focus:ring-0 ui-open:outline-blue-600">
-              <img
-                alt="profile picture"
-                src={session.user.image as string}
-                className="ml-auto h-12 w-12 rounded-full bg-slate-300"
-                referrerPolicy="no-referrer"
-              />
-            </Popover.Button>
-
-            {/* Dropdown menu */}
-            <Transition
-              enter="transition ease-out z-10"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="transition ease-out z-10"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Popover.Panel className="absolute top-full right-0 z-10 mt-3 flex w-72 flex-col rounded-lg bg-gray-100 py-2 text-gray-600 drop-shadow-lg dark:bg-gray-800 dark:text-gray-100">
-                {/* Account settings */}
-                <DropdownLine>
-                  <Gear //
-                    className="text-gray-400 dark:text-gray-500"
-                    size={24}
-                    weight="regular"
-                  />
-                  <span>Account settings</span>
-                </DropdownLine>
-                {/* Theme Selector */}
-                <DropdownLine>
-                  <Palette //
-                    className="text-gray-400 dark:text-gray-500"
-                    size={24}
-                    weight="regular"
-                  />
-                  <span>Theme</span>
-                  <ThemeSelector theme={theme} setTheme={setTheme} />
-                </DropdownLine>
-
-                {/* About/more info */}
-                <DropdownLine>
-                  <Info //
-                    className="text-gray-400 dark:text-gray-500"
-                    size={24}
-                    weight="regular"
-                  />
-                  <span>About</span>
-                </DropdownLine>
-                {/* Logout */}
-                <hr className="my-1 h-[2px] border-none bg-gray-300 dark:bg-gray-700"></hr>
-                <DropdownLine
-                  onClick={() => void signOut({ callbackUrl: "/" })}
-                >
-                  <SignOut //
-                    className="text-gray-400 dark:text-gray-500"
-                    size={24}
-                    weight="regular"
-                  />
-                  <span>Log out</span>
-                </DropdownLine>
-              </Popover.Panel>
-            </Transition>
-          </Popover>
+          <PfpDropdown session={session} />
         </>
       ) : (
         <div className="ml-auto">
