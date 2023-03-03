@@ -10,6 +10,7 @@ import { Inter } from "@next/font/google";
 import useThemeStore from "../stores/theme";
 // import useHasHydrated from "../hooks/useHasHydrated";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,11 +23,16 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   const { theme } = useThemeStore();
 
+  const { pathname } = useRouter();
+  console.log(pathname);
+
   useEffect(() => {
+    if (pathname === "/" || pathname.includes("auth")) return;
+
     theme === "dark"
       ? document.body.classList.add("dark")
       : document.body.classList.remove("dark");
-  }, [theme]);
+  }, [theme, pathname]);
 
   return (
     <>
