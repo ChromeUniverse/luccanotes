@@ -114,6 +114,10 @@ function NotesPage(
 
   return (
     <PageLayout container session={session}>
+      <Head>
+        <title>LuccaNotes • {session.user.name}&apos;s notes</title>
+      </Head>
+
       {/* Top row */}
       <div className="flex gap-3">
         <SearchBar tags={tags} />
