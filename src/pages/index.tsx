@@ -1,6 +1,10 @@
 import { GetServerSidePropsContext, NextPage } from "next";
 import { Session } from "next-auth";
 import { signIn } from "next-auth/react";
+import PageLayout from "../components/Layouts/Page";
+import { getServerAuthSession } from "../server/auth";
+
+// Phosphor and FontAwesome icons
 import {
   Eye,
   FloppyDisk,
@@ -8,8 +12,9 @@ import {
   MagnifyingGlass,
   Tag,
 } from "phosphor-react";
-import PageLayout from "../components/Layouts/Page";
-import { getServerAuthSession } from "../server/auth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
+import Button from "../components/Button";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -30,8 +35,8 @@ export const getServerSideProps = async (
 };
 
 const iconProps = {
-  className: "rounded-full bg-blue-600 p-3.5 text-white",
-  size: 56,
+  className: "rounded-full bg-blue-600 h-14 w-14 p-3 text-white drop-shadow-md",
+  // size: 20,
   weight: "bold",
 } as const;
 
@@ -49,7 +54,11 @@ type Section = {
 
 const features: Feature[] = [
   {
-    icon: <Tag {...iconProps} />,
+    icon: (
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 p-0 text-white drop-shadow-md">
+        <FontAwesomeIcon size="xl" icon={faMarkdown} />
+      </div>
+    ),
     title: "GitHub-flavored Markdown",
     content:
       "Tailwind automatically removes all unused CSS when building for production, which means your final CSS bundle is the smallest it could possibly be.",
@@ -90,7 +99,7 @@ const sections: Section[] = [];
 
 function FeatureCard({ feature: f }: { feature: Feature }) {
   return (
-    <div className="flex flex-col gap-3.5 rounded-lg bg-gray-100 px-6 pt-6 pb-8">
+    <div className="flex flex-col items-start gap-3.5 rounded-lg border-2 border-transparent bg-gray-100 px-6 pt-6 pb-8 drop-shadow-md transition-colors hover:border-blue-600 hover:bg-gray-50">
       {/* Icon */}
       {f.icon}
       {/* Title */}
@@ -143,15 +152,40 @@ const Home: NextPage = () => {
         </h1>
 
         {/* Subtitle */}
-        <p className="mx-auto mt-4 max-w-4xl text-center text-lg text-gray-600">
+        <p className="mx-auto mt-4 max-w-3xl text-center text-lg text-gray-600">
           A no-frills web app for all your Markdown note-taking needs,
           laser-focused on productivity and unobtrusive UX. Powered by awesome
-          open-source web technologies.
+          open-source tech.
         </p>
+
+        {/* CTA */}
+        <div className="mt-5 flex items-center justify-center gap-5">
+          <Button
+            intent="outline"
+            label="Source"
+            tooltipAlignment="xCenter"
+            tooltipPosition="bottom"
+            icon="github"
+            size="rectangle"
+            href="https://github.com/ChromeUniverse/luccanotes"
+            shadow
+          />
+          <Button
+            intent="primary"
+            label="Get started"
+            tooltipAlignment="xCenter"
+            tooltipPosition="bottom"
+            // icon="sign-in"
+            reverse
+            size="rectangle"
+            onClick={() => void signIn(undefined, { callbackUrl: "/notes" })}
+            shadow
+          />
+        </div>
 
         {/* Hero image */}
         <img
-          className="mx-auto mt-16 mb-10 w-[70%] rounded-lg drop-shadow-xl"
+          className="mx-auto mt-16 mb-10 w-[70%] rounded-lg drop-shadow-2xl"
           src="/images/notes-light.png"
           alt=""
         />
@@ -177,7 +211,7 @@ const Home: NextPage = () => {
           </p>
 
           {/* Feature cards */}
-          <div className="grid grid-cols-3 gap-5 pt-12">
+          <div className="grid grid-cols-3 gap-7 pt-12">
             {features.map((f, index) => (
               <FeatureCard key={index} feature={f} />
             ))}

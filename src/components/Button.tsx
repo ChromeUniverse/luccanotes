@@ -1,3 +1,5 @@
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cva, type VariantProps } from "class-variance-authority";
 import Link from "next/link";
 import {
@@ -23,22 +25,24 @@ import Tooltip, {
 
 // CVA Variants
 const buttonStyles = cva(
-  "peer flex items-center justify-center disabled:cursor-not-allowed font-semibold",
+  "peer flex items-center justify-center disabled:cursor-not-allowed font-semibold border-2",
   {
     variants: {
       intent: {
         primary:
-          "bg-blue-600 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
+          "bg-blue-600 border-transparent text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
         secondary:
-          "bg-white dark:bg-gray-950 text-gray-400 dark:text-gray-500 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 dark:hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600 dark:focus-visible:text-blue-600 dark:hover:border-blue-600 dark:focus-visible:border-blue-600 dark:outline-none dark:border-2 dark:border-transparent dark:hover:bg-opacity-50",
+          "bg-white dark:bg-gray-950 border-transparent text-gray-400 dark:text-gray-500 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 dark:hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600 dark:focus-visible:text-blue-600 dark:hover:border-blue-600 dark:focus-visible:border-blue-600 dark:outline-none dark:border-2 dark:border-transparent dark:hover:bg-opacity-50",
+        outline:
+          "bg-white border-2 border-blue-600 text-blue-600 hover:brightness-[90%] focus-visible:brightness-[90%]",
         secondaryAlt:
-          "dark:bg-gray-850 bg-gray-100 text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600",
+          "dark:bg-gray-850 bg-gray-100 text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600  border-transparent",
         secondaryAltTransparent:
-          "bg-transparent text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600",
+          "bg-transparent text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600  border-transparent",
         dangerPrimary:
-          "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%]",
+          "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%] border-transparent",
         dangerSecondary:
-          "bg-white dark:bg-gray-850 text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 dark:hover:bg-gray-900 dark:focus-visible:bg-gray-900 border-2 border-red-500",
+          "bg-white border-red-500 dark:bg-gray-850 text-red-500 hover:text-red-500 hover:brightness-95 focus-visible:brightness-95 dark:hover:bg-gray-900 dark:focus-visible:bg-gray-900",
       },
       roundedFull: {
         true: "rounded-[28px] hover:rounded-xl transition-[border-radius]",
@@ -83,7 +87,8 @@ type ButtonIconNames =
   | "eye-slash"
   | "download"
   | "sign-in"
-  | "floppy";
+  | "floppy"
+  | "github";
 
 // Icons and styling props
 // const IconProps: IconProps = { size: 28, weight: "bold" };
@@ -102,6 +107,7 @@ const icons: Record<ButtonIconNames, JSX.Element> = {
   download: <Download size={24} weight="bold" />,
   "sign-in": <SignIn size={24} />,
   floppy: <FloppyDisk size={24} weight="bold" />,
+  github: <FontAwesomeIcon size="lg" icon={faGithub} />,
 } as const;
 
 // Base Button Props
