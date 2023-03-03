@@ -1,5 +1,5 @@
-import { GetServerSidePropsContext, NextPage } from "next";
-import { Session } from "next-auth";
+import { type GetServerSidePropsContext, type NextPage } from "next";
+import { type Session } from "next-auth";
 import { signIn } from "next-auth/react";
 import PageLayout from "../components/Layouts/Page";
 import { getServerAuthSession } from "../server/auth";
@@ -15,6 +15,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import Button from "../components/Button";
+import Tooltip from "../components/Tooltip";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -129,6 +130,42 @@ function Section({
   );
 }
 
+function TechLogo({
+  label,
+  src,
+  link,
+  tooltipPosition = "bottom",
+  rounded = false,
+}: {
+  label: string;
+  src: string;
+  link: string;
+  tooltipPosition?: "bottom" | "top";
+  rounded?: boolean;
+}) {
+  return (
+    <div>
+      <a
+        className="relative mx-auto flex w-20 items-center justify-center transition-all hover:scale-110"
+        target="_blank"
+        rel="noreferrer noopener"
+        href={link}
+      >
+        <img
+          className={`peer z-10 h-20 w-20 object-contain ${
+            rounded ? "rounded-3xl" : ""
+          }`}
+          src={src}
+          alt="A logo"
+        />
+        <Tooltip tooltipPosition={tooltipPosition} alignment="xCenter">
+          <span className="">{label}</span>
+        </Tooltip>
+      </a>
+    </div>
+  );
+}
+
 const Home: NextPage = () => {
   return (
     <PageLayout>
@@ -187,7 +224,7 @@ const Home: NextPage = () => {
         <img
           className="mx-auto mt-16 mb-10 w-[70%] rounded-lg drop-shadow-2xl"
           src="/images/notes-light.png"
-          alt=""
+          alt="A preview of the main dashboard for LuccaNotes"
         />
         {/* <img className="shadow-lg" src="/images/editor-light.png" alt="" /> */}
       </section>
@@ -232,12 +269,105 @@ const Home: NextPage = () => {
 
           {/* Description */}
           <p className="max-w-3xl text-gray-600">
-            Huge props to the amazing people who build and maintain the
+            Huge thanks to the amazing people who build and maintain the
             programming languages, libraries, frameworks, databases, tooling,
-            and PaaSs that power LuccaNotes. Go check them out!
+            and platforms that power LuccaNotes. Go check them out!
           </p>
 
-          {/* Feature cards */}
+          {/* Logos */}
+          <div className="grid grid-cols-8 items-stretch gap-x-8 gap-y-10 pt-10">
+            <TechLogo
+              label="TypeScript"
+              link="https://www.typescriptlang.org/"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/1200px-Typescript_logo_2020.svg.png"
+              tooltipPosition="top"
+            />
+            <TechLogo
+              label="Next.js"
+              link="https://nextjs.org/"
+              src="/images/logos/nextjs-dark.svg"
+              tooltipPosition="top"
+            />
+            <TechLogo
+              label="create-t3-app"
+              link="https://create.t3.gg/"
+              src="https://create.t3.gg/favicon.svg"
+              tooltipPosition="top"
+              rounded
+            />
+            <TechLogo
+              label="Tailwind CSS"
+              link="https://tailwindcss.com/"
+              src="/images/logos/tailwindcss.svg"
+              tooltipPosition="top"
+            />
+            <TechLogo
+              label="Headless UI"
+              link="https://headlessui.com/"
+              src="/images/logos/headless-ui.svg"
+              tooltipPosition="top"
+            />
+            <TechLogo
+              label="Prisma"
+              link="https://prisma.io/"
+              src="/images/logos/prisma.jpg"
+              rounded
+              tooltipPosition="top"
+            />
+            <TechLogo
+              label="tRPC"
+              link="https://trpc.io/"
+              src="https://trpc.io/img/logo.svg"
+              tooltipPosition="top"
+            />
+            <TechLogo
+              label="TanStack Query"
+              link="https://tanstack.com/query/latest"
+              src="https://react-query-v3.tanstack.com/_next/static/images/emblem-light-628080660fddb35787ff6c77e97ca43e.svg"
+              tooltipPosition="top"
+            />
+            <TechLogo
+              label="NextAuth"
+              link="https://next-auth.js.org/"
+              src="https://next-auth.js.org/img/logo/logo-sm.png"
+            />
+            <TechLogo
+              label="Codemirror"
+              link="https://codemirror.net/"
+              src="https://codemirror.net/favicon.ico"
+            />
+            <TechLogo
+              label="Phosphor Icons"
+              link="https://phosphoricons.com/"
+              src="https://phosphoricons.com/favicon-512.png"
+            />
+            <TechLogo
+              label="Font Awesome"
+              link="https://fontawesome.com/"
+              // src="https://www.drupal.org/files/project-images/font_awesome_logo.png"
+              src="/images/logos/fa.svg"
+            />
+            <TechLogo
+              label="Zod"
+              link="https://zod.io/"
+              src="/images/logos/zod.svg"
+            />
+            <TechLogo
+              label="PostgreSQL"
+              link="https://www.postgresql.org/"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Postgresql_elephant.svg/1985px-Postgresql_elephant.svg.png"
+            />
+            <TechLogo
+              label="Supabase"
+              link="https://supabase.com/"
+              src="https://seeklogo.com/images/S/supabase-logo-DCC676FFE2-seeklogo.com.png"
+            />
+            <TechLogo
+              label="Vercel"
+              link="https://vercel.com/"
+              src="https://static-00.iconduck.com/assets.00/vercel-icon-512x449-3422jidz.png"
+            />
+          </div>
         </div>
       </section>
     </PageLayout>
