@@ -192,43 +192,65 @@ function Navbar({
       <Logo session={session} />
       {session ? (
         <>
-          <Slash />
+          {/* Desktop */}
+          <div className="hidden items-center gap-2 md:flex">
+            <Slash />
 
-          {/* Username */}
-          <span className="text-xl text-gray-700 dark:text-gray-300">
-            {session.user.name}
-          </span>
+            {/* Username */}
+            <span className="text-xl text-gray-700 dark:text-gray-300">
+              {session.user.name}
+            </span>
 
-          {/* Note title */}
-          {noteTitle && (
-            <>
-              <Slash />
-              <span className="text-xl font-semibold text-gray-900 dark:text-white">
-                {noteTitle}
-              </span>
-            </>
-          )}
+            {/* Note title */}
+            {noteTitle && (
+              <>
+                <Slash />
+                <span className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {noteTitle}
+                </span>
+              </>
+            )}
+          </div>
 
-          {/* Profile picture dropdown */}
+          {/* Mobile */}
+          <div className="flex items-center gap-2 md:hidden">
+            {noteTitle ? (
+              <>
+                <Slash />
+                <span className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {noteTitle}
+                </span>
+              </>
+            ) : (
+              <>
+                <Slash />
+                <span className="text-xl text-gray-700 dark:text-gray-300">
+                  {session.user.name}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Profile Picture */}
           <PfpDropdown session={session} />
         </>
       ) : (
         <div className="ml-auto flex items-center gap-8">
           {/* Nav links */}
           <a
-            className="text-base font-semibold text-gray-600 hover:text-blue-600" //
+            className="hidden text-base font-semibold text-gray-600 hover:text-blue-600 md:block" //
             href="#features"
           >
             Features
           </a>
           <a
-            className="text-base font-semibold text-gray-600 hover:text-blue-600" //
+            className="hidden text-base font-semibold text-gray-600 hover:text-blue-600 md:block" //
             href="#technologies"
           >
             Tech
           </a>
           <a
-            className="text-base font-semibold text-gray-600 hover:text-blue-600" //
+            className="hidden text-base font-semibold text-gray-600 hover:text-blue-600 md:block" //
             href="#cta"
           >
             Get started
