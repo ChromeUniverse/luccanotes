@@ -40,9 +40,9 @@ const buttonStyles = cva(
         outline:
           "bg-white border-2 border-blue-600 text-blue-600 hover:brightness-[95%] focus-visible:brightness-[95%]",
         secondaryAlt:
-          "dark:bg-gray-850 bg-gray-100 text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600  border-transparent",
+          "dark:bg-gray-850 bg-gray-100 text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600 border-transparent",
         secondaryAltTransparent:
-          "bg-transparent text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-950 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600  border-transparent",
+          "bg-transparent text-gray-600 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-900 dark:focus-visible:bg-gray-900 hover:brightness-95 dark:hover:brightness-100 hover:text-blue-600 dark:hover:text-blue-600 focus-visible:brightness-95 dark:focus-visible:brightness-100 focus-visible:text-blue-600 dark:focus-visible:text-blue-600  border-transparent",
         dangerPrimary:
           "bg-red-500 text-white hover:brightness-[85%] focus-visible:brightness-[85%] border-transparent",
         dangerSecondary:
