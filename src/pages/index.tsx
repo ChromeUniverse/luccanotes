@@ -190,7 +190,7 @@ const Home: NextPage = () => {
         <title>LuccaNotes • Note-taking app for Markdown lovers 💙</title>
       </Head>
 
-      <main className="flex w-screen flex-grow flex-col bg-gray-200">
+      <main className="flex flex-grow flex-col bg-gray-200">
         {/* Hero section */}
         <section
           id="hero"
