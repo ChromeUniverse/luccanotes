@@ -4,7 +4,14 @@ import {
   type InferGetServerSidePropsType,
 } from "next";
 import { Note } from "phosphor-react";
-import { Fragment, memo, useCallback, useEffect, useState } from "react";
+import {
+  Fragment,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 
 // custom components
@@ -103,27 +110,69 @@ const MarkdownPreview = ({
 
 const MemoedMarkdownPreview = memo(MarkdownPreview);
 
+function TextEditor({
+  initialContent,
+  setEditorContent,
+  debouncedAutoSave,
+}: {
+  initialContent: string;
+  setEditorContent: (newContent: string) => void;
+  debouncedAutoSave: () => void;
+}) {
+  console.log("Text editor re-rendered");
+
+  const { theme } = useThemeStore();
+
+  const onEditorChange = useCallback(
+    (value: string, viewUpdate: ViewUpdate) => {
+      // console.log(value);
+      setEditorContent(value);
+      debouncedAutoSave();
+    },
+    []
+  );
+
+  return (
+    <CodeMirror
+      className="h-full overflow-auto"
+      value={initialContent}
+      theme={theme === "light" ? customLightTheme : customDarkTheme}
+      onChange={onEditorChange}
+      basicSetup={editorOptions}
+      placeholder="Enter your text here..."
+      extensions={[
+        markdown({ base: markdownLanguage, codeLanguages: languages }),
+        EditorView.lineWrapping,
+      ]}
+    />
+  );
+}
+
+const MemoedTextEditor = memo(TextEditor);
+
 // Codemirror text editor panel
 function EditorPanel({
   note,
   mutationLoading,
-  editorContent,
-  onEditorChange,
+  initialContent,
   previewOpen,
+  setEditorContent,
   setModalOpen,
   setPreviewOpen,
   saveNote,
+  debouncedAutoSave,
 }: {
   note: NoteWithTags;
   mutationLoading: boolean;
-  editorContent: string;
-  onEditorChange: (value: string, viewUpdate: ViewUpdate) => void;
-  setModalOpen: (newModalOpen: boolean) => void;
+  initialContent: string;
   previewOpen: boolean;
+  setEditorContent: (value: string) => void;
+  setModalOpen: (newModalOpen: boolean) => void;
   setPreviewOpen: (newPreviewOpen: boolean) => void;
   saveNote: () => void;
+  debouncedAutoSave: () => void;
 }) {
-  const { theme } = useThemeStore();
+  console.log("Editor panel re-rendered");
 
   return (
     <section className="flex h-full flex-1 flex-col overflow-clip bg-gray-100 dark:bg-gray-900">
@@ -198,10 +247,10 @@ function EditorPanel({
         </div>
       </div>
 
-      <CodeMirror
+      {/* <CodeMirror
         className="h-full overflow-auto"
-        value={editorContent}
         theme={theme === "light" ? customLightTheme : customDarkTheme}
+        value={initialContent}
         onChange={onEditorChange}
         basicSetup={editorOptions}
         placeholder="Enter your text here..."
@@ -209,10 +258,18 @@ function EditorPanel({
           markdown({ base: markdownLanguage, codeLanguages: languages }),
           EditorView.lineWrapping,
         ]}
+      /> */}
+
+      <MemoedTextEditor
+        initialContent={initialContent}
+        setEditorContent={setEditorContent}
+        debouncedAutoSave={debouncedAutoSave}
       />
     </section>
   );
 }
+
+const MemoedEditorPanel = memo(EditorPanel);
 
 // React Markdown preview panel
 function PreviewPanel({
@@ -255,7 +312,9 @@ const NotePage = (
   const utils = api.useContext();
 
   // diff-match-patch
-  const dmp = new DMP.diff_match_patch();
+  const dmp = useMemo(() => {
+    return new DMP.diff_match_patch();
+  }, []);
 
   // editor state
   const [prevEditorContent, setPrevEditorContent] = useState(props.content);
@@ -269,15 +328,6 @@ const NotePage = (
     console.log("Auto-save fired!");
     saveNote();
   }, 2000);
-
-  // editor state update
-  const onEditorChange = useCallback(
-    (value: string, viewUpdate: ViewUpdate) => {
-      setEditorContent(value);
-      debouncedAutoSave();
-    },
-    []
-  );
 
   // note saving function
   const saveNote = useCallback(() => {
@@ -335,15 +385,16 @@ const NotePage = (
       {/* Desktop */}
       <div className="hidden h-full overflow-clip md:flex">
         {/* Editor Panel */}
-        <EditorPanel
-          editorContent={editorContent}
+        <MemoedEditorPanel
           mutationLoading={noteContentMutation.isLoading}
           note={note}
-          onEditorChange={onEditorChange}
+          initialContent={props.content}
+          setEditorContent={setEditorContent}
           previewOpen={previewOpen}
-          saveNote={saveNote}
           setModalOpen={setModalOpen}
           setPreviewOpen={setPreviewOpen}
+          saveNote={saveNote}
+          debouncedAutoSave={debouncedAutoSave}
         />
 
         {/* Preview Panel */}
@@ -355,24 +406,21 @@ const NotePage = (
       {/* Mobile */}
       <div className="block md:hidden">
         <Tab.Group as="div" className="flex flex-col">
+          {/* Top bar */}
           <div className="flex justify-between bg-white dark:bg-gray-950">
+            {/* Tabs */}
             <Tab.List className="flex gap-0 border-none bg-transparent text-gray-500">
+              {/* Editor tab */}
               <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-white px-6 outline-none ui-selected:bg-gray-200 dark:bg-gray-950 dark:ui-selected:bg-gray-850">
-                {/* <FontAwesomeIcon
-                  className="hidden scale-125 ui-selected:block"
-                  icon={faMarkdown}
-                /> */}
                 <span className="font-semibold">Editor</span>
               </Tab>
+              {/* Preview tab */}
               <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-white px-6 outline-none ui-selected:bg-gray-200 dark:bg-gray-950 dark:ui-selected:bg-gray-850">
-                {/* <Note
-                  className="hidden ui-selected:block"
-                  size={24}
-                  weight="bold"
-                /> */}
                 <span className="font-semibold">Preview</span>
               </Tab>
             </Tab.List>
+
+            {/* Buttons */}
             <div className="mr-3 flex items-center gap-1 bg-transparent">
               <Button
                 icon="floppy"
@@ -399,19 +447,24 @@ const NotePage = (
               />
             </div>
           </div>
+
+          {/* Panels */}
           <Tab.Panels>
+            {/* Editor */}
             <Tab.Panel>
-              <EditorPanel
-                editorContent={editorContent}
+              <MemoedEditorPanel
                 mutationLoading={noteContentMutation.isLoading}
                 note={note}
-                onEditorChange={onEditorChange}
+                initialContent={props.content}
+                setEditorContent={setEditorContent}
                 previewOpen={previewOpen}
-                saveNote={saveNote}
                 setModalOpen={setModalOpen}
                 setPreviewOpen={setPreviewOpen}
+                saveNote={saveNote}
+                debouncedAutoSave={debouncedAutoSave}
               />
             </Tab.Panel>
+            {/* Preview */}
             <Tab.Panel className="bg-gray-200 pt-4 dark:bg-gray-850">
               <PreviewPanel debouncedEditorContent={debouncedEditorContent} />
             </Tab.Panel>
