@@ -176,7 +176,7 @@ function Logo() {
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600">
         <BookBookmark color="white" size={28} />
       </div>
-      <span className="hidden text-2xl font-medium text-gray-600 dark:text-gray-200 md:block">
+      <span className="text-2xl font-medium text-gray-600 dark:text-gray-200">
         LuccaNotes
       </span>
     </div>
