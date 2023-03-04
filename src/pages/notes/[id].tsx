@@ -119,13 +119,10 @@ function TextEditor({
   setEditorContent: (newContent: string) => void;
   debouncedAutoSave: () => void;
 }) {
-  console.log("Text editor re-rendered");
-
   const { theme } = useThemeStore();
 
   const onEditorChange = useCallback(
     (value: string, viewUpdate: ViewUpdate) => {
-      // console.log(value);
       setEditorContent(value);
       debouncedAutoSave();
     },
@@ -172,8 +169,6 @@ function EditorPanel({
   saveNote: () => void;
   debouncedAutoSave: () => void;
 }) {
-  console.log("Editor panel re-rendered");
-
   return (
     <section className="flex h-full flex-1 flex-col overflow-clip bg-gray-100 dark:bg-gray-900">
       {/* Top bar */}
@@ -325,7 +320,6 @@ const NotePage = (
 
   // auto-saving with input debouncing
   const debouncedAutoSave = useDebouncedCallback(() => {
-    console.log("Auto-save fired!");
     saveNote();
   }, 2000);
 
@@ -358,12 +352,7 @@ const NotePage = (
     const handler = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
-        console.log("Shortcut hit!!", noteContentMutation.isLoading);
-        if (noteContentMutation.isLoading) {
-          return console.log("Already saving...");
-        }
-        // console.log("Got here!");
-
+        if (noteContentMutation.isLoading) return;
         saveNote();
       }
     };
