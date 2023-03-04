@@ -355,16 +355,16 @@ const NotePage = (
       {/* Mobile */}
       <div className="block md:hidden">
         <Tab.Group as="div" className="flex flex-col">
-          <div className="flex justify-between bg-gray-950">
+          <div className="flex justify-between bg-white dark:bg-gray-950">
             <Tab.List className="flex gap-0 border-none bg-transparent text-gray-500">
-              <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-gray-950 px-6 outline-none ui-selected:bg-gray-850">
+              <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-white px-6 outline-none ui-selected:bg-gray-200 dark:bg-gray-950 dark:ui-selected:bg-gray-850">
                 {/* <FontAwesomeIcon
                   className="hidden scale-125 ui-selected:block"
                   icon={faMarkdown}
                 /> */}
                 <span className="font-semibold">Editor</span>
               </Tab>
-              <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-gray-950 px-6 outline-none ui-selected:bg-gray-850">
+              <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-white px-6 outline-none ui-selected:bg-gray-200 dark:bg-gray-950 dark:ui-selected:bg-gray-850">
                 {/* <Note
                   className="hidden ui-selected:block"
                   size={24}
@@ -412,7 +412,7 @@ const NotePage = (
                 setPreviewOpen={setPreviewOpen}
               />
             </Tab.Panel>
-            <Tab.Panel className="bg-gray-850 pt-4">
+            <Tab.Panel className="bg-gray-200 pt-4 dark:bg-gray-850">
               <PreviewPanel debouncedEditorContent={debouncedEditorContent} />
             </Tab.Panel>
           </Tab.Panels>
