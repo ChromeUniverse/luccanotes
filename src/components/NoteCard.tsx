@@ -1,5 +1,6 @@
 import { Note, Tag } from "@prisma/client";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { NoteWithTags } from "..";
 import { formatDate } from "../utils/dates";
 import Button from "./Button";
@@ -101,6 +102,23 @@ function NoteCard({
   tags: Tag[];
 }) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [navLoading, setNavLoading] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const handler = (url: string) => {
+      if (url.includes(note.id)) {
+        setNavLoading(true);
+      }
+    };
+
+    router.events.on("routeChangeStart", handler);
+
+    return () => {
+      router.events.off("routeChangeStart", handler);
+    };
+  }, []);
 
   return (
     <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-[border-color] focus-within:border-blue-600 hover:border-blue-600 dark:bg-gray-950 md:px-7">
@@ -128,13 +146,14 @@ function NoteCard({
       <div className="mt-0 flex flex-col items-center gap-1 transition-all group-hover:opacity-100">
         <Button
           intent="secondary"
-          label="Open note"
+          label={navLoading ? "Loading..." : "Open note"}
           tooltipPosition="left"
           tooltipAlignment="yCenter"
           icon="arrow-square-out"
           iconOnly
           size="regular"
           href={`/notes/${note.id}`}
+          loading={navLoading}
         />
         <Button
           intent="secondary"

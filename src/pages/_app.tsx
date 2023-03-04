@@ -24,7 +24,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const { theme } = useThemeStore();
 
   const { pathname } = useRouter();
-  console.log(pathname);
 
   useEffect(() => {
     if (pathname === "/" || pathname.includes("auth")) return;

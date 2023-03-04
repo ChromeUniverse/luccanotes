@@ -169,7 +169,11 @@ function Button({
           })}
           href={href ?? ""}
         >
-          {icon && icons[icon]}
+          {loading ? (
+            <Spinner className="animate-spin" size={28} weight="bold" />
+          ) : (
+            icon && icons[icon]
+          )}
           {!iconOnly && <span>{label}</span>}
         </Link>
       ) : (
