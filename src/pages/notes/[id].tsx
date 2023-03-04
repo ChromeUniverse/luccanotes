@@ -4,7 +4,7 @@ import {
   type InferGetServerSidePropsType,
 } from "next";
 import { Note } from "phosphor-react";
-import { memo, useCallback, useEffect, useState } from "react";
+import { Fragment, memo, useCallback, useEffect, useState } from "react";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 
 // custom components
@@ -49,6 +49,7 @@ import { formatDate } from "../../utils/dates";
 import DMP from "diff-match-patch";
 import Navbar from "../../components/Navbar";
 import Head from "next/head";
+import { Tab } from "@headlessui/react";
 
 // editor customization
 const customDarkTheme = auraInit({
@@ -102,12 +103,146 @@ const MarkdownPreview = ({
 
 const MemoedMarkdownPreview = memo(MarkdownPreview);
 
+// Codemirror text editor panel
+function EditorPanel({
+  note,
+  mutationLoading,
+  editorContent,
+  onEditorChange,
+  previewOpen,
+  setModalOpen,
+  setPreviewOpen,
+  saveNote,
+}: {
+  note: NoteWithTags;
+  mutationLoading: boolean;
+  editorContent: string;
+  onEditorChange: (value: string, viewUpdate: ViewUpdate) => void;
+  setModalOpen: (newModalOpen: boolean) => void;
+  previewOpen: boolean;
+  setPreviewOpen: (newPreviewOpen: boolean) => void;
+  saveNote: () => void;
+}) {
+  const { theme } = useThemeStore();
+
+  return (
+    <section className="flex h-full flex-1 flex-col overflow-clip bg-gray-100 dark:bg-gray-900">
+      {/* Top bar */}
+      <div className="hidden h-16 flex-shrink-0 justify-between px-8 text-gray-500 dark:bg-gray-900 dark:text-gray-400 md:flex">
+        {/* Top bar title */}
+        <div className="flex items-center gap-2.5">
+          <FontAwesomeIcon className="scale-125" icon={faMarkdown} />
+          <span className="font-semibold">Editor</span>
+        </div>
+
+        {/* Top bar buttons */}
+        <div className="flex items-center gap-6">
+          <span className="text-sm">
+            Last edited {formatDate(note.lastUpdated)}
+          </span>
+          <div className="flex items-center gap-0">
+            <Button
+              icon="floppy"
+              iconOnly
+              intent="secondaryAltTransparent"
+              label={mutationLoading ? "Saving..." : "Save note"}
+              tooltipAlignment="xCenter"
+              tooltipPosition="bottom"
+              size="regular"
+              onClick={() => saveNote()}
+              loading={mutationLoading}
+            />
+            <Button
+              icon="note-pencil-sm"
+              iconOnly
+              intent="secondaryAltTransparent"
+              label="Note options"
+              tooltipAlignment="xCenter"
+              tooltipPosition="bottom"
+              size="regular"
+              onClick={() => setModalOpen(true)}
+            />
+            {previewOpen ? (
+              <Button
+                icon="eye-slash"
+                iconOnly
+                intent="secondaryAltTransparent"
+                label="Hide preview"
+                tooltipAlignment="xCenter"
+                tooltipPosition="bottom"
+                size="regular"
+                onClick={() => setPreviewOpen(false)}
+              />
+            ) : (
+              <Button
+                icon="eye"
+                iconOnly
+                intent="secondaryAltTransparent"
+                label="Show preview"
+                tooltipAlignment="left"
+                tooltipPosition="bottom"
+                size="regular"
+                onClick={() => setPreviewOpen(true)}
+              />
+            )}
+            {/* <Button
+                  icon="download"
+                  iconOnly
+                  intent="secondaryAltTransparent"
+                  label="Download"
+                  tooltipAlignment={previewOpen ? "xCenter" : "left"}
+                  tooltipPosition="bottom"
+                  size="regular"
+                /> */}
+          </div>
+        </div>
+      </div>
+
+      <CodeMirror
+        className="h-full overflow-auto"
+        value={editorContent}
+        theme={theme === "light" ? customLightTheme : customDarkTheme}
+        onChange={onEditorChange}
+        basicSetup={editorOptions}
+        placeholder="Enter your text here..."
+        extensions={[
+          markdown({ base: markdownLanguage, codeLanguages: languages }),
+          EditorView.lineWrapping,
+        ]}
+      />
+    </section>
+  );
+}
+
+// React Markdown preview panel
+function PreviewPanel({
+  debouncedEditorContent,
+}: {
+  debouncedEditorContent: string;
+}) {
+  const { theme } = useThemeStore();
+
+  return (
+    <section className="flex h-full flex-1 flex-col overflow-auto bg-gray-200 dark:bg-gray-850">
+      {/* Topbar */}
+      <div className="hidden h-16 flex-shrink-0 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400 md:flex">
+        <Note size={24} weight="bold" />
+        <span className="font-semibold">Preview</span>
+      </div>
+      {/* Markdown Preview */}
+      <div className="overflow-auto px-8">
+        <MemoedMarkdownPreview
+          theme={theme}
+          editorContent={debouncedEditorContent}
+        />
+      </div>
+    </section>
+  );
+}
+
 const NotePage = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
-  // zustand store
-  const { theme } = useThemeStore();
-
   // nextAuth
   const session = useSession().data as Session;
 
@@ -196,112 +331,92 @@ const NotePage = (
       </Head>
 
       <Navbar noteTitle={note.title} session={session} />
-      <div className="flex h-full overflow-clip">
+
+      {/* Desktop */}
+      <div className="hidden h-full overflow-clip md:flex">
         {/* Editor Panel */}
-        <section className="flex h-full flex-1 flex-col overflow-clip bg-gray-100 dark:bg-gray-900">
-          {/* Top bar */}
-          <div className="flex h-16 flex-shrink-0 justify-between px-8 text-gray-500 dark:text-gray-400">
-            {/* Top bar title */}
-            <div className="flex items-center gap-2.5">
-              <FontAwesomeIcon className="scale-125" icon={faMarkdown} />
-              <span className="font-semibold">Editor</span>
-            </div>
+        <EditorPanel
+          editorContent={editorContent}
+          mutationLoading={noteContentMutation.isLoading}
+          note={note}
+          onEditorChange={onEditorChange}
+          previewOpen={previewOpen}
+          saveNote={saveNote}
+          setModalOpen={setModalOpen}
+          setPreviewOpen={setPreviewOpen}
+        />
 
-            {/* Top bar buttons */}
-            <div className="flex items-center gap-6">
-              <span className="text-sm">
-                Last edited {formatDate(note.lastUpdated)}
-              </span>
-              <div className="flex items-center gap-0">
-                <Button
-                  icon="floppy"
-                  iconOnly
-                  intent="secondaryAltTransparent"
-                  label={
-                    noteContentMutation.isLoading ? "Saving..." : "Save note"
-                  }
-                  tooltipAlignment="xCenter"
-                  tooltipPosition="bottom"
-                  size="regular"
-                  onClick={() => saveNote()}
-                  loading={noteContentMutation.isLoading}
-                />
-                <Button
-                  icon="note-pencil-sm"
-                  iconOnly
-                  intent="secondaryAltTransparent"
-                  label="Note options"
-                  tooltipAlignment="xCenter"
-                  tooltipPosition="bottom"
-                  size="regular"
-                  onClick={() => setModalOpen(true)}
-                />
-                {previewOpen ? (
-                  <Button
-                    icon="eye-slash"
-                    iconOnly
-                    intent="secondaryAltTransparent"
-                    label="Hide preview"
-                    tooltipAlignment="xCenter"
-                    tooltipPosition="bottom"
-                    size="regular"
-                    onClick={() => setPreviewOpen(false)}
-                  />
-                ) : (
-                  <Button
-                    icon="eye"
-                    iconOnly
-                    intent="secondaryAltTransparent"
-                    label="Show preview"
-                    tooltipAlignment="xCenter"
-                    tooltipPosition="bottom"
-                    size="regular"
-                    onClick={() => setPreviewOpen(true)}
-                  />
-                )}
-                {/* <Button
-                  icon="download"
-                  iconOnly
-                  intent="secondaryAltTransparent"
-                  label="Download"
-                  tooltipAlignment={previewOpen ? "xCenter" : "left"}
-                  tooltipPosition="bottom"
-                  size="regular"
-                /> */}
-              </div>
-            </div>
-          </div>
-
-          <CodeMirror
-            className="h-full overflow-auto"
-            value={editorContent}
-            theme={theme === "light" ? customLightTheme : customDarkTheme}
-            onChange={onEditorChange}
-            basicSetup={editorOptions}
-            placeholder="Enter your text here..."
-            extensions={[
-              markdown({ base: markdownLanguage, codeLanguages: languages }),
-              EditorView.lineWrapping,
-            ]}
-          />
-        </section>
         {/* Preview Panel */}
         {previewOpen && (
-          <section className="flex h-full flex-1 flex-col overflow-auto bg-gray-200 dark:bg-gray-850">
-            {/* Topbar */}
-            <div className="flex h-16 flex-shrink-0 items-center gap-2.5 px-8 text-gray-500 dark:text-gray-400">
-              <Note size={24} weight="bold" />
-              <span className="font-semibold">Preview</span>
-            </div>
-            {/* Markdown Preview */}
-            <div className="overflow-auto px-8">
-              <MemoedMarkdownPreview
-                theme={theme}
-                editorContent={debouncedEditorContent}
+          <PreviewPanel debouncedEditorContent={debouncedEditorContent} />
+        )}
+      </div>
+
+      {/* Mobile */}
+      <div className="block md:hidden">
+        <Tab.Group as="div" className="flex flex-col">
+          <div className="flex justify-between bg-gray-950">
+            <Tab.List className="flex gap-0 border-none bg-transparent text-gray-500">
+              <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-gray-950 px-6 outline-none ui-selected:bg-gray-850">
+                {/* <FontAwesomeIcon
+                  className="hidden scale-125 ui-selected:block"
+                  icon={faMarkdown}
+                /> */}
+                <span className="font-semibold">Editor</span>
+              </Tab>
+              <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-gray-950 px-6 outline-none ui-selected:bg-gray-850">
+                {/* <Note
+                  className="hidden ui-selected:block"
+                  size={24}
+                  weight="bold"
+                /> */}
+                <span className="font-semibold">Preview</span>
+              </Tab>
+            </Tab.List>
+            <div className="mr-3 flex items-center gap-1 bg-transparent">
+              <Button
+                icon="floppy"
+                iconOnly
+                intent="secondaryAltTransparent"
+                label={
+                  noteContentMutation.isLoading ? "Saving..." : "Save note"
+                }
+                tooltipAlignment="xCenter"
+                tooltipPosition="bottom"
+                size="regular"
+                onClick={() => saveNote()}
+                loading={noteContentMutation.isLoading}
+              />
+              <Button
+                icon="note-pencil-sm"
+                iconOnly
+                intent="secondaryAltTransparent"
+                label="Note options"
+                tooltipAlignment="left"
+                tooltipPosition="bottom"
+                size="regular"
+                onClick={() => setModalOpen(true)}
               />
             </div>
-          </section>
-        )}
+          </div>
+          <Tab.Panels>
+            <Tab.Panel>
+              <EditorPanel
+                editorContent={editorContent}
+                mutationLoading={noteContentMutation.isLoading}
+                note={note}
+                onEditorChange={onEditorChange}
+                previewOpen={previewOpen}
+                saveNote={saveNote}
+                setModalOpen={setModalOpen}
+                setPreviewOpen={setPreviewOpen}
+              />
+            </Tab.Panel>
+            <Tab.Panel className="bg-gray-850 pt-4">
+              <PreviewPanel debouncedEditorContent={debouncedEditorContent} />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </div>
 
       {/* Modal */}
