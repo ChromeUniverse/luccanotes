@@ -410,7 +410,7 @@ const Home: NextPage = () => {
 
           {/* Editor preview image (mobile) */}
 
-          <div className="relative mt-16 h-[700px]">
+          <div className="relative mt-16 block h-[700px] md:hidden">
             <img
               className="absolute top-0 left-0 mx-auto block max-w-[16rem] rounded-lg border-2 border-gray-200 drop-shadow-2xl md:hidden"
               src="/images/editor-mobile-light.jpg"
