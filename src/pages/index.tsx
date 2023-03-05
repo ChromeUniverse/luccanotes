@@ -80,7 +80,7 @@ const features: Feature[] = [
   },
   {
     icon: <Keyboard {...iconProps} />,
-    title: "Keyboard navigation & A11y",
+    title: "Keyboard navigation & a11y",
     content:
       "LuccaNotes is built with full accessibility in mind. In addition to a more inclusive UX, this allows for speedy keyboard navigation throughout the entire app.",
   },
@@ -241,7 +241,13 @@ const Home: NextPage = () => {
             />
           </div>
 
-          {/* Hero image (dashboard) */}
+          <img
+            className="mx-auto mt-16 block max-w-xs rounded-lg border-2 border-gray-200 drop-shadow-2xl md:hidden"
+            src="/images/notes-mobile-light.jpg"
+            alt="A preview of the main dashboard for LuccaNotes"
+          />
+
+          {/* Hero image (desktop) */}
           <img
             className="mx-auto mt-16 hidden rounded-lg border-2 border-gray-200 drop-shadow-2xl md:block lg:max-w-5xl xl:max-w-6xl"
             src="/images/notes-light.png"
@@ -370,6 +376,7 @@ const Home: NextPage = () => {
           </div>
         </Section>
 
+        {/* CTA section */}
         <Section
           id="cta"
           title="Get started"
@@ -394,12 +401,27 @@ const Home: NextPage = () => {
             />
           </div>
 
-          {/* Editor preview image */}
+          {/* Editor preview image (desktop) */}
           <img
             className="mx-auto mb-10 mt-16 hidden rounded-lg border-2 border-gray-200 drop-shadow-xl md:block lg:max-w-5xl xl:max-w-6xl"
             src="/images/editor-light.png"
-            alt="A preview of the main dashboard for LuccaNotes"
+            alt="A preview of the editor and preview for LuccaNotes (desktop)"
           />
+
+          {/* Editor preview image (mobile) */}
+
+          <div className="relative mt-16 h-[700px]">
+            <img
+              className="absolute top-0 left-0 mx-auto block max-w-[16rem] rounded-lg border-2 border-gray-200 drop-shadow-2xl md:hidden"
+              src="/images/editor-mobile-light.jpg"
+              alt="A preview of the text editor panel in LuccaNotes (mobile)"
+            />
+            <img
+              className="absolute bottom-0 right-0 mx-auto block max-w-[16rem] rounded-lg border-2 border-gray-200 drop-shadow-2xl md:hidden"
+              src="/images/preview-mobile-light.jpg"
+              alt="A preview of the Markdown preview panel in LuccaNotes (mobile)"
+            />
+          </div>
         </Section>
 
         {/* Footer */}
