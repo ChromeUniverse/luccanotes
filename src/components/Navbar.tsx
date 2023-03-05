@@ -217,14 +217,14 @@ function Navbar({
             {noteTitle ? (
               <>
                 <Slash />
-                <span className="text-xl font-semibold text-gray-900 dark:text-white">
+                <span className="text-lg font-semibold text-gray-900 dark:text-white">
                   {noteTitle}
                 </span>
               </>
             ) : (
               <>
                 <Slash />
-                <span className="text-xl text-gray-700 dark:text-gray-300">
+                <span className="text-lg text-gray-700 dark:text-gray-300">
                   {session.user.name}
                 </span>
               </>

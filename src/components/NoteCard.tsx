@@ -124,7 +124,7 @@ function NoteCard({
     <div className="group flex items-start justify-between rounded-lg border-2 border-transparent bg-white px-5 py-6 transition-[border-color] focus-within:border-blue-600 hover:border-blue-600 dark:bg-gray-950 md:px-7">
       <div className="flex flex-col">
         {/* Note title */}
-        <h2 className="text-2xl font-semibold text-gray-900 underline decoration-transparent transition-[text-decoration-color] group-hover:decoration-gray-900 dark:text-white dark:group-focus-within:decoration-white dark:group-hover:decoration-white dark:group-focus-visible:decoration-white">
+        <h2 className="text-xl font-semibold text-gray-900 underline decoration-transparent transition-[text-decoration-color] group-hover:decoration-gray-900 dark:text-white dark:group-focus-within:decoration-white dark:group-hover:decoration-white dark:group-focus-visible:decoration-white md:text-2xl">
           {note.title}
         </h2>
 
