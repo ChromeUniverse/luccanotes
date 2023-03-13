@@ -30,6 +30,8 @@ import { Note, Prisma, Tag } from "@prisma/client";
 import { prisma } from "../../server/db";
 import { NoteWithTags } from "../..";
 import useSearchStore from "../../stores/search";
+import { Spinner } from "phosphor-react";
+import LoadingNoteCard from "../../components/LoadingNoteCard";
 
 function sortNotes(
   notes: NoteWithTags[],
@@ -68,6 +70,38 @@ function NotesPage(
 ) {
   // next auth
   const session = useSession().data as Session;
+
+  // dummy data
+  const fakeNote: NoteWithTags = {
+    createdAt: new Date(),
+    id: nanoid(),
+    lastUpdated: new Date(),
+    tags: [
+      {
+        color: "green",
+        id: nanoid(),
+        createdAt: new Date(),
+        label: "test tag",
+        userId: session.user.id,
+      },
+      {
+        color: "green",
+        id: nanoid(),
+        createdAt: new Date(),
+        label: "test tag",
+        userId: session.user.id,
+      },
+      {
+        color: "green",
+        id: nanoid(),
+        createdAt: new Date(),
+        label: "test tag",
+        userId: session.user.id,
+      },
+    ],
+    title: "Fake Note",
+    userId: session.user.id,
+  };
 
   // trpc
   const tagsQuery = api.tags.getAll.useQuery(undefined, {});
@@ -109,9 +143,6 @@ function NotesPage(
         )
     );
   }, [searchInput, sortField, sortOrder, notes, selectedTagIds]);
-
-  if (!notes && !tags) return <span>Loading...</span>;
-
   return (
     <PageLayout container session={session}>
       <Head>
@@ -144,8 +175,18 @@ function NotesPage(
           />
         </div>
       </div>
+
       {/* Note card container */}
-      {visibleNotes.length ? (
+      {notesQuery.isLoading || false ? (
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <LoadingNoteCard />
+          <LoadingNoteCard />
+          <LoadingNoteCard />
+          <LoadingNoteCard />
+          <LoadingNoteCard />
+          <LoadingNoteCard />
+        </div>
+      ) : visibleNotes.length ? (
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
           {visibleNotes.map((note, index) => (
             <NoteCard
@@ -176,6 +217,7 @@ function NotesPage(
           create one!
         </p>
       )}
+
       {/* Mobile button container */}
       <div className="fixed right-0 bottom-0 flex flex-col gap-2 px-5 py-5 md:hidden">
         <Button //
