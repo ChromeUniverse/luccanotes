@@ -3,7 +3,7 @@ import {
   type GetServerSidePropsContext,
   type InferGetServerSidePropsType,
 } from "next";
-import { Note } from "phosphor-react";
+import { Note, Spinner } from "phosphor-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 
@@ -73,7 +73,7 @@ const MarkdownPreview = ({
 }) => {
   return (
     <ReactMarkdown
-      className="prose prose-h1:border-b-2 prose-h1:border-gray-300 prose-h1:pb-2 prose-h2:h-10 prose-h2:border-b-2 prose-h2:border-gray-300 prose-h2:pb-1.5 hover:prose-a:text-blue-400 prose-blockquote:border-gray-300 prose-pre:bg-transparent prose-pre:p-0 prose-img:mx-auto prose-img:my-6 prose-img:max-h-[600px] prose-img:rounded-md prose-hr:h-1 prose-hr:rounded-full prose-hr:bg-gray-300 dark:prose-invert  dark:prose-h1:border-gray-700 dark:prose-h2:border-gray-700 dark:prose-blockquote:border-gray-700 dark:prose-hr:bg-gray-700"
+      className="prose my-3 prose-h1:border-b-2 prose-h1:border-gray-300 prose-h1:pb-2 prose-h2:h-10 prose-h2:border-b-2 prose-h2:border-gray-300 prose-h2:pb-1.5 hover:prose-a:text-blue-400 prose-blockquote:border-gray-300 prose-pre:bg-transparent prose-pre:p-0 prose-img:mx-auto prose-img:my-6 prose-img:max-h-[600px] prose-img:rounded-md prose-hr:h-1 prose-hr:rounded-full prose-hr:bg-gray-300 dark:prose-invert  dark:prose-h1:border-gray-700 dark:prose-h2:border-gray-700 dark:prose-blockquote:border-gray-700 dark:prose-hr:bg-gray-700"
       remarkPlugins={[remarkGfm]}
       components={{
         code({ node, inline, className, children, style, ...props }) {
@@ -221,31 +221,9 @@ function EditorPanel({
                 onClick={() => setPreviewOpen(true)}
               />
             )}
-            {/* <Button
-                  icon="download"
-                  iconOnly
-                  intent="secondaryAltTransparent"
-                  label="Download"
-                  tooltipAlignment={previewOpen ? "xCenter" : "left"}
-                  tooltipPosition="bottom"
-                  size="regular"
-                /> */}
           </div>
         </div>
       </div>
-
-      {/* <CodeMirror
-        className="h-full overflow-auto"
-        theme={theme === "light" ? customLightTheme : customDarkTheme}
-        value={initialContent}
-        onChange={onEditorChange}
-        basicSetup={editorOptions}
-        placeholder="Enter your text here..."
-        extensions={[
-          markdown({ base: markdownLanguage, codeLanguages: languages }),
-          EditorView.lineWrapping,
-        ]}
-      /> */}
 
       <MemoedTextEditor
         initialContent={initialContent}
@@ -353,108 +331,155 @@ const NotePage = (
     return () => document.removeEventListener("keydown", handler);
   }, [noteContentMutation.isLoading, saveNote]);
 
-  if (!note || !tags) return <div>Loading...</div>;
-
   return (
     <div className="flex h-screen flex-col">
       <Head>
-        <title>LuccaNotes • {note.title}</title>
+        <title>
+          {note
+            ? `LuccaNotes •  ${note.title}`
+            : `LuccaNotes •  Loading note...`}
+        </title>
       </Head>
 
-      <Navbar noteTitle={note.title} session={session} />
+      <Navbar noteTitle={note ? note.title : undefined} session={session} />
 
       {/* Desktop */}
       <div className="hidden h-full overflow-clip md:flex">
-        {/* Editor Panel */}
-        <MemoedEditorPanel
-          mutationLoading={noteContentMutation.isLoading}
-          note={note}
-          initialContent={props.content}
-          setEditorContent={setEditorContent}
-          previewOpen={previewOpen}
-          setModalOpen={setModalOpen}
-          setPreviewOpen={setPreviewOpen}
-          saveNote={saveNote}
-          debouncedAutoSave={debouncedAutoSave}
-        />
+        {!note || !tags ? (
+          // Loading state
+          <>
+            {/* Editor */}
+            <div className="flex h-full flex-1 items-center justify-center bg-gray-100 dark:bg-gray-900">
+              <Spinner
+                className="animate-spin text-gray-400 dark:text-gray-500"
+                size={40}
+              />
+            </div>
+            {/* Markdown preview */}
+            <div className="flex h-full flex-1 items-center justify-center bg-gray-200 dark:bg-gray-850">
+              <Spinner
+                className="animate-spin text-gray-400 dark:text-gray-500"
+                size={40}
+              />
+            </div>
+          </>
+        ) : (
+          // Loaded
+          <>
+            {/* Editor Panel */}
+            <MemoedEditorPanel
+              mutationLoading={noteContentMutation.isLoading}
+              note={note}
+              initialContent={props.content}
+              setEditorContent={setEditorContent}
+              previewOpen={previewOpen}
+              setModalOpen={setModalOpen}
+              setPreviewOpen={setPreviewOpen}
+              saveNote={saveNote}
+              debouncedAutoSave={debouncedAutoSave}
+            />
 
-        {/* Preview Panel */}
-        {previewOpen && (
-          <PreviewPanel debouncedEditorContent={debouncedEditorContent} />
+            {/* Preview Panel */}
+            {previewOpen && (
+              <PreviewPanel debouncedEditorContent={debouncedEditorContent} />
+            )}
+          </>
         )}
       </div>
 
       {/* Mobile */}
-      <div className="block md:hidden">
-        <Tab.Group as="div" className="flex flex-col">
-          {/* Top bar */}
+      <div className="block grow md:hidden">
+        <Tab.Group as="div" className="flex h-full flex-col">
           <div className="flex justify-between bg-white dark:bg-gray-950">
             {/* Tabs */}
             <Tab.List className="flex gap-0 border-none bg-transparent text-gray-500">
-              {/* Editor tab */}
               <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-white px-6 outline-none ui-selected:bg-gray-200 dark:bg-gray-950 dark:ui-selected:bg-gray-850">
                 <span className="font-semibold">Editor</span>
               </Tab>
-              {/* Preview tab */}
+
               <Tab className="flex h-12 items-center gap-2.5 rounded-t-lg bg-white px-6 outline-none ui-selected:bg-gray-200 dark:bg-gray-950 dark:ui-selected:bg-gray-850">
                 <span className="font-semibold">Preview</span>
               </Tab>
             </Tab.List>
 
             {/* Buttons */}
-            <div className="mr-3 flex items-center gap-1 bg-transparent">
-              <Button
-                icon="floppy"
-                iconOnly
-                intent="secondaryAltTransparent"
-                label={
-                  noteContentMutation.isLoading ? "Saving..." : "Save note"
-                }
-                tooltipAlignment="xCenter"
-                tooltipPosition="bottom"
-                size="regular"
-                onClick={() => saveNote()}
-                loading={noteContentMutation.isLoading}
-              />
-              <Button
-                icon="note-pencil-sm"
-                iconOnly
-                intent="secondaryAltTransparent"
-                label="Note options"
-                tooltipAlignment="left"
-                tooltipPosition="bottom"
-                size="regular"
-                onClick={() => setModalOpen(true)}
-              />
-            </div>
+            {note && tags && (
+              <div className="mr-3 flex items-center gap-1 bg-transparent">
+                <Button
+                  icon="floppy"
+                  iconOnly
+                  intent="secondaryAltTransparent"
+                  label={
+                    noteContentMutation.isLoading ? "Saving..." : "Save note"
+                  }
+                  tooltipAlignment="xCenter"
+                  tooltipPosition="bottom"
+                  size="regular"
+                  onClick={() => saveNote()}
+                  loading={noteContentMutation.isLoading}
+                />
+                <Button
+                  icon="note-pencil-sm"
+                  iconOnly
+                  intent="secondaryAltTransparent"
+                  label="Note options"
+                  tooltipAlignment="left"
+                  tooltipPosition="bottom"
+                  size="regular"
+                  onClick={() => setModalOpen(true)}
+                />
+              </div>
+            )}
           </div>
+          <Tab.Panels className="flex grow">
+            {!note || !tags ? (
+              // Loading state
+              <>
+                {/* Editor */}
+                <Tab.Panel className="flex h-full w-full flex-1 items-center justify-center bg-gray-100 dark:bg-gray-900">
+                  <Spinner
+                    className="animate-spin text-gray-400 dark:text-gray-500"
+                    size={40}
+                  />
+                </Tab.Panel>
 
-          {/* Panels */}
-          <Tab.Panels>
-            {/* Editor */}
-            <Tab.Panel>
-              <MemoedEditorPanel
-                mutationLoading={noteContentMutation.isLoading}
-                note={note}
-                initialContent={props.content}
-                setEditorContent={setEditorContent}
-                previewOpen={previewOpen}
-                setModalOpen={setModalOpen}
-                setPreviewOpen={setPreviewOpen}
-                saveNote={saveNote}
-                debouncedAutoSave={debouncedAutoSave}
-              />
-            </Tab.Panel>
-            {/* Preview */}
-            <Tab.Panel className="bg-gray-200 pt-4 dark:bg-gray-850">
-              <PreviewPanel debouncedEditorContent={debouncedEditorContent} />
-            </Tab.Panel>
+                {/* Markdown preview */}
+                <Tab.Panel className="flex h-full flex-1 items-center justify-center bg-gray-200 dark:bg-gray-850">
+                  <Spinner
+                    className="animate-spin text-gray-400 dark:text-gray-500"
+                    size={40}
+                  />
+                </Tab.Panel>
+              </>
+            ) : (
+              <>
+                <Tab.Panel>
+                  <MemoedEditorPanel
+                    mutationLoading={noteContentMutation.isLoading}
+                    note={note}
+                    initialContent={props.content}
+                    setEditorContent={setEditorContent}
+                    previewOpen={previewOpen}
+                    setModalOpen={setModalOpen}
+                    setPreviewOpen={setPreviewOpen}
+                    saveNote={saveNote}
+                    debouncedAutoSave={debouncedAutoSave}
+                  />
+                </Tab.Panel>
+
+                <Tab.Panel className="bg-gray-200 pt-4 dark:bg-gray-850">
+                  <PreviewPanel
+                    debouncedEditorContent={debouncedEditorContent}
+                  />
+                </Tab.Panel>
+              </>
+            )}
           </Tab.Panels>
         </Tab.Group>
       </div>
 
       {/* Modal */}
-      {modalOpen && (
+      {modalOpen && note && tags && (
         <NoteOptionsModal
           open={modalOpen}
           onClose={setModalOpen}
