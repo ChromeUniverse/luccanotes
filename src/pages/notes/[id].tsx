@@ -4,18 +4,10 @@ import {
   type InferGetServerSidePropsType,
 } from "next";
 import { Note } from "phosphor-react";
-import {
-  Fragment,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 
 // custom components
-import PageLayout from "../../components/Layouts/Page";
 import NoteOptionsModal from "../../components/Modals/NoteOptions";
 import Button from "../../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -81,7 +73,7 @@ const MarkdownPreview = ({
 }) => {
   return (
     <ReactMarkdown
-      className="preview"
+      className="prose prose-h1:border-b-2 prose-h1:border-gray-300 prose-h1:pb-2 prose-h2:h-10 prose-h2:border-b-2 prose-h2:border-gray-300 prose-h2:pb-1.5 hover:prose-a:text-blue-400 prose-blockquote:border-gray-300 prose-pre:bg-transparent prose-pre:p-0 prose-img:mx-auto prose-img:my-6 prose-img:max-h-[600px] prose-img:rounded-md prose-hr:h-1 prose-hr:rounded-full prose-hr:bg-gray-300 dark:prose-invert  dark:prose-h1:border-gray-700 dark:prose-h2:border-gray-700 dark:prose-blockquote:border-gray-700 dark:prose-hr:bg-gray-700"
       remarkPlugins={[remarkGfm]}
       components={{
         code({ node, inline, className, children, style, ...props }) {
