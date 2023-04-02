@@ -33,7 +33,7 @@ $ cd luccanotes
 npm i
 ```
 - Register new OAuth2 apps with Google and Discord. See [NextAuth docs on Authentication Providers](https://next-auth.js.org/providers/) for more information.
-- Create a new `.env` file by copying nad pasting `.env.example`, then populate it with your environment variables, including Prisma connection string, OAuth2 credentials and NextAuth secret.
+- Create a new `.env` file by copying and pasting `.env.example`, then populate it with your environment variables, including Prisma connection string, OAuth2 credentials and NextAuth secret.
 - Create a new PostgreSQL database for this app and push the Prisma schema.
 ```
 npx prisma db push
@@ -47,6 +47,6 @@ npm run dev
 
 LuccaNotes' live demo is deployed on Vercel (Next.js app) and Supabase (PostgreSQL database), but any hosting services with support for Next.js and/or PostgreSQL should work fine.
 
-**First, set up your database.** To deploy on Supabase, first create a new project. Once it's set up, go to Project Settings -> Database -> Connection String. Copy the Node.js connection string and temporarily change it your local `.env`, then push your Prisma schema by running `npx prisma db push` locally.
+**First, set up your database.** To deploy on Supabase, first create a new project. Once it's set up, go to Project Settings -> Database -> Connection String. Copy the Node.js connection string and temporarily change it to your local `.env`, then push your Prisma schema by running `npx prisma db push` locally.
 
 **Now, the Next.js app.** To deploy on Vercel, simply visit your [dashboard](https://vercel.com/dashboard), select your GitHub repo, set up your environment variables, and voilà! 

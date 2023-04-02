@@ -157,7 +157,7 @@ function TechLogo({
       >
         <img
           className={`peer z-10 h-16 w-16 object-contain drop-shadow-lg md:h-20 md:w-20 ${
-            rounded ? "rounded-2xl lg:rounded-3xl" : ""
+            rounded ? "rounded-2xl lg:rounded-2xl" : ""
           }`}
           src={src}
           alt="A logo"
@@ -330,7 +330,7 @@ const Home: NextPage = () => {
             <TechLogo
               label="TanStack Query"
               link="https://tanstack.com/query/latest"
-              src="https://react-query-v3.tanstack.com/_next/static/images/emblem-light-628080660fddb35787ff6c77e97ca43e.svg"
+              src="/images/logos/react-query.svg"
               tooltipPosition="top"
             />
             <TechLogo
@@ -347,6 +347,7 @@ const Home: NextPage = () => {
               label="Phosphor Icons"
               link="https://phosphoricons.com/"
               src="https://phosphoricons.com/favicon-512.png"
+              rounded
             />
             <TechLogo
               label="Font Awesome"
