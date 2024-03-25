@@ -20,7 +20,7 @@ import CodeMirror, { type BasicSetupOptions } from "@uiw/react-codemirror";
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { EditorView, keymap, type ViewUpdate } from "@codemirror/view";
-import { Extension } from "@codemirror/state";
+// import { Extension } from "@codemirror/state";
 
 // codemirror themes
 import { tokyoNightDayInit } from "@uiw/codemirror-theme-tokyo-night-day";

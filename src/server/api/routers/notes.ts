@@ -6,16 +6,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { Session } from "next-auth";
 
 const diffSchema = z.tuple([z.number(), z.string()]);
-
-const patchesSchema = z.array(
-  z.object({
-    diffs: diffSchema.array(),
-    start1: z.number().nullable(),
-    start2: z.number().nullable(),
-    length1: z.number(),
-    length2: z.number(),
-  })
-);
+const patchesSchema: z.ZodType<(new () => DMP.patch_obj)[]> = z.any();
 
 // get current note content, check ownership
 async function getFullNote(
@@ -203,6 +194,7 @@ export const notesRouter = createTRPCRouter({
 
       // compute and apply text patches
       const dmp = new DMP.diff_match_patch();
+
       const [newContent, results] = dmp.patch_apply(
         input.patches,
         note.content

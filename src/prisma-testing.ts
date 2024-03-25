@@ -124,7 +124,18 @@ async function deleteTags() {
 }
 
 async function seedNotes() {
-  //
+  const notes: Prisma.NoteCreateManyArgs["data"] = [];
+
+  for (let i = 1; i <= 10; i++) {
+    const note: Prisma.NoteCreateManyInput = {
+      title: `Auto Note #${i}`,
+      userId,
+    };
+    notes.push(note);
+  }
+
+  const createdNotes = await prisma.note.createMany({ data: notes });
+  console.log(`Created ${createdNotes.count} notes`);
 }
 
 async function getNotes() {
@@ -133,7 +144,11 @@ async function getNotes() {
 }
 
 async function deleteNotes() {
-  const deletedNotes = await prisma.note.deleteMany();
+  const deletedNotes = await prisma.note.deleteMany({
+    where: {
+      title: { contains: "Auto Note" },
+    },
+  });
   console.log(`Deleted ${deletedNotes.count} Notes.`);
 }
 
@@ -141,12 +156,13 @@ async function main() {
   // users
   // void (await getUsers());
   // tags
-  void (await seedTags());
-  void (await getTags());
+  // void (await seedTags());
+  // void (await getTags());
   // void (await deleteTags());
   // notes
-  // void (await seedNotes());
+  void (await seedNotes());
   // void (await getNotes());
+  // void (await deleteNotes());
 }
 
 void main();
